@@ -12,4 +12,6 @@ members = [
     "course-1",
     "course-30",
     "ibc-protocol",
+    "mirror",
+    "router",
 ]
