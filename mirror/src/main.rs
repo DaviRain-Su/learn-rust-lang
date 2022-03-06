@@ -2,12 +2,13 @@ use std::io::{self, BufRead};
 
 use feed_rs::parser;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let stdin = io::stdin();
     for line in stdin.lock().lines() {
         let line = line?;
         print!("{}  ... ", line);
-        let xml = reqwest::blocking::get(&line)?.bytes()?;
+        let xml = reqwest::get(&line).await?.bytes().await?;
 
         match parser::parse_with_uri(xml.as_ref(), Some(&line)) {
             Ok(feed) => {

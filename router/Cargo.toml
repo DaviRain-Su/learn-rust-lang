@@ -12,15 +12,14 @@ log = "0.4"
 getrandom = { version = "0.2", features = ["js"] }
 rand = { version = "0.8", features = ["small_rng"] }
 wasm-logger = "0.2"
-#yew = { path = "../yew/packages/yew" }
-yew = "0.19.3"
-#yew-router = { path = "../yew/packages/yew-router" }
-yew-router = "0.16.0"
+yew = { git = "https://github.com/yewstack/yew.git", branch = "master" }
+yew-router = { git = "https://github.com/yewstack/yew.git", branch = "master" }
 serde = { version = "1.0", features = ["derive"] }
 lazy_static = "1.4.0"
 gloo-timers = "0.2"
-reqwest = { version = "0.11", features = ["blocking"] }
+#reqwest = { version = "0.10.0-alpha.0", default-features = false, features = ["blocking"] }
+reqwest = { version = "0.11" }
 feed-rs = "1.0.0"
 html_parser = "0.6.2"
-tokio = { version = "1", features = ["macros", "rt"] }
 uuid = { version = "0.8", features = ["wasm-bindgen", "v4"] }
+tokio = { version = "1", default-features = false, features = ["rt", "macros", "rt-multi-thread"] }

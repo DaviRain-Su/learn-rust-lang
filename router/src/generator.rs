@@ -8,7 +8,7 @@ use std::ptr::hash;
 use std::string::String;
 use std::sync::Arc;
 
-use feed_rs::model::{Entry, Feed};
+use feed_rs::model::{Entry, Feed, Text};
 use html_parser::{Dom, Element, Node};
 use lazy_static::lazy_static;
 use lipsum::MarkovChain;
@@ -26,10 +26,11 @@ lazy_static! {
     };
 }
 
-#[tokio::test]
-async fn test_display_ssr_feed() {
+#[test]
+fn test_display_ssr_feed() {
     let ssr_url = read_ssr_url("/data/test.txt").unwrap();
-    let ret = generate_ssr_feed(ssr_url).await.unwrap();
+    // let mut feeds = vec![];
+    let ret = generate_ssr_feed(ssr_url);
     // println!("ret = {:?}", ret);
 }
 
@@ -95,10 +96,11 @@ async fn generate_ssr_feed(ssr_url: Vec<String>) -> Result<Vec<MirrorContent>, B
     for line in ssr_url {
         print!("{}  ... ", line);
         let xml = reqwest::get(&line).await?.bytes().await?;
+        // println!("xml = {:?}", xml);
 
         let ret = match feed_rs::parser::parse_with_uri(xml.as_ref(), Some(&line)) {
             Ok(feed) => {
-                println!();
+                // println!();
                 // println!("mirror feed_type = {:?}", feed.feed_type);
                 // println!("mirror id = {}", feed.id);
                 // println!("mirror title = {:?}", feed.title);
@@ -239,7 +241,7 @@ impl From<Feed> for MirrorContent {
             id: feed.id.to_string(),
             mirror_title: format!("{:?}", feed.title.unwrap().content),
             updated: format!("{:?}", feed.updated.unwrap()),
-            description: format!("{:?}", feed.description.unwrap().content),
+            description: format!("{:?}", feed.description),
             links: format!("{:?}", feed.links.into_iter().map(|value| value.href).collect::<Vec<String>>()),
             entries: feed.entries.into_iter().map(|value| RssContent::from(value)).collect(),
         }
@@ -271,6 +273,116 @@ impl From<Entry> for RssContent {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct Mirror {
+    content: Vec<MirrorContent>,
+}
+
+
+impl Mirror {
+    pub fn new() -> Self {
+        let ssr_url = read_ssr_url("/data/test.txt").unwrap();
+
+        let rt = tokio::runtime::Runtime::new().expect("Failed to create Tokio runtime");
+
+        let feeds = rt.block_on(generate_ssr_feed(ssr_url)).unwrap();
+
+
+        Self {
+            content: feeds,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct MirrorContents {
+    rand_index: u64,
+    generator: Generator,
+    mirror_content: Vec<RssContent>,
+}
+
+impl MirrorContents {
+    pub fn new(mut mirror: Mirror) -> Self {
+        let mut mirror_content = vec![];
+        for item in mirror.content.clone().iter_mut() {
+            mirror_content.append(&mut item.entries);
+        }
+
+        let mut generator = Generator::from_seed(12);
+
+        let mut rand_index = generator.new_seed();
+        println!("rand_index = {}", rand_index);
+
+        if rand_index > mirror_content.len().try_into().unwrap() {
+            rand_index = mirror_content.len() as u64 - 1;
+        }
+
+        Self {
+            rand_index: rand_index,
+            mirror_content: mirror_content,
+            generator: generator,
+        }
+    }
+
+    pub fn len(&self) -> usize {
+        self.mirror_content.len()
+    }
+
+    pub fn ger_random_index(&self) -> usize {
+        self.rand_index as usize
+    }
+
+    pub fn get_title(&self) -> String {
+        self.get_title_index(self.ger_random_index())
+    }
+
+    pub fn get_paragraph(&self) -> String {
+        self.get_paragraph_index(self.ger_random_index())
+    }
+
+    fn get_title_index(&self, index: usize) -> String {
+        // println!("index = {}", index);
+        // println!("len = {}", self.len());
+        let ret = self.mirror_content.clone().iter().enumerate().find(|(index_l, value)| *index_l == index).unwrap().1.clone();
+
+
+        let title = ret.title;
+
+        title
+    }
+
+    fn get_paragraph_index(&self, index: usize) -> String {
+        let ret = self.mirror_content.clone().iter().enumerate().find(|(index_l, value)| *index_l == index).unwrap().1.clone();
+
+        let n_sentences = ret.content;
+
+        let mut paragraph = String::new();
+
+        for (index, value) in n_sentences.iter().enumerate() {
+            if index > 0 {
+                paragraph.push('\n');
+                paragraph.push('\n');
+            }
+
+            paragraph.push_str(value);
+        }
+        paragraph
+    }
+}
+
+#[test]
+fn test_title_paragraph() {
+    let mirror = Mirror::new();
+
+    let mirror_contents = MirrorContents::new(mirror);
+
+    let title = mirror_contents.get_title();
+    println!("title = {}", title);
+
+    let paragraph = mirror_contents.get_paragraph();
+    println!("paragraph = {}", paragraph);
+}
+
 
 #[derive(Debug, Clone)]
 pub struct Generator {
@@ -291,12 +403,37 @@ fn test_generator() {
     let ssr_url = read_ssr_url("/data/test.txt").unwrap();
     println!("ssr_url = {:?}", ssr_url);
 
-    let rt = Arc::new(tokio::runtime::Runtime::new().unwrap()).clone();
+    // let rt = tokio::runtime::Runtime::new().unwrap();
 
-    let feeds = rt.block_on(generate_ssr_feed(ssr_url)).unwrap();
+    // let ret = rt.block_on(generate_ssr_feed(ssr_url)).unwrap();
+
+    // println!("ret = {:?}", ret);
+    let mirror = Mirror::new();
+    let mirror_content = MirrorContents::new(mirror);
+
+
+    for item in mirror_content.mirror_content.iter() {
+        println!("title = {:#?}", item.title);
+        println!("content = {:#?}", item.content)
+    }
 }
 
+#[test]
+fn test_mirror() {
+    let mirror = Mirror::new();
+    println!("mirror = {:?}", mirror);
+}
+
+
 impl Generator {
+    pub fn new() -> MirrorContents {
+        let mirror = Mirror::new();
+
+        let mirror_contents = MirrorContents::new(mirror);
+
+        mirror_contents
+    }
+
     pub fn new_seed(&mut self) -> u64 {
         self.rng.gen()
     }
@@ -386,12 +523,16 @@ impl Generator {
         title
     }
 
+    // let mirror_content = Generator::new();
+    // mirror_content.get_title()
     pub fn sentence(&mut self) -> String {
         const WORDS_MIN: usize = 7;
         const WORDS_MAX: usize = 25;
 
         let n_words = self.rng.gen_range(WORDS_MIN..WORDS_MAX);
         YEW_CHAIN.generate_with_rng(&mut self.rng, n_words)
+        // let mirror_content = Generator::new();
+        // mirror_content.get_paragraph()
     }
 
     pub fn paragraph(&mut self) -> String {
@@ -408,6 +549,8 @@ impl Generator {
             paragraph.push_str(&self.sentence());
         }
         paragraph
+        // let mirror_content = Generator::new();
+        // mirror_content.get_paragraph()
     }
 }
 

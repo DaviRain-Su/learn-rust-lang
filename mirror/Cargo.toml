@@ -6,8 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-reqwest = { version = "0.11", features = ["blocking"] }
-#tokio = { version = "1", features = ["full"]}
+reqwest = { version = "0.11" }
+tokio = { version = "1", features = ["full"] }
 feed-rs = "1.0.0"
 
 [build]

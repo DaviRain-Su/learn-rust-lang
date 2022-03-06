@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
-use yew_router::scope_ext::HistoryHandle;
+use yew_router::scope_ext::LocationHandle;
 
 use crate::components::{pagination::Pagination, post_card::PostCard};
 use crate::components::pagination::PageQuery;
@@ -15,7 +15,7 @@ pub enum Msg {
 
 pub struct PostList {
     page: u64,
-    _listener: HistoryHandle,
+    _listener: LocationHandle,
 }
 
 fn current_page(ctx: &Context<PostList>) -> u64 {
@@ -32,7 +32,7 @@ impl Component for PostList {
         let link = ctx.link().clone();
         let listener = ctx
             .link()
-            .add_history_listener(link.callback(move |_| Msg::PageUpdated))
+            .add_location_listener(link.callback(move |_| Msg::PageUpdated))
             .unwrap();
 
         Self {
