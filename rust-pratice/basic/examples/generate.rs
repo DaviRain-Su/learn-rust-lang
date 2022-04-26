@@ -14,7 +14,7 @@ pub struct Schema {
 use std::collections::HashMap;
 
 use generated::*;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 fn main() {
     let schema: Schema = serde_json::from_str(include_str!("../fixtures/person.json")).unwrap();

@@ -1,5 +1,5 @@
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
 
 /// input data
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -11,15 +11,15 @@ pub struct Schema {
 }
 
 /// output structure
-/// 
+///
 pub struct St {
     /// structure name
     name: String,
     /// a list of structure fields
-    fields: Vec<Fd>
+    fields: Vec<Fd>,
 }
 
-pub struct  Fd {
+pub struct Fd {
     name: String,
     ty: String,
 }
@@ -30,15 +30,14 @@ impl St {
             name: name.into(),
             fields,
         }
-    }    
+    }
 }
 
 impl Fd {
-    pub fn new(name: impl Into<String>, ty: impl Into<String> ) -> Self {
+    pub fn new(name: impl Into<String>, ty: impl Into<String>) -> Self {
         Self {
             name: name.into(),
             ty: ty.into(),
         }
     }
 }
-
