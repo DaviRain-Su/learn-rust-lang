@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 mod json_schema;
 
 use proc_macro::TokenStream;
