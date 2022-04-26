@@ -3,4 +3,5 @@ members = [
     "course-1",
     "course-30",
     "rust-pratice/basic",
+    "algorithms-rs",
 ]
