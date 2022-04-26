@@ -1,8 +1,4 @@
 pub mod search {
-    /// arrays, this is search arrays
-    /// key, this is search item
-    /// if not find will return none,
-    /// if find will return index
     pub fn binary_search<T: core::cmp::PartialOrd>(arrays: &[T], key: T) -> Option<usize> {
         // assert arrays is sort
         let mut lo = 0usize;
@@ -12,14 +8,12 @@ pub mod search {
             let mid = lo + (hi - lo) / 2;
             if key < arrays[mid] {
                 hi = mid - 1;
-            }
-            if key > arrays[mid] {
+            } else if key > arrays[mid] {
                 lo = mid + 1;
             } else {
                 return Some(mid);
             }
         }
-
         None
     }
 }
