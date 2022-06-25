@@ -33,12 +33,19 @@ fn compute_stuff(x: i32) -> i32 {
 // Let us now refactor `vec_min`.
 fn vec_min(v: Vec<i32>) -> NumberOrNothing {
     fn min_i32(a: i32, b: i32) -> i32 {
-        unimplemented!()
+        if a < b { a  } else { b }
     }
 
     let mut min = Nothing;
     for e in v {
-        unimplemented!()
+        match min {
+            NumberOrNothing::Nothing => {
+                min = NumberOrNothing::Number(e);
+            },
+            NumberOrNothing::Number(value) => {
+                min = NumberOrNothing::Number(min_i32(e, value));
+            },
+        }
     }
     min
 }
@@ -62,13 +69,23 @@ fn read_vec() -> Vec<i32> {
 }
 pub fn main() {
     let vec = read_vec();
-    let min = vec_min(vec);
-    unimplemented!()
+    let min = vec_min(vec.clone());
+    min.print();
+    let sum = vec_sum(vec.clone());
+    println!("Vec Sum: {}", sum);
+    vec_print(vec.clone());
 }
 // You will have to replace `part00` by `part01` in the `main` function in
 // `main.rs` to run this code.
 
 // **Exercise 01.1**: Write a function `vec_sum` that computes the sum of all values of a `Vec<i32>`.
 
-// **Exercise 01.2**: Write a function `vec_print` that takes a vector and prints all its elements.
+fn vec_sum(nums: Vec<i32>) -> i32 {
+    nums.iter().fold(0, |acc, x| acc + x)
+}
 
+// **Exercise 01.2**: Write a function `vec_print` that takes a vector and prints all its elements.
+fn vec_print(nums: Vec<i32>) {
+    let result = nums.iter().fold(String::new(), |acc,&x| format!("{acc}, {x}"));
+    println!("{}", result);
+}
