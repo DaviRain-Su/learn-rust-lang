@@ -2,15 +2,14 @@
 // =========================================
 
 use std::io::prelude::*;
-use std::{io, fs, thread};
-use std::sync::mpsc::{sync_channel, SyncSender, Receiver};
+use std::sync::mpsc::{sync_channel, Receiver, SyncSender};
 use std::sync::Arc;
-
+use std::{fs, io, thread};
 
 // Before we come to the actual code, we define a data-structure `Options` to store all the
 // information we need to complete the job: Which files to work on, which pattern to look for, and
 // how to output.
-#[derive(Clone,Copy)]
+#[derive(Clone, Copy)]
 pub enum OutputMode {
     Print,
     SortAndPrint,
@@ -23,7 +22,6 @@ pub struct Options {
     pub pattern: String,
     pub output_mode: OutputMode,
 }
-
 
 // The first function reads the files, and sends every line over the `out_channel`.
 fn read_files(options: Arc<Options>, out_channel: SyncSender<String>) {
@@ -43,9 +41,11 @@ fn read_files(options: Arc<Options>, out_channel: SyncSender<String>) {
 
 // The second function filters the lines it receives through `in_channel` with the pattern, and sends
 // matches via `out_channel`.
-fn filter_lines(options: Arc<Options>,
-                in_channel: Receiver<String>,
-                out_channel: SyncSender<String>) {
+fn filter_lines(
+    options: Arc<Options>,
+    in_channel: Receiver<String>,
+    out_channel: SyncSender<String>,
+) {
     // We can simply iterate over the channel, which will stop when the channel is closed.
     for line in in_channel.iter() {
         // `contains` works on lots of types of patterns, but in particular, we can use it to test
@@ -66,12 +66,12 @@ fn output_lines(options: Arc<Options>, in_channel: Receiver<String>) {
             for line in in_channel.iter() {
                 unimplemented!()
             }
-        },
+        }
         Count => {
             // We are supposed to count the number of matching lines. There's a convenient iterator
             // adapter that we can use for this job.
             unimplemented!()
-        },
+        }
         SortAndPrint => {
             // We are asked to sort the matching lines before printing. So let's collect them all
             // in a local vector...
@@ -99,9 +99,7 @@ pub fn run(options: Options) {
 
     // Same with the filter thread.
     let options2 = options.clone();
-    let handle2 = thread::spawn(move || {
-        filter_lines(options2, line_receiver, filtered_sender)
-    });
+    let handle2 = thread::spawn(move || filter_lines(options2, line_receiver, filtered_sender));
 
     // And the output thread.
     let options3 = options.clone();
@@ -116,11 +114,13 @@ pub fn run(options: Options) {
 // Now we have all the pieces together for testing our rgrep with some hard-coded options.
 pub fn main() {
     let options = Options {
-        files: vec!["src/part10.rs".to_string(),
-                    "src/part11.rs".to_string(),
-                    "src/part12.rs".to_string()],
+        files: vec![
+            "src/part10.rs".to_string(),
+            "src/part11.rs".to_string(),
+            "src/part12.rs".to_string(),
+        ],
         pattern: "let".to_string(),
-        output_mode: Print
+        output_mode: Print,
     };
     run(options);
 }
@@ -128,6 +128,3 @@ pub fn main() {
 // **Exercise 13.1**: Change rgrep such that it prints not only the matching lines, but also the
 // name of the file and the number of the line in the file. You will have to change the type of the
 // channels from `String` to something that records this extra information.
-
-
-

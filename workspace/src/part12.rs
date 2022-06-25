@@ -1,10 +1,8 @@
 // Rust-101, Part 12: Rc, Interior Mutability, Cell, RefCell
 // =========================================================
 
-use std::rc::Rc;
 use std::cell::{Cell, RefCell};
-
-
+use std::rc::Rc;
 
 #[derive(Clone)]
 struct Callbacks {
@@ -13,11 +11,13 @@ struct Callbacks {
 
 impl Callbacks {
     pub fn new() -> Self {
-        Callbacks { callbacks: Vec::new() }
+        Callbacks {
+            callbacks: Vec::new(),
+        }
     }
 
     // Registration works just like last time, except that we are creating an `Rc` now.
-    pub fn register<F: Fn(i32)+'static>(&mut self, callback: F) {
+    pub fn register<F: Fn(i32) + 'static>(&mut self, callback: F) {
         unimplemented!()
     }
 
@@ -32,7 +32,8 @@ impl Callbacks {
 // Time for a demo!
 fn demo(c: &mut Callbacks) {
     c.register(|val| println!("Callback 1: {}", val));
-    c.call(0); c.clone().call(1);
+    c.call(0);
+    c.clone().call(1);
 }
 
 pub fn main() {
@@ -50,15 +51,15 @@ fn demo_cell(c: &mut Callbacks) {
         c.register(move |val| {
             // In here, all we have is a shared reference of our environment. But that's good enough
             // for the `get` and `set` of the cell!
-            let new_count = count.get()+1;
+            let new_count = count.get() + 1;
             count.set(new_count);
             println!("Callback 2: {} ({}. time)", val, new_count);
-        } );
+        });
     }
 
-    c.call(2); c.clone().call(3);
+    c.call(2);
+    c.clone().call(3);
 }
-
 
 // ## `RefCell`
 
@@ -70,10 +71,12 @@ struct CallbacksMut {
 
 impl CallbacksMut {
     pub fn new() -> Self {
-        CallbacksMut { callbacks: Vec::new() }
+        CallbacksMut {
+            callbacks: Vec::new(),
+        }
     }
 
-    pub fn register<F: FnMut(i32)+'static>(&mut self, callback: F) {
+    pub fn register<F: FnMut(i32) + 'static>(&mut self, callback: F) {
         unimplemented!()
     }
 
@@ -99,14 +102,14 @@ fn demo_mut(c: &mut CallbacksMut) {
     {
         let mut count: usize = 0;
         c.register(move |val| {
-            count = count+1;
+            count = count + 1;
             println!("Callback 2: {} ({}. time)", val, count);
-        } );
+        });
     }
-    c.call(1); c.clone().call(2);
+    c.call(1);
+    c.clone().call(2);
 }
 
 // **Exercise 12.1**: Write some piece of code using only the available, public interface of
 // `CallbacksMut` such that a reentrant call to a closure is happening, and the program panics
 // because the `RefCell` refuses to hand out a second mutable borrow of the closure's environment.
-

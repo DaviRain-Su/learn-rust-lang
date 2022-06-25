@@ -1,9 +1,8 @@
 // Rust-101, Part 08: Associated Types, Modules
 // ============================================
 
-use std::{cmp,ops};
 use part05::BigInt;
-
+use std::{cmp, ops};
 
 // So, let us write a function to "add with carry", and give it the appropriate type. Notice Rust's
 // native support for pairs.
@@ -31,12 +30,11 @@ fn test_overflowing_add() {
     assert_eq!(overflowing_add(10, 100, true), (111, false));
     assert_eq!(overflowing_add(1 << 63, 1 << 63, false), (0, true));
     assert_eq!(overflowing_add(1 << 63, 1 << 63, true), (1, true));
-    assert_eq!(overflowing_add(1 << 63, (1 << 63) -1 , true), (0, true));
+    assert_eq!(overflowing_add(1 << 63, (1 << 63) - 1, true), (0, true));
 }
 
 // ## Associated Types
 impl ops::Add<BigInt> for BigInt {
-
     // Here, we choose the result type to be again `BigInt`.
     type Output = BigInt;
 
@@ -45,7 +43,7 @@ impl ops::Add<BigInt> for BigInt {
         // We know that the result will be *at least* as long as the longer of the two operands,
         // so we can create a vector with sufficient capacity to avoid expensive reallocations.
         let max_len = cmp::max(self.data.len(), rhs.data.len());
-        let mut result_vec:Vec<u64> = Vec::with_capacity(max_len);
+        let mut result_vec: Vec<u64> = Vec::with_capacity(max_len);
         let mut carry = false; /* the current carry bit */
         for i in 0..max_len {
             let lhs_val = if i < self.data.len() { self.data[i] } else { 0 };
@@ -96,4 +94,3 @@ mod tests {
 // **Exercise 08.6**: Write a subtraction function, and testcases for it. Decide for yourself how
 // you want to handle negative results. For example, you may want to return an `Option`, to panic,
 // or to return `0`.
-

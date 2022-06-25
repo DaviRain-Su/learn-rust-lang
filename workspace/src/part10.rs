@@ -1,9 +1,8 @@
 // Rust-101, Part 10: Closures
 // ===========================
 
-use std::fmt;
 use part05::BigInt;
-
+use std::fmt;
 
 // So, let us define a trait that demands that the type provides some method `do_action` on digits.
 trait Action {
@@ -62,7 +61,7 @@ impl BigInt {
 // Now that we saw how to write a function that operates on closures, let's see how to write a
 // closure.
 pub fn print_with_prefix(b: &BigInt, prefix: String) {
-    b.act(|digit| println!("{}{}", prefix, digit) );
+    b.act(|digit| println!("{}{}", prefix, digit));
 }
 // You can change `main` to call this function, and you should notice - nothing, no difference in
 // behavior. But we wrote much less boilerplate code!
@@ -71,7 +70,10 @@ pub fn print_with_prefix(b: &BigInt, prefix: String) {
 // mutate its environment. For example, we can use that to count the digits as they are printed.
 pub fn print_and_count(b: &BigInt) {
     let mut count: usize = 0;
-    b.act(|digit| { println!("{}: {}", count, digit); count = count +1; } );
+    b.act(|digit| {
+        println!("{}: {}", count, digit);
+        count = count + 1;
+    });
     println!("There are {} digits", count);
 }
 
@@ -112,4 +114,3 @@ fn filter_vec_by_divisor(v: &Vec<i32>, divisor: i32) -> Vec<i32> {
 // (Hint: read the source code of `map`, and see if the pattern appears in your own code.)
 // Bonus: [`test_invariant` in Part 05](part05.html#section-6) doesn't use `match`,
 // but can you still find a way to rewrite it with `map`?
-

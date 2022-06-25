@@ -1,10 +1,9 @@
 // Rust-101, Part 16: Unsafe Rust, Drop
 // ====================================
 
-use std::ptr;
-use std::mem;
 use std::marker::PhantomData;
-
+use std::mem;
+use std::ptr;
 
 // A node of the list consists of the data, and two node pointers for the predecessor and successor.
 struct Node<T> {
@@ -19,10 +18,9 @@ type NodePtr<T> = *mut Node<T>;
 // that this type will own data of type `T`.
 pub struct LinkedList<T> {
     first: NodePtr<T>,
-    last:  NodePtr<T>,
+    last: NodePtr<T>,
     _marker: PhantomData<T>,
 }
-
 
 unsafe fn raw_into_box<T>(r: *mut T) -> Box<T> {
     mem::transmute(r)
@@ -35,13 +33,21 @@ impl<T> LinkedList<T> {
     // A new linked list just contains null pointers. `PhantomData` is how we construct any
     // `PhantomData<T>`.
     pub fn new() -> Self {
-        LinkedList { first: ptr::null_mut(), last: ptr::null_mut(), _marker: PhantomData }
+        LinkedList {
+            first: ptr::null_mut(),
+            last: ptr::null_mut(),
+            _marker: PhantomData,
+        }
     }
 
     // This function adds a new node to the end of the list.
     pub fn push_back(&mut self, t: T) {
         // Create the new node, and make it a raw pointer.
-        let new = Box::new( Node { data: t, next: ptr::null_mut(), prev: self.last } );
+        let new = Box::new(Node {
+            data: t,
+            next: ptr::null_mut(),
+            prev: self.last,
+        });
         let new = box_into_raw(new);
         // Update other pointers to this node.
         if self.last.is_null() {
@@ -63,12 +69,17 @@ impl<T> LinkedList<T> {
 
     // Next, we are going to provide an iterator.
     pub fn iter_mut(&mut self) -> IterMut<T> {
-        IterMut { next: self.first, _marker: PhantomData  }
+        IterMut {
+            next: self.first,
+            _marker: PhantomData,
+        }
     }
 }
 
-
-pub struct IterMut<'a, T> where T: 'a {
+pub struct IterMut<'a, T>
+where
+    T: 'a,
+{
     next: NodePtr<T>,
     _marker: PhantomData<&'a mut LinkedList<T>>,
 }
@@ -89,7 +100,6 @@ impl<'a, T> Iterator for IterMut<'a, T> {
         }
     }
 }
-
 
 // **Exercise 16.2**: Add a method `iter` and a type `Iter` providing iteration for shared
 // references. Add testcases for both kinds of iterators.
@@ -114,4 +124,3 @@ impl<T> Drop for LinkedList<T> {
 }
 
 // ## The End
-

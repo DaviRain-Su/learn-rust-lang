@@ -4,11 +4,10 @@
 // As our first piece of Rust code, we want to write a function that computes the
 // minimum of a list.
 
-
 // An `enum` for "a number or nothing" could look as follows:
 enum NumberOrNothing {
     Number(i32),
-    Nothing
+    Nothing,
 }
 
 // Observe how in Rust, the return type comes *after* the arguments.
@@ -24,7 +23,7 @@ fn vec_min(vec: Vec<i32>) -> NumberOrNothing {
             // it the number `el`.
             NumberOrNothing::Nothing => {
                 min = NumberOrNothing::Number(el);
-            },
+            }
             // In this arm, `min` is currently the number `n`, so let's compute the new minimum and
             // store it.
             NumberOrNothing::Number(n) => {
@@ -51,7 +50,7 @@ fn min_i32(a: i32, b: i32) -> i32 {
 // Indeed, we can: The following line tells Rust to take
 // the constructors of `NumberOrNothing` into the local namespace.
 // Try moving that above the function, and removing all the occurrences of `NumberOrNothing::`.
-use self::NumberOrNothing::{Number,Nothing};
+use self::NumberOrNothing::{Nothing, Number};
 
 // To call this function, we now just need a list. Of course, ultimately we want to ask the user for
 // a list of numbers, but for now, let's just hard-code something.
@@ -81,5 +80,3 @@ pub fn main() {
 }
 
 // Finally, try `cargo run` on the console to run it.
-
-

@@ -1,11 +1,12 @@
 // Rust-101, Part 14: Slices, Arrays, External Dependencies
 // ========================================================
 
-
 // ## Slices
 
 pub fn sort<T: PartialOrd>(data: &mut [T]) {
-    if data.len() < 2 { return; }
+    if data.len() < 2 {
+        return;
+    }
 
     // We decide that the element at 0 is our pivot, and then we move our cursors through the rest
     // of the slice, making sure that everything on the left is no larger than the pivot, and
@@ -13,7 +14,7 @@ pub fn sort<T: PartialOrd>(data: &mut [T]) {
     let mut lpos = 1;
     let mut rpos = data.len();
     /* Invariant: pivot is data[0]; everything with index (0,lpos) is <= pivot;
-       [rpos,len) is >= pivot; lpos < rpos */
+    [rpos,len) is >= pivot; lpos < rpos */
     loop {
         // **Exercise 14.1**: Complete this Quicksort loop. You can use `swap` on slices to swap
         // two elements. Write a test function for `sort`.
@@ -21,7 +22,7 @@ pub fn sort<T: PartialOrd>(data: &mut [T]) {
     }
 
     // Once our cursors met, we need to put the pivot in the right place.
-    data.swap(0, lpos-1);
+    data.swap(0, lpos - 1);
 
     // Finally, we split our slice to sort the two halves. The nice part about slices is that
     // splitting them is cheap:
@@ -46,7 +47,6 @@ fn sort_array() {
 }
 
 // ## External Dependencies
-
 
 // I disabled the following module (using a rather bad hack), because it only compiles if `docopt`
 // is linked. Remove the attribute of the `rgrep` module to enable compilation.
@@ -73,7 +73,9 @@ Options:
     fn get_options() -> Options {
         // This parses `argv` and exit the program with an error message if it fails. The code is
         // taken from the [`docopt` documentation](http://burntsushi.net/rustdoc/docopt/). <br/>
-        let args = Docopt::new(USAGE).and_then(|d| d.parse()).unwrap_or_else(|e| e.exit());
+        let args = Docopt::new(USAGE)
+            .and_then(|d| d.parse())
+            .unwrap_or_else(|e| e.exit());
         // Now we can get all the values out.
         let count = args.get_bool("-c");
         let sort = args.get_bool("-s");
@@ -115,4 +117,3 @@ Options:
 // to honor this option. The documentation of regex is available from its crates.io site.
 // (You won't be able to use the `regex!` macro if you are on the stable or beta channel of Rust.
 // But it wouldn't help for our use-case anyway.)
-

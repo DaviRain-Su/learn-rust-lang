@@ -13,7 +13,7 @@ pub fn vec_min<T: Minimum>(v: &Vec<T>) -> Option<&T> {
     for e in v {
         min = Some(match min {
             None => e,
-            Some(n) => n.min(e)
+            Some(n) => n.min(e),
         });
     }
     min
@@ -38,13 +38,17 @@ impl PartialEq for BigInt {
     }
 }
 
-
 // Now we can compare `BigInt`s. Rust treats `PartialEq` special in that it is wired to the operator
 // `==`:
 fn compare_big_ints() {
     let b1 = BigInt::new(13);
     let b2 = BigInt::new(37);
-    println!("b1 == b1: {} ; b1 == b2: {}; b1 != b2: {}", b1 == b1, b1 == b2, b1 != b2);
+    println!(
+        "b1 == b1: {} ; b1 == b2: {}; b1 != b2: {}",
+        b1 == b1,
+        b1 == b2,
+        b1 != b2
+    );
 }
 
 // ## Testing
@@ -91,4 +95,3 @@ fn test_vec_min() {
 // (This will, of course, need a `Display` bound on `T`.) Then you should be able to use them with
 // `println!` just like you do with numbers, and get rid of the inherent functions to print
 // `SomethingOrNothing<i32>` and `SomethingOrNothing<f32>`.
-

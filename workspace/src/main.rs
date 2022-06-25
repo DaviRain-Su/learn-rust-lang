@@ -1,4 +1,10 @@
-#![allow(dead_code, unused_imports, unused_variables, unused_mut, unreachable_code)]
+#![allow(
+    dead_code,
+    unused_imports,
+    unused_variables,
+    unused_mut,
+    unreachable_code
+)]
 
 // To get started with the course, open the file `part00.rs` in this workspace as well
 // as its [fully explained version](https://www.ralfj.de/projects/rust-101/part00.html).
@@ -26,5 +32,5 @@ mod part16;
 
 // This decides which part is actually run.
 fn main() {
-   part01::main();
+    part02::main();
 }

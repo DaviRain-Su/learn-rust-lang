@@ -1,12 +1,11 @@
 // Rust-101, Part 03: Input
 // ========================
 
-
 // I/O is provided by the module `std::io`, so we first have to import that with `use`.
 // We also import the I/O *prelude*, which makes a bunch of commonly used I/O stuff
 // directly available.
-use std::io::prelude::*;
 use std::io;
+use std::io::prelude::*;
 
 fn read_vec() -> Vec<i32> {
     let mut vec: Vec<i32> = Vec::<i32>::new();
@@ -25,20 +24,19 @@ fn read_vec() -> Vec<i32> {
         match line.trim().parse::<i32>() {
             Ok(num) => {
                 unimplemented!()
-            },
+            }
             // We don't care about the particular error, so we ignore it with a `_`.
             Err(_) => {
                 unimplemented!()
-            },
+            }
         }
     }
 
     vec
 }
 
-
 // For the rest of the code, we just re-use part 02 by importing it with `use`.
-use part02::{SomethingOrNothing,Something,Nothing,vec_min};
+use part02::{vec_min, Nothing, Something, SomethingOrNothing};
 
 // If you update your `main.rs` to use part 03, `cargo run` should now ask you for some numbers,
 // and tell you the minimum. Neat, isn't it?
@@ -54,10 +52,10 @@ pub fn main() {
 // implementations (just compare it to the `impl` block from the previous exercise).
 // You can read this as "For all types `T` satisfying the `Print` trait, I provide an implementation
 // for `SomethingOrNothing<T>`".
-// 
+//
 // Notice that I called the function on `SomethingOrNothing` `print2` to disambiguate from the
 // `print` defined previously.
-// 
+//
 // *Hint*: There is a macro `print!` for printing without appending a newline.
 pub trait Print {
     /* Add things here */
@@ -70,4 +68,3 @@ impl<T: Print> SomethingOrNothing<T> {
 
 // **Exercise 03.2**: Building on exercise 02.2, implement all the things you need on `f32` to make
 // your program work with floating-point numbers.
-

@@ -36,9 +36,8 @@ fn vec_min(v: &Vec<BigInt>) -> Option<BigInt> {
 
 // ## `Copy` types
 
-use part02::{SomethingOrNothing,Something,Nothing};
+use part02::{Nothing, Something, SomethingOrNothing};
 impl<T: Copy> Copy for SomethingOrNothing<T> {}
-
 
 // ## Lifetimes
 
@@ -64,5 +63,3 @@ fn rust_foo(mut v: Vec<i32>) -> i32 {
     /* v.push(42); */
     *first.unwrap()
 }
-
-
