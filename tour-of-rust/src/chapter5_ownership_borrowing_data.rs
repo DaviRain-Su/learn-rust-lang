@@ -9,13 +9,13 @@ pub mod content {
     #[allow(dead_code)]
     #[derive(Debug)]
     struct Foo {
-        pub x: i32
+        pub x: i32,
     }
-    
-    impl Drop for Foo  {
+
+    impl Drop for Foo {
         fn drop(&mut self) {
             println!("Drop Foo");
-        }    
+        }
     }
 
     /// # 所有权
@@ -42,12 +42,8 @@ pub mod content {
     /// - Rust 没有垃圾回收机制。
     /// - 在 C++ 中，这被也称为“资源获取即初始化“（RAII）
     pub fn base_block_resource_manager() {
-        let foo_a = Foo {
-            x: 32,
-        };
-        let foo_b = Foo {
-            x: 12,
-        };
+        let foo_a = Foo { x: 32 };
+        let foo_b = Foo { x: 12 };
 
         println!("foo a : {:?}", foo_a);
         // foo_a 将在这里被 dropped 因为其在这之后再也没有被使用
@@ -65,7 +61,7 @@ pub mod content {
     pub struct Bar {
         x: i32,
     }
-    
+
     impl Drop for Bar {
         fn drop(&mut self) {
             println!("Drop Bar");
@@ -77,7 +73,7 @@ pub mod content {
     pub struct Boo {
         bar: Bar,
     }
-    
+
     impl Drop for Boo {
         fn drop(&mut self) {
             println!("Drop Boo");
@@ -91,7 +87,7 @@ pub mod content {
     /// - Rust 通过自动释放内存来帮助确保减少内存泄漏。
     /// - 每个内存资源仅会被释放一次
     pub fn drop_access() {
-        let boo = Boo { bar: Bar { x: 42}};
+        let boo = Boo { bar: Bar { x: 42 } };
         println!("boo = {:?}", boo);
         // boo 首先被 dropped 释放
         // 紧接着是 boo.bar
@@ -109,11 +105,11 @@ pub mod content {
     /// - 在移动期间，所有者的堆栈值将会被复制到函数调用的参数堆栈中
     pub fn transfer_ownership() {
         fn do_something(f: Foo) {
-            println!("{:?}",f );
+            println!("{:?}", f);
             // f here will be drop and release.
         }
 
-        let foo = Foo { x: 32};
+        let foo = Foo { x: 32 };
         // foo transfer to do_something
         do_something(foo);
         // foo never to used.
@@ -129,7 +125,7 @@ pub mod content {
     /// 所有权也可以从一个函数中被归还。
     pub fn transfer_ownership_to_self() {
         fn do_something() -> Foo {
-            Foo {x: 3}
+            Foo { x: 3 }
         }
         // ownership will be remove to
 
@@ -148,19 +144,17 @@ pub mod content {
     ///
     /// 引用允许我们通过 & 操作符来借用对一个资源的访问权限。 引用也会如同其他资源一样被释放。
     pub fn use_ref_borrow_ownership() {
-        let foo = Foo {x: 32};
+        let foo = Foo { x: 32 };
         let f = &foo;
         println!("foo = {:?}", f);
         // f will be dropped
         // foo will be dropped
     }
 
-
     #[test]
     fn test_use_ref_borrow_ownership() {
         use_ref_borrow_ownership();
     }
-
 
     /// # 通过引用借用可变所有权
     /// 我们也可以使用 &mut 操作符来借用对一个资源的可变访问权限。 在发生了可变借用后，一个资源的所有者便不可以再次被借用或者修改。
@@ -168,13 +162,13 @@ pub mod content {
     /// 内存细节：
     ///
     /// Rust 之所以要避免同时存在两种可以改变所拥有变量值的方式，是因为此举可能会导致潜在的数据争用（data race）。
-    pub fn use_mut_ref_borrow_ownership(){
+    pub fn use_mut_ref_borrow_ownership() {
         fn do_something(f: Foo) {
-            println!("{:?}",f);
+            println!("{:?}", f);
             // f will be dropped.
         }
 
-        let mut foo = Foo { x: 32};
+        let mut foo = Foo { x: 32 };
         let f = &mut foo;
 
         // 会报错:
@@ -194,7 +188,6 @@ pub mod content {
 
         // 移动 foo 的所有权到一个函数中
         do_something(foo);
-
     }
 
     #[test]
@@ -237,7 +230,7 @@ pub mod content {
             // 可变引用 f 在这里被 dropped 释放
         }
 
-        let mut foo = Foo {x: 323};
+        let mut foo = Foo { x: 323 };
         do_something(&mut foo);
         println!("Foo : {:?}", foo);
         // 因为所有的可变引用都在 do_something 函数内部被释放了
@@ -261,12 +254,12 @@ pub mod content {
             &a.x
         }
 
-        let mut foo = Foo {x: 32};
+        let mut foo = Foo { x: 32 };
         let x = &mut foo.x;
         *x = 12;
         // x 在这里被 dropped 释放从而允许我们再创建一个不可变引用
         let y = do_something(&foo);
-        println!("y = {}",y);
+        println!("y = {}", y);
         // y 在这里被 dropped 释放
         // foo 在这里被 dropped 释放
     }
@@ -287,7 +280,7 @@ pub mod content {
             return &foo.x;
         }
 
-        let mut foo = Foo { x: 23};
+        let mut foo = Foo { x: 23 };
         let x = &mut foo.x;
         *x = 12;
         // x 在这里被 dropped 释放从而允许我们再创建一个不可变引用
@@ -313,8 +306,8 @@ pub mod content {
             return &foo_b.x;
         }
 
-        let foo_a = Foo { x: 323};
-        let foo_b = Foo { x: 23};
+        let foo_a = Foo { x: 323 };
+        let foo_b = Foo { x: 23 };
         let x = do_something(&foo_a, &foo_b);
         // foo_a 在这里被 dropped 释放因为只有 foo_b 的生命周期在此之后还在延续
         println!("x = {}", x);
@@ -327,7 +320,6 @@ pub mod content {
         multi_life_time_example();
     }
 
-
     /// # 静态生命周期
     ///
     /// 一个静态变量是一个在编译期间即被创建并存在于整个程序始末的内存资源。他们必须被明确指定类型。 一个静态生命周期是指一段内存资源无限期地延续到程序结束。需要注意的一点是，在此定义之下，一些静态生命周期的资源也可以在运行时被创建。 拥有静态生命周期的资源会拥有一个特殊的生命周期注解 'static。 'static 资源永远也不会被 drop 释放。 如果静态生命周期资源包含了引用，那么这些引用的生命周期也一定是 'static 的。（任何缺少了此注解的引用都不会达到同样长的存活时间）
@@ -338,15 +330,14 @@ pub mod content {
     /// 所以修改它具有内在的危险性。我们会在稍后讨论使用全局数据的一些挑战。
     /// - Rust 允许使用 `unsafe { ... }` 代码块来进行一些无法被编译器担保的内存操作。
     /// The R̸͉̟͈͔̄͛̾̇͜U̶͓͖͋̅Ṡ̴͉͇̃̉̀T̵̻̻͔̟͉́͆Ơ̷̥̟̳̓͝N̶̨̼̹̲͛Ö̵̝͉̖̏̾̔M̶̡̠̺̠̐͜Î̷̛͓̣̃̐̏C̸̥̤̭̏͛̎͜O̶̧͚͖͔̊͗̇͠N̸͇̰̏̏̽̃（常见的中文翻译为：Rust 死灵书）在讨论时应该被严肃地看待，
-    pub  fn static_life_time_example() {
+    pub fn static_life_time_example() {
         static PI: f64 = 3.1415;
 
         // 静态变量的范围也可以被限制在一个函数内
         static mut SECRET: &'static str = "swordfish";
-        unsafe  {
+        unsafe {
             println!("SECRET: {}", SECRET);
         }
-
 
         // 字符串字面值拥有 'static 生命周期
         let msg: &'static str = "Hello World!";
@@ -355,7 +346,7 @@ pub mod content {
         println!("PI = {}", p);
 
         // 你可以打破一些规则，但是必须是显式地
-        unsafe  {
+        unsafe {
             // 我们可以修改 SECRET 到一个字符串字面值因为其同样是 'static 的
             SECRET = "abracadabra";
             println!("SECRET = {}", SECRET);
@@ -367,7 +358,6 @@ pub mod content {
         static_life_time_example();
     }
 
-
     /// 数据类型中的生命周期
     /// 和函数相同，数据类型也可以用生命周期注解来参数化其成员。
     /// Rust 会验证引用所包含的数据结构永远也不会比引用指向的所有者存活周期更长。
@@ -378,9 +368,7 @@ pub mod content {
         }
 
         let x = 23;
-        let foo = Foo {
-            i: &x
-        };
+        let foo = Foo { i: &x };
 
         println!("{}", foo.i);
     }

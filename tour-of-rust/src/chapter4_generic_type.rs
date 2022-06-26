@@ -18,22 +18,14 @@ pub mod content {
 
         // 注意：通过使用泛型，我们创建了编译时创建的类型，使代码更大
         // Turbofish 使之显式化
-        let i32_bag = BagOfHolding::<i32> {
-            item: 23,
-        };
+        let i32_bag = BagOfHolding::<i32> { item: 23 };
 
-        let bool_bag = BagOfHolding::<bool> {
-            item: true,
-        };
+        let bool_bag = BagOfHolding::<bool> { item: true };
 
-        let float_bag = BagOfHolding {
-            item: 23.4,
-        };
+        let float_bag = BagOfHolding { item: 23.4 };
 
         let bag_in_bag = BagOfHolding {
-            item: BagOfHolding {
-                item: 23,
-            },
+            item: BagOfHolding { item: 23 },
         };
         println!("i32 bag : {:?}", i32_bag);
         println!("bool bag : {:?}", bool_bag);
@@ -60,7 +52,6 @@ pub mod content {
             // None represents the absence of an empty
             None,
         }
-
 
         #[allow(dead_code)]
         struct BagOfHolding {
@@ -90,9 +81,7 @@ pub mod content {
 
         // 注意：一个放 i32 的 bag，里面什么都没有！
         // 我们必须注明类型，否则 Rust 不知道 bag 的类型
-        let i32_bag = BagOfHolding::<i32> {
-            item: None
-        };
+        let i32_bag = BagOfHolding::<i32> { item: None };
 
         if i32_bag.item.is_none() {
             println!("there's nothing in the bag!");
@@ -100,9 +89,7 @@ pub mod content {
             println!("there's something in the bag!");
         }
 
-        let i32_bag= BagOfHolding::<i32> {
-            item: Some(23),
-        };
+        let i32_bag = BagOfHolding::<i32> { item: Some(23) };
 
         if i32_bag.item.is_some() {
             println!("there's something in the bag!");
@@ -150,7 +137,7 @@ pub mod content {
 
         match result {
             Ok(v) => println!("found: {}", v),
-            Err(e) => println!("Error: {}",e),
+            Err(e) => println!("Error: {}", e),
         }
     }
 
@@ -177,9 +164,7 @@ pub mod content {
             Ok(v) => {
                 println!("found: {}", v);
             }
-            Err(_e) => {
-                return Err(String::from("something went wrong in main!"))
-            }
+            Err(_e) => return Err(String::from("something went wrong in main!")),
         }
 
         // Notice we use a unit value inside a Result Ok
@@ -211,7 +196,7 @@ pub mod content {
     /// Err(e) => todo!(),
     /// }
     ///```
-    pub fn handle_error() -> Result<(), String>{
+    pub fn handle_error() -> Result<(), String> {
         fn do_something_that_might_fail(i: i32) -> Result<f32, String> {
             if i == 42 {
                 Ok(13.0)
@@ -269,7 +254,7 @@ pub mod content {
 
         // 简洁但假设性强，而且很快就会变得丑陋
         let v = do_something_that_might_fail(42).unwrap();
-        println!("Found {}",v);
+        println!("Found {}", v);
 
         // painc!
         // let v = do_something_that_might_fail(2).unwrap();
@@ -284,7 +269,6 @@ pub mod content {
         let result = ugly_handle_option_or_result();
         println!("Result {:?}", result);
     }
-
 
     /// # Vectors
     ///
@@ -343,11 +327,13 @@ pub mod content {
     /// 别担心，仅仅是了解这些将会在代码中反复出现的中心思想就足够了。我们的功能在日趋强大！
     /// 在下一章中，我们将讨论 Rust 中的一个重要概念：数据所有权。
     pub fn chapter4_summary() {
-        println!("
+        println!(
+            "
 第四章 - 总结
 在这一章中，我们了解了泛型给我们带来的强大功能！如果你还不完全知道该如何使用这一切，
 别担心，仅仅是了解这些将会在代码中反复出现的中心思想就足够了。
 我们的功能在日趋强大！ 在下一章中，我们将讨论 Rust 中的一个重要概念：数据所有权。
-        ");
+        "
+        );
     }
 }

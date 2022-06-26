@@ -115,11 +115,11 @@ pub mod content {
     /// ```
     pub fn for_example() {
         for x in 0..5 {
-            println!("The item is {}",x);
+            println!("The item is {}", x);
         }
 
         for x in 0..=5 {
-            println!("The item is {}",x);
+            println!("The item is {}", x);
         }
     }
 
@@ -158,13 +158,11 @@ pub mod content {
             // 我们可以匹配迭代器
             3..=9 => println!("found a number 3 to 9 inclusively!"),
             // 我们可以将匹配数值绑定到变量
-            matched_num @ 10..=100 => println!("found {} number between 10 and 100!",matched_num),
+            matched_num @ 10..=100 => println!("found {} number between 10 and 100!", matched_num),
             // 这是默认匹配，如果没有处理所有情况，则必须存在该匹配
             _ => println!("found something else!"),
-
         }
     }
-
 
     #[test]
     fn test_match_example() {
@@ -201,7 +199,6 @@ pub mod content {
         break_value_from_loop()
     }
 
-
     /// # 从块表达式返回值
     /// if，match，函数，以及作用域块都有一种返回值的独特方式。
     ///
@@ -233,7 +230,7 @@ pub mod content {
     pub fn return_block_expression_value() {
         let x = 42;
 
-        let v = if x < 42 { -1} else { 1};
+        let v = if x < 42 { -1 } else { 1 };
         println!("from if: {}", v);
 
         let food = "hamburger";
@@ -262,12 +259,14 @@ pub mod content {
     /// 希望即便是在最基本的语言特性中，我也已经向你展示了 Rust 的强大功能。
     /// 我们将在后续章节更深入地讨论 for 和 match，因为我们将获得更多可以 利用它们能力的知识。
     /// 接下来，我们将讨论 Rust 的基本数据结构。
-    pub fn chapter2_summary()  {
-        println!("\
+    pub fn chapter2_summary() {
+        println!(
+            "\
 第二章总结
 希望即便是在最基本的语言特性中，我也已经向你展示了 Rust 的强大功能。
 我们将在后续章节更深入地讨论 for 和 match，因为我们将获得更多可以 利用它们能力的知识
 。接下来，我们将讨论 Rust 的基本数据结构。
-        ");
+        "
+        );
     }
 }

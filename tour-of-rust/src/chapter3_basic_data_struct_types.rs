@@ -133,7 +133,7 @@ pub mod content {
         };
 
         println!("ferris type : {:#?}", ferris);
-        println!("sarah type: {:#?}",sarah);
+        println!("sarah type: {:#?}", sarah);
     }
 
     #[test]
@@ -151,12 +151,12 @@ pub mod content {
     /// pub struct  Location(i32,i32);
     ///```
     #[derive(Debug)]
-    pub struct  Location(i32,i32);
+    pub struct Location(i32, i32);
 
     #[test]
     fn test_location_type() {
         let loc = Location(32, 23);
-        println!("Location type : {:#?}",loc);
+        println!("Location type : {:#?}", loc);
     }
 
     /// # 类单元结构体
@@ -173,7 +173,7 @@ pub mod content {
     /// pub struct  Marker;
     /// ```
     #[derive(Debug)]
-    pub struct  Marker;
+    pub struct Marker;
 
     #[test]
     fn test_class_unit_struct_type() {
@@ -202,7 +202,7 @@ pub mod content {
         Crab,
         Octopus,
         Fish,
-        Clam
+        Clam,
     }
 
     #[derive(Debug)]
@@ -214,7 +214,6 @@ pub mod content {
         legs: i32,
         weapon: String,
     }
-
 
     #[test]
     fn test_enums_type() {
@@ -229,21 +228,20 @@ pub mod content {
         match ferris.species {
             Species::Crab => {
                 println!("{} is a crab", ferris.name);
-            },
+            }
             Species::Octopus => {
-                println!("{} is a octopus",ferris.name);
-            },
+                println!("{} is a octopus", ferris.name);
+            }
             Species::Fish => {
                 println!("{} is fish", ferris.name);
-            },
+            }
             Species::Clam => {
                 println!("{} is a clam", ferris.name);
-            },
+            }
         }
-
     }
 
-    pub enum  PositionType {
+    pub enum PositionType {
         Acidic,
         Painful,
         Lethal,
@@ -251,7 +249,7 @@ pub mod content {
 
     pub enum Size {
         Big,
-        Small
+        Small,
     }
 
     /// # 带数据的枚举
@@ -302,7 +300,6 @@ pub mod content {
         weapon: Weapon,
     }
 
-
     #[test]
     fn test_with_data_enum_type() {
         let ferris = SeaCreature3 {
@@ -314,18 +311,19 @@ pub mod content {
         };
 
         match ferris.species {
-            Species::Crab => {
-                match ferris.weapon {
-                    Weapon::Claw(num_clawns, size) => {
-                        let size_description = match  size {
-                            Size::Big => "big",
-                            Size::Small => "small",
-                        };
-                        println!("ferris is a crab with {} {} claws",  num_clawns, size_description);
-                    }
-                    _ => println!("ferris is a crab with  some other weapon!"),
+            Species::Crab => match ferris.weapon {
+                Weapon::Claw(num_clawns, size) => {
+                    let size_description = match size {
+                        Size::Big => "big",
+                        Size::Small => "small",
+                    };
+                    println!(
+                        "ferris is a crab with {} {} claws",
+                        num_clawns, size_description
+                    );
                 }
-            }
+                _ => println!("ferris is a crab with  some other weapon!"),
+            },
             _ => println!("ferris is some other animal"),
         }
     }
@@ -336,11 +334,13 @@ pub mod content {
     /// 希望现在我们能看到 Rust 的基本操作是如何与它的类型和谐一致地工作的。
     /// 接下来我们将讨论一个概念，它为我们的数据类型提供了更大的灵活性：泛型。
     pub fn chapter3_summary() {
-        println!("
+        println!(
+            "
 第三章 - 总结
 太好了！现在我们有了一些用代码来展示我们想法最基本的工具。
 希望现在我们能看到 Rust 的基本操作是如何与它的类型和谐一致地工作的。
 接下来我们将讨论一个概念，它为我们的数据类型提供了更大的灵活性：泛型。
-        ");
+        "
+        );
     }
 }
