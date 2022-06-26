@@ -76,6 +76,6 @@ fn work_on_variant(mut var: Variant, text: String) {
         Variant::Text(_) => return,
     }
     /* var = Variant::Text(text); */
- /* BAD! */
+    /* BAD! */
     *ptr = 1337;
 }

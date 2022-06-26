@@ -1,3 +1,5 @@
+/// # Chapter 10 The End
+pub mod chapter10_the_end;
 /// # Chapter 1 The Basic
 pub mod chapter1_the_basic;
 /// # Chapter 2 Basic Control Flow
@@ -16,5 +18,3 @@ pub mod chapter7_object_oriented_programming;
 pub mod chapter8_smart_pointer;
 /// # Chapter 9 Project Organization  and Structure
 pub mod chapter9_project_organization_and_structure;
-/// # Chapter 10 The End
-pub mod chapter10_the_end;

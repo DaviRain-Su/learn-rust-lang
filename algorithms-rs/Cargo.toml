@@ -3,7 +3,6 @@ name = "algorithms-rs"
 version = "0.1.0"
 edition = "2021"
 description = "Algorithms About Rust implement"
-author = "Davirain <davirain.yin@gmail.com>"
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

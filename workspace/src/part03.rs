@@ -26,9 +26,7 @@ fn read_vec() -> Vec<i32> {
                 vec.push(num);
             }
             // We don't care about the particular error, so we ignore it with a `_`.
-            Err(_) => {
-                continue
-            }
+            Err(_) => continue,
         }
     }
 
