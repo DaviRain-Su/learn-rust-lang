@@ -106,6 +106,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "tour-of-rust"
+version = "0.1.0"
+
+[[package]]
 name = "unicode-xid"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"

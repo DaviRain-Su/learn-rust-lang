@@ -23,11 +23,11 @@ fn read_vec() -> Vec<i32> {
 
         match line.trim().parse::<i32>() {
             Ok(num) => {
-                unimplemented!()
+                vec.push(num);
             }
             // We don't care about the particular error, so we ignore it with a `_`.
             Err(_) => {
-                unimplemented!()
+                continue
             }
         }
     }
