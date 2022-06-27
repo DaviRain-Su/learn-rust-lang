@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests;
 
-use crate::ast::{Identifier, LetStatement, Program, Statement};
+use crate::ast::{Identifier, LetStatement, Program, ReturnStatement, Statement};
 use crate::lexer::Lexer;
 use crate::token::token_type::TokenType;
 use crate::token::Token;
@@ -62,6 +62,7 @@ impl Parser {
     fn parse_statement(&mut self) -> Option<Box<dyn Statement>> {
         match self.current_token.r#type {
             TokenType::LET => Some(Box::new(self.parse_let_statement().unwrap())),
+            TokenType::RETURN => Some(Box::new(self.parse_return_statement().unwrap())),
             _ => None,
         }
     }
@@ -97,6 +98,22 @@ impl Parser {
         }
 
         println!("stmt = {:?}", stmt);
+
+        Some(stmt)
+    }
+
+    fn parse_return_statement(&mut self) -> Option<ReturnStatement> {
+        let stmt = ReturnStatement {
+            token: self.current_token.clone(),
+            ..default()
+        };
+
+        self.next_token();
+
+        // TODO: 跳过对表达式的处理，直到遇见分号
+        while !self.cur_token_is(TokenType::SEMICOLON) {
+            self.next_token();
+        }
 
         Some(stmt)
     }
