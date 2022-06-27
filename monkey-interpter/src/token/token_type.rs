@@ -1,4 +1,3 @@
-use crate::token::Token;
 use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Eq, Clone)]

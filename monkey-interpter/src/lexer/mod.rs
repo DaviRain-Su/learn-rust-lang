@@ -10,6 +10,7 @@ mod tests;
 /// 字符，还需要进一步“查看”字符串，即查看字符串中的下一个字符。readPosition
 /// 始终指向所输入字符串中的“下一个”字符，position 则指向所输入字符串中与 ch
 /// 字节对应的字符。
+#[derive(Debug)]
 pub struct Lexer {
     input: String,
     position: usize,      // 所输入字符串中的当前位置（指向当前字符）
@@ -149,7 +150,7 @@ impl Lexer {
     /// readIdentifier()函数顾名思义，就是读入一个标识符并前移词法分析器的扫描
     /// 位置，直到遇见非字母字符。
     fn read_identifier(&mut self) -> &str {
-        let mut position = self.position;
+        let position = self.position;
         while Self::is_letter(self.ch) {
             self.read_char();
         }
@@ -170,7 +171,7 @@ impl Lexer {
     }
 
     fn read_number(&mut self) -> &str {
-        let mut position = self.position;
+        let position = self.position;
         while Self::is_digit(self.ch) {
             self.read_char();
         }
