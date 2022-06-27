@@ -19,6 +19,9 @@ if ( 5 < 10 ) {
 } else {
     return false;
 }
+
+10 == 10;
+10 != 9;
 ";
 
     let tests = vec![
@@ -87,6 +90,14 @@ if ( 5 < 10 ) {
         Token::from_string(TokenType::FALSE, "false".into()),
         Token::from_string(TokenType::SEMICOLON, ";".into()),
         Token::from_string(TokenType::RBRACE, "}".into()),
+        Token::from_string(TokenType::INT, "10".into()),
+        Token::from_string(TokenType::EQ, "==".into()),
+        Token::from_string(TokenType::INT, "10".into()),
+        Token::from_string(TokenType::SEMICOLON, ";".into()),
+        Token::from_string(TokenType::INT, "10".into()),
+        Token::from_string(TokenType::NOTEQ, "!=".into()),
+        Token::from_string(TokenType::INT, "9".into()),
+        Token::from_string(TokenType::SEMICOLON, ";".into()),
     ];
 
     let mut l = Lexer::new(input);

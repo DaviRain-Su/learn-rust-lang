@@ -65,46 +65,61 @@ impl Lexer {
 
         match self.ch {
             '=' => {
-                tok = Token::new(TokenType::ASSIGN, self.ch);
+                if self.peek_char() == '=' {
+                    let ch = self.ch;
+                    self.read_char();
+                    let literal = String::from(ch) + &String::from(self.ch);
+                    tok = Token::from_string(TokenType::EQ, literal);
+                } else {
+                    tok = Token::from_char(TokenType::ASSIGN, self.ch);
+                }
             }
             '-' => {
-                tok = Token::new(TokenType::MINUS, self.ch);
+                tok = Token::from_char(TokenType::MINUS, self.ch);
             }
             '!' => {
-                tok = Token::new(TokenType::BANG, self.ch);
+                if self.peek_char() == '=' {
+                    let ch = self.ch;
+                    self.read_char();
+                    let literal = String::from(ch) + &String::from(self.ch);
+                    tok = Token::from_string(TokenType::NOTEQ, literal);
+                } else {
+                    tok = Token::from_char(TokenType::BANG, self.ch);
+                }
+
             }
             '/' => {
-                tok = Token::new(TokenType::SLASH, self.ch);
+                tok = Token::from_char(TokenType::SLASH, self.ch);
             }
             '*' => {
-                tok = Token::new(TokenType::ASTERISK, self.ch);
+                tok = Token::from_char(TokenType::ASTERISK, self.ch);
             }
             '<' => {
-                tok = Token::new(TokenType::LT, self.ch);
+                tok = Token::from_char(TokenType::LT, self.ch);
             }
             '>' => {
-                tok = Token::new(TokenType::GT, self.ch);
+                tok = Token::from_char(TokenType::GT, self.ch);
             }
             ';' => {
-                tok = Token::new(TokenType::SEMICOLON, self.ch);
+                tok = Token::from_char(TokenType::SEMICOLON, self.ch);
             }
             '(' => {
-                tok = Token::new(TokenType::LPAREN, self.ch);
+                tok = Token::from_char(TokenType::LPAREN, self.ch);
             }
             ')' => {
-                tok = Token::new(TokenType::RPAREN, self.ch);
+                tok = Token::from_char(TokenType::RPAREN, self.ch);
             }
             ',' => {
-                tok = Token::new(TokenType::COMMA, self.ch);
+                tok = Token::from_char(TokenType::COMMA, self.ch);
             }
             '+' => {
-                tok = Token::new(TokenType::PLUS, self.ch);
+                tok = Token::from_char(TokenType::PLUS, self.ch);
             }
             '{' => {
-                tok = Token::new(TokenType::LBRACE, self.ch);
+                tok = Token::from_char(TokenType::LBRACE, self.ch);
             }
             '}' => {
-                tok = Token::new(TokenType::RBRACE, self.ch);
+                tok = Token::from_char(TokenType::RBRACE, self.ch);
             }
             _ => {
                 if Self::is_letter(self.ch) {
@@ -174,5 +189,16 @@ impl Lexer {
     /// 示例中包含 ch =='_'，这意味着下划线_会被视为字母，允许在标识符和关键字中使用
     fn is_letter(ch: char) -> bool {
         'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+    }
+
+    /// 但这个函数不会前移 l.position 和
+    /// l.readPosition。它的目的只是窥视一下输入中的下一个字符，不会移动位于输入中
+    /// 的指针位置，这样就能知道下一步在调用 readChar()时会返回什么。
+    fn peek_char(&self) -> char {
+        if self.read_position >= self.input.len() {
+            return 0 as char;
+        } else {
+            return self.input.get(self.read_position..self.read_position+1).unwrap().parse().unwrap();
+        }
     }
 }

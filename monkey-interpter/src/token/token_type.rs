@@ -21,6 +21,9 @@ pub enum TokenType {
     LT, // <
     GT, // >
 
+    EQ, // ==
+    NOTEQ, // !=
+
     // 分隔符
     COMMA,     // ,
     SEMICOLON, // ;
