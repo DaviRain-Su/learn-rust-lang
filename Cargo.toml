@@ -6,4 +6,5 @@ members = [
     "algorithms-rs",
     "workspace",
     "tour-of-rust",
+    "monkey-interpter",
 ]
