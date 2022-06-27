@@ -3,6 +3,7 @@ use crate::token::token_type::TokenType;
 use crate::token::Token;
 
 fn test_next_token() {
+    // example 1
     // let input = "=+(){},;";
     let input = "let five = 5;
 let ten = 10;
