@@ -97,12 +97,14 @@ return 233;
     }
 
     for (_, stmt) in program.statements.into_iter().enumerate() {
-
         let return_stmt: ReturnStatement = stmt.into();
         println!("return statement: {:?}", return_stmt);
 
         if return_stmt.token_literal() != "return" {
-            eprintln!("return statement token literal not `return`, got {}", return_stmt.token_literal());
+            eprintln!(
+                "return statement token literal not `return`, got {}",
+                return_stmt.token_literal()
+            );
         }
     }
 }
@@ -113,7 +115,7 @@ fn check_parser_errors(p: Parser) {
         return;
     }
 
-    eprintln!("parser has {} errors",errors.len());
+    eprintln!("parser has {} errors", errors.len());
 
     for (_index, msg) in errors.iter().enumerate() {
         eprintln!("parser error: {:?}", msg);

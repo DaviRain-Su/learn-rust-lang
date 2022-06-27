@@ -103,7 +103,6 @@ impl Expression for Identifier {
 #[derive(Debug, Default)]
 pub struct ExpressionId;
 
-
 #[derive(Debug, Default)]
 pub struct ReturnStatement {
     pub token: Token, //  'return'词法单元
@@ -117,20 +116,18 @@ impl Node for ReturnStatement {
 }
 
 impl Statement for ReturnStatement {
-    fn statement_node(&self) {
-    }
+    fn statement_node(&self) {}
 
     fn identifier(&self) -> &Identifier {
         todo!()
     }
 }
 
-
 impl From<Box<dyn Statement>> for ReturnStatement {
     fn from(value: Box<dyn Statement>) -> Self {
         Self {
             token: Token::from_string(TokenType::LET, value.token_literal()),
-            return_value: ExpressionId
+            return_value: ExpressionId,
         }
     }
 }

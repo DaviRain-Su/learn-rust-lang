@@ -143,9 +143,11 @@ impl Parser {
         &self.errors
     }
 
-
     fn peek_error(&mut self, t: TokenType) {
-        let msg = format!("expected next token be {:?}, got {:?} instead", t, self.peek_token.r#type);
+        let msg = format!(
+            "expected next token be {:?}, got {:?} instead",
+            t, self.peek_token.r#type
+        );
         self.errors.push(msg);
     }
 }
