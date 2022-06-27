@@ -18,6 +18,8 @@ pub struct Parser {
     /// 策。
     current_token: Token,
     peek_token: Token,
+    /// error handle
+    errors: Vec<String>,
 }
 
 impl Parser {
@@ -26,6 +28,7 @@ impl Parser {
             lexer,
             current_token: Token::default(),
             peek_token: Token::default(),
+            errors: vec![],
         };
 
         // 读取两个词法单元，以设置 curToken 和 peekToken
@@ -76,7 +79,7 @@ impl Parser {
         };
 
         if !self.expect_peek(TokenType::IDENT) {
-            return None;
+            return Some(stmt);
         }
 
         stmt.name = Identifier::new(
@@ -85,7 +88,7 @@ impl Parser {
         );
 
         if !self.expect_peek(TokenType::ASSIGN) {
-            return None;
+            return Some(stmt);
         }
 
         // TODO: 跳过对表达式的处理，直到遇见分号
@@ -106,12 +109,26 @@ impl Parser {
         self.peek_token.r#type == t
     }
 
+    /// 断言函数的主要目的是通过检查下一个词法单元的
+    /// 类型，确保词法单元顺序的正确性。这里的 expectPeek 会检查 peekToken 的类型，
+    /// 并且只有在类型正确的情况下，它才会调用 nextToken 前移词法单元。
     fn expect_peek(&mut self, t: TokenType) -> bool {
-        if self.peek_token_is(t) {
+        if self.peek_token_is(t.clone()) {
             self.next_token();
             true
         } else {
+            self.peek_error(t.clone());
             false
         }
+    }
+
+    fn errors(&self) -> &Vec<String> {
+        &self.errors
+    }
+
+
+    fn peek_error(&mut self, t: TokenType) {
+        let msg = format!("expected next token be {:?}, got {:?} instead", t, self.peek_token.r#type);
+        self.errors.push(msg);
     }
 }

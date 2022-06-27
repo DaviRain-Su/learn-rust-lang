@@ -4,15 +4,17 @@ use crate::parser::Parser;
 
 fn test_let_statements() {
     let input = "
-let x = 5;
-let y = 19;
-let foobar = 838383;
+let x  5;
+let  = 19;
+let  838383;
     ";
 
     let lexer = Lexer::new(input);
     let mut parser = Parser::new(lexer);
 
     let program = parser.parse_program();
+    check_parser_errors(parser);
+
     if program.is_none() {
         panic!("parse_program() returned None!")
     }
@@ -67,6 +69,19 @@ fn test_let_statement(s: &Box<dyn Statement>, name: String) -> bool {
     }
 
     true
+}
+
+fn check_parser_errors(p: Parser) {
+    let errors = p.errors();
+    if errors.is_empty() {
+        return;
+    }
+
+    eprintln!("parser has {} errors",errors.len());
+
+    for (_index, msg) in errors.iter().enumerate() {
+        eprintln!("parser error: {:?}", msg);
+    }
 }
 
 #[test]
