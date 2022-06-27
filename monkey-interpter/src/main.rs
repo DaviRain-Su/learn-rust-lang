@@ -1,3 +1,4 @@
+#![feature(default_free_fn)]
 #![allow(dead_code)]
 #![allow(unused_assignments)]
 #[macro_use]

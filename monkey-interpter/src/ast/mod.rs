@@ -9,6 +9,9 @@ pub trait Node {
 
 pub trait Statement: Node {
     fn statement_node(&self);
+
+    // must be have this function
+    fn identifier(&self) -> &Identifier;
 }
 
 pub trait Expression: Node {
@@ -24,6 +27,12 @@ pub struct Program {
 
 
 impl Program {
+    pub fn new() -> Self {
+        Self {
+            statements: vec![],
+        }
+    }
+
     pub fn token_literal(&self) -> String {
         if self.statements.is_empty() {
             return String::new();
@@ -37,11 +46,11 @@ impl Program {
     }
 }
 
-
+#[derive(Debug, Default)]
 pub struct LetStatement {
-    token: Token, // token.LET 词法单元
+    pub token: Token, // token.LET 词法单元
     pub name: Identifier,
-    value: ExpressionId,
+    pub value: ExpressionId,
 }
 
 
@@ -49,10 +58,7 @@ impl  From<&Box<dyn Statement>> for LetStatement {
     fn from(value: &Box<dyn Statement>) -> Self {
         Self {
             token: Token::from_string(TokenType::LET, "let".into()),
-            name: Identifier {
-                token: Token::from_string(TokenType::IDENT, value.token_literal()),
-                value: value.token_literal(),
-            },
+            name: value.identifier().clone(),
             value: ExpressionId,
         }
     }
@@ -66,12 +72,26 @@ impl Node for LetStatement {
 
 impl Statement for LetStatement {
     fn statement_node(&self) {}
+
+    fn identifier(&self) -> &Identifier {
+        &self.name
+    }
 }
 
 
+#[derive(Debug, Default, Clone)]
 pub struct Identifier {
     pub token: Token, // token.IDENT 词法单元
     pub value: String,
+}
+
+impl Identifier {
+    pub fn new(token: Token, value: String) -> Self {
+        Self {
+            token,
+            value
+        }
+    }
 }
 
 impl Node for Identifier {
@@ -84,4 +104,5 @@ impl Expression for Identifier {
     fn expression_node(&self) {}
 }
 
+#[derive(Debug, Default)]
 pub struct ExpressionId;

@@ -11,7 +11,7 @@ let foobar = 838383;
     ";
 
     let lexer = Lexer::new(input);
-    let parser = Parser::new(lexer);
+    let mut parser = Parser::new(lexer);
 
     let program = parser.parse_program();
     if program.is_none() {
@@ -29,7 +29,7 @@ let foobar = 838383;
     for (i,tt) in tests.into_iter().enumerate() {
         let stmt = program.statements.get(i).unwrap();
 
-        if ! test_let_statement(stmt, tt.into()) {
+        if !test_let_statement(stmt, tt.into()) {
             return;
         }
     }
@@ -41,7 +41,8 @@ fn test_let_statement(s: &Box<dyn Statement>, name: String) -> bool {
         return false;
     }
 
-    let let_stmt : LetStatement = s.into(); // HOW TODO this convert from box to concept type
+    // HOW TODO this convert from box to concept type
+    let let_stmt : LetStatement = s.into();
 
     if let_stmt.name.value != name {
         eprint!("let_stmt.name.value not `{}`. got = {}",name, let_stmt.name.value);
