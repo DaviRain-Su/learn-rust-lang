@@ -41,18 +41,6 @@ let result = add(five, ten);";
             literal: String::from("ten"),
         },
         Token {
-            r#type: TokenType::SEMICOLON,
-            literal: String::from(";"),
-        },
-        Token {
-            r#type: TokenType::LET,
-            literal: String::from("let"),
-        },
-        Token {
-            r#type: TokenType::IDENT,
-            literal: String::from("add"),
-        },
-        Token {
             r#type: TokenType::ASSIGN,
             literal: String::from("="),
         },
@@ -174,13 +162,10 @@ let result = add(five, ten);";
         },
     ];
 
-
     let mut l = Lexer::new(input);
     for (i, tt) in tests.iter().enumerate() {
         let mut tok = l.next_token();
-        while tok.r#type.is_match(&TokenType::SPACE) {
-            tok = l.next_token();
-        }
+
         println!("token = {:?}", tok);
 
         if tok.r#type != tt.r#type {

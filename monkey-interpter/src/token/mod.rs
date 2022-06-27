@@ -16,12 +16,12 @@ impl Token {
     pub fn new(token_type: TokenType, ch: char) -> Self {
         Self {
             r#type: token_type,
-            literal: String::from(ch)
+            literal: String::from(ch),
         }
     }
 }
 
-impl  Default for Token {
+impl Default for Token {
     fn default() -> Self {
         Token::new(TokenType::EOF, 0 as char)
     }
