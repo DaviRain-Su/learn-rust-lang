@@ -1,5 +1,5 @@
-use crate::token::Token;
 use crate::token::token_type::TokenType;
+use crate::token::Token;
 
 pub trait Node {
     /// 必须提供 TokenLiteral()方法，该方法返回与其
@@ -25,19 +25,20 @@ pub struct Program {
     pub(crate) statements: Vec<Box<dyn Statement>>,
 }
 
-
 impl Program {
     pub fn new() -> Self {
-        Self {
-            statements: vec![],
-        }
+        Self { statements: vec![] }
     }
 
     pub fn token_literal(&self) -> String {
         if self.statements.is_empty() {
             return String::new();
         } else {
-            return self.statements.first().expect("never failed").token_literal();
+            return self
+                .statements
+                .first()
+                .expect("never failed")
+                .token_literal();
         }
     }
 
@@ -53,8 +54,7 @@ pub struct LetStatement {
     pub value: ExpressionId,
 }
 
-
-impl  From<&Box<dyn Statement>> for LetStatement {
+impl From<&Box<dyn Statement>> for LetStatement {
     fn from(value: &Box<dyn Statement>) -> Self {
         Self {
             token: Token::from_string(TokenType::LET, "let".into()),
@@ -78,7 +78,6 @@ impl Statement for LetStatement {
     }
 }
 
-
 #[derive(Debug, Default, Clone)]
 pub struct Identifier {
     pub token: Token, // token.IDENT 词法单元
@@ -87,10 +86,7 @@ pub struct Identifier {
 
 impl Identifier {
     pub fn new(token: Token, value: String) -> Self {
-        Self {
-            token,
-            value
-        }
+        Self { token, value }
     }
 }
 

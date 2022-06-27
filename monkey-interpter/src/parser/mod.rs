@@ -1,11 +1,11 @@
 #[cfg(test)]
 mod tests;
 
-use std::default::default;
 use crate::ast::{Identifier, LetStatement, Program, Statement};
 use crate::lexer::Lexer;
-use crate::token::Token;
 use crate::token::token_type::TokenType;
+use crate::token::Token;
+use std::default::default;
 
 #[derive(Debug)]
 pub struct Parser {
@@ -19,7 +19,6 @@ pub struct Parser {
     current_token: Token,
     peek_token: Token,
 }
-
 
 impl Parser {
     pub fn new(lexer: Lexer) -> Self {
@@ -35,7 +34,6 @@ impl Parser {
 
         parser
     }
-
 
     fn next_token(&mut self) {
         self.current_token = self.peek_token.clone();
@@ -60,15 +58,12 @@ impl Parser {
 
     fn parse_statement(&mut self) -> Option<Box<dyn Statement>> {
         match self.current_token.r#type {
-            TokenType::LET => {
-                Some(Box::new(self.parse_let_statement().unwrap()))
-            }
+            TokenType::LET => Some(Box::new(self.parse_let_statement().unwrap())),
             _ => None,
         }
     }
 
     fn parse_let_statement(&mut self) -> Option<LetStatement> {
-
         let mut stmt = LetStatement {
             token: self.current_token.clone(),
             ..default()
@@ -78,7 +73,10 @@ impl Parser {
             return None;
         }
 
-        stmt.name = Identifier::new(self.current_token.clone(), self.current_token.literal.clone());
+        stmt.name = Identifier::new(
+            self.current_token.clone(),
+            self.current_token.literal.clone(),
+        );
 
         if !self.expect_peek(TokenType::ASSIGN) {
             return None;
@@ -89,7 +87,7 @@ impl Parser {
             self.next_token();
         }
 
-        println!("stmt = {:?}",stmt);
+        println!("stmt = {:?}", stmt);
 
         Some(stmt)
     }

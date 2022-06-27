@@ -198,8 +198,7 @@ impl Lexer {
         if self.read_position >= self.input.len() {
             0 as char
         } else {
-            self
-                .input
+            self.input
                 .get(self.read_position..self.read_position + 1)
                 .unwrap()
                 .parse()

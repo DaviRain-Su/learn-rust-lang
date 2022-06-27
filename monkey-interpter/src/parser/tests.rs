@@ -3,7 +3,6 @@ use crate::lexer::Lexer;
 use crate::parser::Parser;
 
 fn test_let_statements() {
-
     let input = "
 let x = 5;
 let y = 19;
@@ -21,12 +20,15 @@ let foobar = 838383;
     let program_len = program.len();
 
     if program_len != 3 {
-        panic!("program statements does not contain 3 statements. got = {}", program_len);
+        panic!(
+            "program statements does not contain 3 statements. got = {}",
+            program_len
+        );
     }
 
-    let tests = vec!["x", "y","foobar"];
+    let tests = vec!["x", "y", "foobar"];
 
-    for (i,tt) in tests.into_iter().enumerate() {
+    for (i, tt) in tests.into_iter().enumerate() {
         let stmt = program.statements.get(i).unwrap();
 
         if !test_let_statement(stmt, tt.into()) {
@@ -37,27 +39,35 @@ let foobar = 838383;
 
 fn test_let_statement(s: &Box<dyn Statement>, name: String) -> bool {
     if s.token_literal() != "let" {
-       eprint!("Statement token_literal not 'let'. got = {}", s.token_literal());
+        eprint!(
+            "Statement token_literal not 'let'. got = {}",
+            s.token_literal()
+        );
         return false;
     }
 
     // HOW TODO this convert from box to concept type
-    let let_stmt : LetStatement = s.into();
+    let let_stmt: LetStatement = s.into();
 
     if let_stmt.name.value != name {
-        eprint!("let_stmt.name.value not `{}`. got = {}",name, let_stmt.name.value);
+        eprint!(
+            "let_stmt.name.value not `{}`. got = {}",
+            name, let_stmt.name.value
+        );
         return false;
     }
 
     if let_stmt.name.token_literal() != name {
-        eprint!("let_stmt.name.token_literal() not `{}`. got = {}",name, let_stmt.name.token_literal());
+        eprint!(
+            "let_stmt.name.token_literal() not `{}`. got = {}",
+            name,
+            let_stmt.name.token_literal()
+        );
         return false;
     }
 
     true
 }
-
-
 
 #[test]
 fn test_test_let_statements() {
