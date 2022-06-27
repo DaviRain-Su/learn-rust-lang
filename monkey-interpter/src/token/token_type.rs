@@ -3,36 +3,41 @@ use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum TokenType {
-    ILLEGAL,
-    EOF,
+    ILLEGAL, // illegal
+    EOF, // eof
 
     //  标识符 + 字面量
     IDENT, // add，foobar, x, y, z,...
     INT,   // 12345
 
     // 运算符
-    ASSIGN,
-    PLUS,
-    MINUS,
-    BANG,
-    ASTERISK,
-    SLASH,
+    ASSIGN, // =
+    PLUS, // +
+    MINUS, // -
+    BANG, // !
+    ASTERISK, // *
+    SLASH, // /
 
-    LT,
-    GT,
+    LT, // <
+    GT, // >
 
     // 分隔符
-    COMMA,
-    SEMICOLON,
+    COMMA, // ,
+    SEMICOLON, // ;
 
-    LPAREN,
-    RPAREN,
-    LBRACE,
-    RBRACE,
+    LPAREN, // (
+    RPAREN, // )
+    LBRACE, // {
+    RBRACE, // }
 
     // 关键字
-    FUNCTION,
-    LET,
+    FUNCTION, // fn
+    LET, // let
+    TRUE, // true
+    FALSE, // false
+    IF, // if
+    ELSE, // else
+    RETURN,// return
 }
 
 lazy_static! {
@@ -40,6 +45,11 @@ lazy_static! {
         let mut m = HashMap::new();
         m.insert("fn", TokenType::FUNCTION);
         m.insert("let", TokenType::LET);
+        m.insert("true", TokenType::TRUE);
+        m.insert("false", TokenType::FALSE);
+        m.insert("if", TokenType::IF);
+        m.insert("else", TokenType::ELSE);
+        m.insert("return", TokenType::RETURN);
         m
     };
 }

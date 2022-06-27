@@ -13,197 +13,277 @@ let add = fn(x, y) {
 let result = add(five, ten);
 !-/*5;
 5 < 10 > 5;
+
+if ( 5 < 10 ) {
+    return true;
+} else {
+    return false;
+}
 ";
 
     let tests = vec![
-        Token {
-            r#type: TokenType::LET,
-            literal: String::from("let"),
-        },
-        Token {
-            r#type: TokenType::IDENT,
-            literal: String::from("five"),
-        },
-        Token {
-            r#type: TokenType::ASSIGN,
-            literal: String::from("="),
-        },
-        Token {
-            r#type: TokenType::INT,
-            literal: String::from("5"),
-        },
-        Token {
-            r#type: TokenType::SEMICOLON,
-            literal: String::from(";"),
-        },
-        Token {
-            r#type: TokenType::LET,
-            literal: String::from("let"),
-        },
-        Token {
-            r#type: TokenType::IDENT,
-            literal: String::from("ten"),
-        },
-        Token {
-            r#type: TokenType::ASSIGN,
-            literal: String::from("="),
-        },
-        Token {
-            r#type: TokenType::INT,
-            literal: String::from("10"),
-        },
-        Token {
-            r#type: TokenType::SEMICOLON,
-            literal: String::from(";"),
-        },
-        Token {
-            r#type: TokenType::LET,
-            literal: String::from("let"),
-        },
-        Token {
-            r#type: TokenType::IDENT,
-            literal: String::from("add"),
-        },
-        Token {
-            r#type: TokenType::ASSIGN,
-            literal: String::from("="),
-        },
-        Token {
-            r#type: TokenType::FUNCTION,
-            literal: String::from("fn"),
-        },
-        Token {
-            r#type: TokenType::LPAREN,
-            literal: String::from("("),
-        },
-        Token {
-            r#type: TokenType::IDENT,
-            literal: String::from("x"),
-        },
-        Token {
-            r#type: TokenType::COMMA,
-            literal: String::from(","),
-        },
-        Token {
-            r#type: TokenType::IDENT,
-            literal: String::from("y"),
-        },
-        Token {
-            r#type: TokenType::RPAREN,
-            literal: String::from(")"),
-        },
-        Token {
-            r#type: TokenType::LBRACE,
-            literal: String::from("{"),
-        },
-        Token {
-            r#type: TokenType::IDENT,
-            literal: String::from("x"),
-        },
-        Token {
-            r#type: TokenType::PLUS,
-            literal: String::from("+"),
-        },
-        Token {
-            r#type: TokenType::IDENT,
-            literal: String::from("y"),
-        },
-        Token {
-            r#type: TokenType::SEMICOLON,
-            literal: String::from(";"),
-        },
-        Token {
-            r#type: TokenType::RBRACE,
-            literal: String::from("}"),
-        },
-        Token {
-            r#type: TokenType::SEMICOLON,
-            literal: String::from(";"),
-        },
-        Token {
-            r#type: TokenType::LET,
-            literal: String::from("let"),
-        },
-        Token {
-            r#type: TokenType::IDENT,
-            literal: String::from("result"),
-        },
-        Token {
-            r#type: TokenType::ASSIGN,
-            literal: String::from("="),
-        },
-        Token {
-            r#type: TokenType::IDENT,
-            literal: String::from("add"),
-        },
-        Token {
-            r#type: TokenType::LPAREN,
-            literal: String::from("("),
-        },
-        Token {
-            r#type: TokenType::IDENT,
-            literal: String::from("five"),
-        },
-        Token {
-            r#type: TokenType::COMMA,
-            literal: String::from(","),
-        },
-        Token {
-            r#type: TokenType::IDENT,
-            literal: String::from("ten"),
-        },
-        Token {
-            r#type: TokenType::RPAREN,
-            literal: String::from(")"),
-        },
-        Token {
-            r#type: TokenType::SEMICOLON,
-            literal: String::from(";"),
-        },
-        Token {
-            r#type: TokenType::BANG,
-            literal: String::from("!"),
-        },
-        Token {
-            r#type: TokenType::MINUS,
-            literal: String::from("-"),
-        },
-        Token {
-            r#type: TokenType::SLASH,
-            literal: String::from("/"),
-        },
-        Token {
-            r#type: TokenType::ASTERISK,
-            literal: String::from("*"),
-        },
-        Token {
-            r#type: TokenType::INT,
-            literal: String::from("5"),
-        },
-        Token {
-            r#type: TokenType::SEMICOLON,
-            literal: String::from(";"),
-        },
-        Token {
-            r#type: TokenType::INT,
-            literal: String::from("5"),
-        },
-        Token {
-            r#type: TokenType::LT,
-            literal: String::from("<"),
-        },
-        Token {
-            r#type: TokenType::INT,
-            literal: String::from("10"),
-        },
-        Token {
-            r#type: TokenType::GT,
-            literal: String::from(">"),
-        },
-        Token {
-            r#type: TokenType::INT,
-            literal: String::from("5"),
-        },
+        Token::from_string(
+            TokenType::LET,
+            "let".into(),
+        ),
+        Token::from_string(
+            TokenType::IDENT,
+            "five".into(),
+        ),
+        Token::from_string(
+            TokenType::ASSIGN,
+            "=".into(),
+        ),
+        Token::from_string(
+            TokenType::INT,
+             "5".into(),
+        ),
+        Token::from_string (
+             TokenType::SEMICOLON,
+             ";".into(),
+            ),
+        Token::from_string (
+             TokenType::LET,
+            "let".into(),
+        ),
+        Token::from_string (
+            TokenType::IDENT,
+            "ten".into(),
+        ),
+        Token::from_string (
+           TokenType::ASSIGN,
+            "=".into(),
+        ),
+        Token::from_string(
+            TokenType::INT,
+             "10".into(),
+        ),
+        Token::from_string (
+            TokenType::SEMICOLON,
+            ";".into(),
+        ),
+        Token::from_string (
+           TokenType::LET,
+           "let".into(),
+        ),
+        Token::from_string(
+           TokenType::IDENT,
+             "add".into(),
+        ),
+        Token::from_string (
+            TokenType::ASSIGN,
+           "=".into(),
+        ),
+        Token::from_string (
+             TokenType::FUNCTION,
+             "fn".into(),
+        ),
+        Token::from_string(
+             TokenType::LPAREN,
+             "(".into(),
+        ),
+        Token::from_string (
+            TokenType::IDENT,
+             "x".into(),
+        ),
+        Token::from_string (
+             TokenType::COMMA,
+             ",".into(),
+        ),
+        Token::from_string (
+             TokenType::IDENT,
+             "y".into(),
+        ),
+        Token::from_string (
+            TokenType::RPAREN,
+             ")".into(),
+       ),
+        Token::from_string (
+             TokenType::LBRACE,
+             "{".into(),
+        ),
+        Token::from_string (
+             TokenType::IDENT,
+            "x".into(),
+        ),
+        Token::from_string (
+            TokenType::PLUS,
+           "+".into(),
+        ),
+        Token::from_string (
+             TokenType::IDENT,
+             "y".into(),
+        ),
+        Token::from_string (
+             TokenType::SEMICOLON,
+             ";".into(),
+        ),
+        Token::from_string (
+             TokenType::RBRACE,
+            "}".into(),
+        ),
+        Token::from_string (
+             TokenType::SEMICOLON,
+            ";".into(),
+        ),
+        Token::from_string (
+            TokenType::LET,
+             "let".into(),
+        ),
+        Token::from_string (
+            TokenType::IDENT,
+             "result".into(),
+        ),
+        Token::from_string (
+             TokenType::ASSIGN,
+           "=".into(),
+        ),
+        Token::from_string (
+            TokenType::IDENT,
+             "add".into(),
+        ),
+        Token::from_string (
+            TokenType::LPAREN,
+             "(".into(),
+        ),
+        Token::from_string (
+             TokenType::IDENT,
+           "five".into(),
+        ),
+        Token::from_string (
+            TokenType::COMMA,
+             ",".into(),
+        ),
+        Token::from_string (
+             TokenType::IDENT,
+             "ten".into(),
+        ),
+        Token::from_string (
+            TokenType::RPAREN,
+             ")".into(),
+        ),
+        Token::from_string(
+             TokenType::SEMICOLON,
+             ";".into(),
+        ),
+        Token::from_string (
+             TokenType::BANG,
+             "!".into(),
+        ),
+        Token::from_string (
+             TokenType::MINUS,
+             "-".into(),
+        ),
+        Token::from_string (
+             TokenType::SLASH,
+             "/".into(),
+        ),
+        Token::from_string (
+             TokenType::ASTERISK,
+            "*".into(),
+        ),
+        Token::from_string (
+             TokenType::INT,
+           "5".into(),
+        ),
+        Token::from_string (
+             TokenType::SEMICOLON,
+         ";".into(),
+        ),
+        Token::from_string (
+             TokenType::INT,
+             "5".into(),
+        ),
+        Token::from_string (
+             TokenType::LT,
+            "<".into(),
+        ),
+        Token::from_string (
+             TokenType::INT,
+             "10".into(),
+        ),
+        Token::from_string (
+             TokenType::GT,
+            ">".into(),
+        ),
+        Token::from_string (
+            TokenType::INT,
+             "5".into(),
+        ),
+        Token::from_string(
+            TokenType::SEMICOLON,
+            ";".into(),
+        ),
+        Token::from_string(
+            TokenType::IF,
+            "if".into(),
+        ),
+        Token::from_string(
+            TokenType::LPAREN,
+            "(".into(),
+        ),
+        Token::from_string(
+            TokenType::INT,
+            "5".into(),
+        ),
+        Token::from_string(
+        TokenType::LT,
+            "<".into(),
+        ),
+        Token::from_string(
+            TokenType::INT,
+            "10".into(),
+        ),
+        Token::from_string(
+            TokenType::RPAREN,
+            ")".into(),
+        ),
+        Token::from_string(
+            TokenType::LBRACE,
+            "{".into(),
+        ),
+        Token::from_string(
+            TokenType::RETURN,
+            "return".into(),
+        ),
+        Token::from_string(
+            TokenType::TRUE,
+            "true".into(),
+        ),
+        Token::from_string(
+            TokenType::SEMICOLON,
+            ";".into(),
+        ),
+        Token::from_string(
+            TokenType::RBRACE,
+            "}".into(),
+        ),
+        Token::from_string(
+            TokenType::ELSE,
+            "else".into(),
+        ),
+        Token::from_string(
+            TokenType::LBRACE,
+            "{".into(),
+        ),
+        Token::from_string(
+            TokenType::RETURN,
+            "return".into(),
+        ),
+        Token::from_string(
+            TokenType::FALSE,
+            "false".into(),
+        ),
+        Token::from_string(
+            TokenType::SEMICOLON,
+            ";".into(),
+        ),
+        Token::from_string(
+            TokenType::RBRACE,
+            "}".into(),
+        ),
+
+
     ];
 
     let mut l = Lexer::new(input);

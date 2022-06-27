@@ -19,6 +19,20 @@ impl Token {
             literal: String::from(ch),
         }
     }
+
+    pub fn from_char(token_type: TokenType, ch: char) -> Self {
+        Self {
+            r#type: token_type,
+            literal: String::from(ch),
+        }
+    }
+
+    pub fn from_string(token_type: TokenType, literal: String) -> Self {
+        Self {
+            r#type: token_type,
+            literal: String::from(literal),
+        }
+    }
 }
 
 impl Default for Token {
