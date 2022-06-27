@@ -1,12 +1,15 @@
-use std::fmt::{Display, Formatter};
+use std::collections::HashMap;
+use crate::token::Token;
 
-#[derive(Debug, PartialEq, Eq)]
+
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum TokenType {
     ILLEGAL,
     EOF,
+    SPACE,
 
     //  标识符 + 字面量
-    IDENT(String), // add，foobar, x, y, z,...
+    IDENT, // add，foobar, x, y, z,...
     INT,           // 12345
 
     // 运算符
@@ -27,23 +30,38 @@ pub enum TokenType {
     LET,
 }
 
-impl Display for TokenType {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::ILLEGAL => write!(f, "ILLEGAL"),
-            Self::EOF => write!(f, "EOF"),
-            Self::IDENT(value) => write!(f, "IDENT({})", value),
-            Self::INT => write!(f, "INT"),
-            Self::ASSIGN => write!(f, "="),
-            Self::PLUS => write!(f, "+"),
-            Self::COMMA => write!(f, ","),
-            Self::SEMICOLON => write!(f, ";"),
-            Self::LPAREN => write!(f, "("),
-            Self::RPAREN => write!(f, ")"),
-            Self::LBRACE => write!(f, "{{"),
-            Self::RBRACE => write!(f, "}}"),
-            Self::FUNCTION => write!(f, "FUNCTION"),
-            Self::LET => write!(f, "LET"),
+impl TokenType {
+    pub fn is_match(&self, token_type: &TokenType) -> bool {
+        self == token_type
+    }
+
+
+}
+
+impl  From<&str> for TokenType {
+    fn from(token_type: &str) -> Self {
+        match token_type {
+            "let" => Self::LET,
+            " " => Self::SPACE,
+            "=" => Self::ASSIGN,
+            _ => Self::IDENT,
         }
     }
+}
+
+lazy_static! {
+    static ref  KEYWORDS: HashMap<&'static str, TokenType> = {
+        let mut m = HashMap::new();
+        m.insert("fn", TokenType::FUNCTION);
+        m.insert("let", TokenType::LET);
+        m
+    };
+}
+
+
+pub fn lookup_ident(ident: &str) -> TokenType {
+   match KEYWORDS.get(ident) {
+       Some(value) => value.clone(),
+       None => TokenType::IDENT,
+   }
 }

@@ -1,4 +1,4 @@
-use crate::token::Token;
+use crate::token::{Token, token_type};
 use crate::token::token_type::TokenType;
 
 #[cfg(test)]
@@ -41,6 +41,10 @@ impl Lexer {
 
     pub fn next_token(&mut self) -> Token {
         let mut tok = Token::default();
+
+        // skip whitespace
+        self.skip_whitespace();
+
         match self.ch {
             '=' => {
                 tok = Token::new(TokenType::ASSIGN, self.ch);
@@ -66,8 +70,19 @@ impl Lexer {
             '}' =>  {
                 tok = Token::new(TokenType::RBRACE, self.ch);
             },
+            ' ' => {
+                tok = Token::new(TokenType::SPACE, self.ch);
+            },
             _ =>  {
-                tok = Token::new(TokenType::EOF, 0 as char);
+                if Self::is_letter(self.ch) {
+                    let literal= self.read_identifier();
+                    tok.r#type = token_type::lookup_ident(literal);
+                    tok.literal = String::from(literal);
+                    return tok;
+                } else {
+                    tok = Token::new(TokenType::ILLEGAL, self.ch);
+                }
+
             },
         }
 
@@ -75,4 +90,30 @@ impl Lexer {
 
         tok
     }
+
+    fn read_identifier(&mut self) -> &str {
+        let mut position = self.position;
+         while Self::is_letter(self.ch) {
+             self.read_char();
+         }
+
+        let literal = self.input.get(position..self.position).unwrap();
+
+        literal
+    }
+
+    fn skip_whitespace(&mut self) {
+        loop {
+            if self.ch == ' ' || self.ch == '\t' || self.ch == '\n' || self.ch == '\r' {
+                self.read_char();
+            } else {
+                break;
+            }
+        }
+    }
+
+    fn is_letter(ch: char) -> bool {
+        'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+    }
 }
+
