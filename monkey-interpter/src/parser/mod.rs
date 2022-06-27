@@ -44,7 +44,7 @@ impl Parser {
         let mut program = Program::new();
 
         // TODO this should be EOF, but this is ILLEGAL
-        while self.current_token.r#type != TokenType::ILLEGAL {
+        while !self.cur_token_is(TokenType::ILLEGAL) {
             // println!("current_token = {:?}", self.current_token);
             let stmt = self.parse_statement();
             if stmt.is_some() {
@@ -63,6 +63,12 @@ impl Parser {
         }
     }
 
+    /// 先来看 parseLetStatement。这里使用当前所在的词法单元（token.LET）构造
+    /// 了一个*ast.LetStatement 节点，然后调用 expectPeek 来判断下一个是不是期望的
+    /// 词法单元，如果是，则前移词法单元指针。第一次期望的是一个 token.IDENT 词法单
+    /// 元，用于构造一个*ast.Identifier 节点。然后期望下一个词法单元是等号。之后跳
+    /// 过了一些表达式，直到遇见分号为止。目前的代码跳过了表达式的处理，后面介绍完
+    /// 如何解析表达式后会返回来替换这里的代码。
     fn parse_let_statement(&mut self) -> Option<LetStatement> {
         let mut stmt = LetStatement {
             token: self.current_token.clone(),
