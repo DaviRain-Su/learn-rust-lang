@@ -10,7 +10,10 @@ let ten = 10;
 let add = fn(x, y) {
     x + y;
 };
-let result = add(five, ten);";
+let result = add(five, ten);
+!-/*5;
+5 < 10 > 5;
+";
 
     let tests = vec![
         Token {
@@ -158,8 +161,48 @@ let result = add(five, ten);";
             literal: String::from(";"),
         },
         Token {
-            r#type: TokenType::EOF,
-            literal: String::from(0 as char),
+            r#type: TokenType::BANG,
+            literal: String::from("!"),
+        },
+        Token {
+            r#type: TokenType::MINUS,
+            literal: String::from("-"),
+        },
+        Token {
+            r#type: TokenType::SLASH,
+            literal: String::from("/"),
+        },
+        Token {
+            r#type: TokenType::ASTERISK,
+            literal: String::from("*"),
+        },
+        Token {
+            r#type: TokenType::INT,
+            literal: String::from("5"),
+        },
+        Token {
+            r#type: TokenType::SEMICOLON,
+            literal: String::from(";"),
+        },
+        Token {
+            r#type: TokenType::INT,
+            literal: String::from("5"),
+        },
+        Token {
+            r#type: TokenType::LT,
+            literal: String::from("<"),
+        },
+        Token {
+            r#type: TokenType::INT,
+            literal: String::from("10"),
+        },
+        Token {
+            r#type: TokenType::GT,
+            literal: String::from(">"),
+        },
+        Token {
+            r#type: TokenType::INT,
+            literal: String::from("5"),
         },
     ];
 

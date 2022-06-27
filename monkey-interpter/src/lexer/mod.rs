@@ -31,7 +31,6 @@ impl Lexer {
         lexer
     }
 
-
     /// readChar 的目的是读取 input 中的下一个字符，并前移其在 input 中的位置。
     /// 这个过程的第一件事就是检查是否已经到达 input 的末尾。如果是，则将 l.ch 设置为 0，
     /// 这是 NUL 字符的 ASCII 编码，用来表示“尚未读取任何内容”或“文件结尾”。如果还
@@ -67,6 +66,24 @@ impl Lexer {
         match self.ch {
             '=' => {
                 tok = Token::new(TokenType::ASSIGN, self.ch);
+            }
+            '-' => {
+                tok = Token::new(TokenType::MINUS, self.ch);
+            }
+            '!' => {
+                tok = Token::new(TokenType::BANG, self.ch);
+            }
+            '/' => {
+                tok = Token::new(TokenType::SLASH, self.ch);
+            }
+            '*' => {
+                tok = Token::new(TokenType::ASTERISK, self.ch);
+            }
+            '<' => {
+                tok = Token::new(TokenType::LT, self.ch);
+            }
+            '>' => {
+                tok = Token::new(TokenType::GT, self.ch);
             }
             ';' => {
                 tok = Token::new(TokenType::SEMICOLON, self.ch);
