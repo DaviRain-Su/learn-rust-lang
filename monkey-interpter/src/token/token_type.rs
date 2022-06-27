@@ -4,25 +4,25 @@ use std::collections::HashMap;
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum TokenType {
     ILLEGAL, // illegal
-    EOF, // eof
+    EOF,     // eof
 
     //  标识符 + 字面量
     IDENT, // add，foobar, x, y, z,...
     INT,   // 12345
 
     // 运算符
-    ASSIGN, // =
-    PLUS, // +
-    MINUS, // -
-    BANG, // !
+    ASSIGN,   // =
+    PLUS,     // +
+    MINUS,    // -
+    BANG,     // !
     ASTERISK, // *
-    SLASH, // /
+    SLASH,    // /
 
     LT, // <
     GT, // >
 
     // 分隔符
-    COMMA, // ,
+    COMMA,     // ,
     SEMICOLON, // ;
 
     LPAREN, // (
@@ -32,12 +32,12 @@ pub enum TokenType {
 
     // 关键字
     FUNCTION, // fn
-    LET, // let
-    TRUE, // true
-    FALSE, // false
-    IF, // if
-    ELSE, // else
-    RETURN,// return
+    LET,      // let
+    TRUE,     // true
+    FALSE,    // false
+    IF,       // if
+    ELSE,     // else
+    RETURN,   // return
 }
 
 lazy_static! {

@@ -22,268 +22,71 @@ if ( 5 < 10 ) {
 ";
 
     let tests = vec![
-        Token::from_string(
-            TokenType::LET,
-            "let".into(),
-        ),
-        Token::from_string(
-            TokenType::IDENT,
-            "five".into(),
-        ),
-        Token::from_string(
-            TokenType::ASSIGN,
-            "=".into(),
-        ),
-        Token::from_string(
-            TokenType::INT,
-             "5".into(),
-        ),
-        Token::from_string (
-             TokenType::SEMICOLON,
-             ";".into(),
-            ),
-        Token::from_string (
-             TokenType::LET,
-            "let".into(),
-        ),
-        Token::from_string (
-            TokenType::IDENT,
-            "ten".into(),
-        ),
-        Token::from_string (
-           TokenType::ASSIGN,
-            "=".into(),
-        ),
-        Token::from_string(
-            TokenType::INT,
-             "10".into(),
-        ),
-        Token::from_string (
-            TokenType::SEMICOLON,
-            ";".into(),
-        ),
-        Token::from_string (
-           TokenType::LET,
-           "let".into(),
-        ),
-        Token::from_string(
-           TokenType::IDENT,
-             "add".into(),
-        ),
-        Token::from_string (
-            TokenType::ASSIGN,
-           "=".into(),
-        ),
-        Token::from_string (
-             TokenType::FUNCTION,
-             "fn".into(),
-        ),
-        Token::from_string(
-             TokenType::LPAREN,
-             "(".into(),
-        ),
-        Token::from_string (
-            TokenType::IDENT,
-             "x".into(),
-        ),
-        Token::from_string (
-             TokenType::COMMA,
-             ",".into(),
-        ),
-        Token::from_string (
-             TokenType::IDENT,
-             "y".into(),
-        ),
-        Token::from_string (
-            TokenType::RPAREN,
-             ")".into(),
-       ),
-        Token::from_string (
-             TokenType::LBRACE,
-             "{".into(),
-        ),
-        Token::from_string (
-             TokenType::IDENT,
-            "x".into(),
-        ),
-        Token::from_string (
-            TokenType::PLUS,
-           "+".into(),
-        ),
-        Token::from_string (
-             TokenType::IDENT,
-             "y".into(),
-        ),
-        Token::from_string (
-             TokenType::SEMICOLON,
-             ";".into(),
-        ),
-        Token::from_string (
-             TokenType::RBRACE,
-            "}".into(),
-        ),
-        Token::from_string (
-             TokenType::SEMICOLON,
-            ";".into(),
-        ),
-        Token::from_string (
-            TokenType::LET,
-             "let".into(),
-        ),
-        Token::from_string (
-            TokenType::IDENT,
-             "result".into(),
-        ),
-        Token::from_string (
-             TokenType::ASSIGN,
-           "=".into(),
-        ),
-        Token::from_string (
-            TokenType::IDENT,
-             "add".into(),
-        ),
-        Token::from_string (
-            TokenType::LPAREN,
-             "(".into(),
-        ),
-        Token::from_string (
-             TokenType::IDENT,
-           "five".into(),
-        ),
-        Token::from_string (
-            TokenType::COMMA,
-             ",".into(),
-        ),
-        Token::from_string (
-             TokenType::IDENT,
-             "ten".into(),
-        ),
-        Token::from_string (
-            TokenType::RPAREN,
-             ")".into(),
-        ),
-        Token::from_string(
-             TokenType::SEMICOLON,
-             ";".into(),
-        ),
-        Token::from_string (
-             TokenType::BANG,
-             "!".into(),
-        ),
-        Token::from_string (
-             TokenType::MINUS,
-             "-".into(),
-        ),
-        Token::from_string (
-             TokenType::SLASH,
-             "/".into(),
-        ),
-        Token::from_string (
-             TokenType::ASTERISK,
-            "*".into(),
-        ),
-        Token::from_string (
-             TokenType::INT,
-           "5".into(),
-        ),
-        Token::from_string (
-             TokenType::SEMICOLON,
-         ";".into(),
-        ),
-        Token::from_string (
-             TokenType::INT,
-             "5".into(),
-        ),
-        Token::from_string (
-             TokenType::LT,
-            "<".into(),
-        ),
-        Token::from_string (
-             TokenType::INT,
-             "10".into(),
-        ),
-        Token::from_string (
-             TokenType::GT,
-            ">".into(),
-        ),
-        Token::from_string (
-            TokenType::INT,
-             "5".into(),
-        ),
-        Token::from_string(
-            TokenType::SEMICOLON,
-            ";".into(),
-        ),
-        Token::from_string(
-            TokenType::IF,
-            "if".into(),
-        ),
-        Token::from_string(
-            TokenType::LPAREN,
-            "(".into(),
-        ),
-        Token::from_string(
-            TokenType::INT,
-            "5".into(),
-        ),
-        Token::from_string(
-        TokenType::LT,
-            "<".into(),
-        ),
-        Token::from_string(
-            TokenType::INT,
-            "10".into(),
-        ),
-        Token::from_string(
-            TokenType::RPAREN,
-            ")".into(),
-        ),
-        Token::from_string(
-            TokenType::LBRACE,
-            "{".into(),
-        ),
-        Token::from_string(
-            TokenType::RETURN,
-            "return".into(),
-        ),
-        Token::from_string(
-            TokenType::TRUE,
-            "true".into(),
-        ),
-        Token::from_string(
-            TokenType::SEMICOLON,
-            ";".into(),
-        ),
-        Token::from_string(
-            TokenType::RBRACE,
-            "}".into(),
-        ),
-        Token::from_string(
-            TokenType::ELSE,
-            "else".into(),
-        ),
-        Token::from_string(
-            TokenType::LBRACE,
-            "{".into(),
-        ),
-        Token::from_string(
-            TokenType::RETURN,
-            "return".into(),
-        ),
-        Token::from_string(
-            TokenType::FALSE,
-            "false".into(),
-        ),
-        Token::from_string(
-            TokenType::SEMICOLON,
-            ";".into(),
-        ),
-        Token::from_string(
-            TokenType::RBRACE,
-            "}".into(),
-        ),
-
-
+        Token::from_string(TokenType::LET, "let".into()),
+        Token::from_string(TokenType::IDENT, "five".into()),
+        Token::from_string(TokenType::ASSIGN, "=".into()),
+        Token::from_string(TokenType::INT, "5".into()),
+        Token::from_string(TokenType::SEMICOLON, ";".into()),
+        Token::from_string(TokenType::LET, "let".into()),
+        Token::from_string(TokenType::IDENT, "ten".into()),
+        Token::from_string(TokenType::ASSIGN, "=".into()),
+        Token::from_string(TokenType::INT, "10".into()),
+        Token::from_string(TokenType::SEMICOLON, ";".into()),
+        Token::from_string(TokenType::LET, "let".into()),
+        Token::from_string(TokenType::IDENT, "add".into()),
+        Token::from_string(TokenType::ASSIGN, "=".into()),
+        Token::from_string(TokenType::FUNCTION, "fn".into()),
+        Token::from_string(TokenType::LPAREN, "(".into()),
+        Token::from_string(TokenType::IDENT, "x".into()),
+        Token::from_string(TokenType::COMMA, ",".into()),
+        Token::from_string(TokenType::IDENT, "y".into()),
+        Token::from_string(TokenType::RPAREN, ")".into()),
+        Token::from_string(TokenType::LBRACE, "{".into()),
+        Token::from_string(TokenType::IDENT, "x".into()),
+        Token::from_string(TokenType::PLUS, "+".into()),
+        Token::from_string(TokenType::IDENT, "y".into()),
+        Token::from_string(TokenType::SEMICOLON, ";".into()),
+        Token::from_string(TokenType::RBRACE, "}".into()),
+        Token::from_string(TokenType::SEMICOLON, ";".into()),
+        Token::from_string(TokenType::LET, "let".into()),
+        Token::from_string(TokenType::IDENT, "result".into()),
+        Token::from_string(TokenType::ASSIGN, "=".into()),
+        Token::from_string(TokenType::IDENT, "add".into()),
+        Token::from_string(TokenType::LPAREN, "(".into()),
+        Token::from_string(TokenType::IDENT, "five".into()),
+        Token::from_string(TokenType::COMMA, ",".into()),
+        Token::from_string(TokenType::IDENT, "ten".into()),
+        Token::from_string(TokenType::RPAREN, ")".into()),
+        Token::from_string(TokenType::SEMICOLON, ";".into()),
+        Token::from_string(TokenType::BANG, "!".into()),
+        Token::from_string(TokenType::MINUS, "-".into()),
+        Token::from_string(TokenType::SLASH, "/".into()),
+        Token::from_string(TokenType::ASTERISK, "*".into()),
+        Token::from_string(TokenType::INT, "5".into()),
+        Token::from_string(TokenType::SEMICOLON, ";".into()),
+        Token::from_string(TokenType::INT, "5".into()),
+        Token::from_string(TokenType::LT, "<".into()),
+        Token::from_string(TokenType::INT, "10".into()),
+        Token::from_string(TokenType::GT, ">".into()),
+        Token::from_string(TokenType::INT, "5".into()),
+        Token::from_string(TokenType::SEMICOLON, ";".into()),
+        Token::from_string(TokenType::IF, "if".into()),
+        Token::from_string(TokenType::LPAREN, "(".into()),
+        Token::from_string(TokenType::INT, "5".into()),
+        Token::from_string(TokenType::LT, "<".into()),
+        Token::from_string(TokenType::INT, "10".into()),
+        Token::from_string(TokenType::RPAREN, ")".into()),
+        Token::from_string(TokenType::LBRACE, "{".into()),
+        Token::from_string(TokenType::RETURN, "return".into()),
+        Token::from_string(TokenType::TRUE, "true".into()),
+        Token::from_string(TokenType::SEMICOLON, ";".into()),
+        Token::from_string(TokenType::RBRACE, "}".into()),
+        Token::from_string(TokenType::ELSE, "else".into()),
+        Token::from_string(TokenType::LBRACE, "{".into()),
+        Token::from_string(TokenType::RETURN, "return".into()),
+        Token::from_string(TokenType::FALSE, "false".into()),
+        Token::from_string(TokenType::SEMICOLON, ";".into()),
+        Token::from_string(TokenType::RBRACE, "}".into()),
     ];
 
     let mut l = Lexer::new(input);
