@@ -1,4 +1,5 @@
 use crate::token::Token;
+use crate::token::token_type::TokenType;
 
 pub trait Node {
     /// 必须提供 TokenLiteral()方法，该方法返回与其
@@ -18,8 +19,9 @@ pub trait Expression: Node {
 /// Monkey 程序都是一系列位于 Program.Statements 中的语句。Program.Statements
 /// 是一个切片，其中有实现 Statement 接口的 AST 节点。
 pub struct Program {
-    statements: Vec<Box<dyn Statement>>,
+    pub(crate) statements: Vec<Box<dyn Statement>>,
 }
+
 
 impl Program {
     pub fn token_literal(&self) -> String {
@@ -29,13 +31,31 @@ impl Program {
             return self.statements.first().expect("never failed").token_literal();
         }
     }
+
+    pub fn len(&self) -> usize {
+        self.statements.len()
+    }
 }
 
 
 pub struct LetStatement {
     token: Token, // token.LET 词法单元
-    name: Identifier,
-    value: dyn Expression,
+    pub name: Identifier,
+    value: ExpressionId,
+}
+
+
+impl  From<&Box<dyn Statement>> for LetStatement {
+    fn from(value: &Box<dyn Statement>) -> Self {
+        Self {
+            token: Token::from_string(TokenType::LET, "let".into()),
+            name: Identifier {
+                token: Token::from_string(TokenType::IDENT, value.token_literal()),
+                value: value.token_literal(),
+            },
+            value: ExpressionId,
+        }
+    }
 }
 
 impl Node for LetStatement {
@@ -49,9 +69,9 @@ impl Statement for LetStatement {
 }
 
 
-struct Identifier {
-    token: Token, // token.IDENT 词法单元
-    value: String,
+pub struct Identifier {
+    pub token: Token, // token.IDENT 词法单元
+    pub value: String,
 }
 
 impl Node for Identifier {
@@ -63,3 +83,5 @@ impl Node for Identifier {
 impl Expression for Identifier {
     fn expression_node(&self) {}
 }
+
+pub struct ExpressionId;

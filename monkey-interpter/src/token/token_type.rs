@@ -5,7 +5,7 @@ pub enum TokenType {
     ILLEGAL, // illegal
     EOF,     // eof
 
-    //  标识符 + 字面量
+    // identifier + literals
     IDENT, // add，foobar, x, y, z,...
     INT,   // 12345
 

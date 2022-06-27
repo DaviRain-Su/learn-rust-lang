@@ -1,10 +1,8 @@
-// type TokenType = String;
-
 pub mod token_type;
 
 use crate::token::token_type::TokenType;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Token {
     // identifier for token type
     pub(crate) r#type: TokenType,

@@ -102,7 +102,7 @@ if ( 5 < 10 ) {
 
     let mut l = Lexer::new(input);
     for (i, tt) in tests.iter().enumerate() {
-        let mut tok = l.next_token();
+        let tok = l.next_token();
 
         println!("token = {:?}", tok);
 
@@ -127,6 +127,7 @@ if ( 5 < 10 ) {
 }
 
 #[test]
+#[ignore]
 fn test_test_next_token() {
     test_next_token();
 }
