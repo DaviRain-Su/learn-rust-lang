@@ -87,7 +87,6 @@ impl Lexer {
                 } else {
                     tok = Token::from_char(TokenType::BANG, self.ch);
                 }
-
             }
             '/' => {
                 tok = Token::from_char(TokenType::SLASH, self.ch);
@@ -199,7 +198,12 @@ impl Lexer {
         if self.read_position >= self.input.len() {
             return 0 as char;
         } else {
-            return self.input.get(self.read_position..self.read_position+1).unwrap().parse().unwrap();
+            return self
+                .input
+                .get(self.read_position..self.read_position + 1)
+                .unwrap()
+                .parse()
+                .unwrap();
         }
     }
 }

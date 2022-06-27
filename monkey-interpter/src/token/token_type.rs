@@ -20,7 +20,7 @@ pub enum TokenType {
     LT, // <
     GT, // >
 
-    EQ, // ==
+    EQ,    // ==
     NOTEQ, // !=
 
     // 分隔符
