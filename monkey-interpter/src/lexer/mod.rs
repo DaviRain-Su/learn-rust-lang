@@ -196,14 +196,14 @@ impl Lexer {
     /// 的指针位置，这样就能知道下一步在调用 readChar()时会返回什么。
     fn peek_char(&self) -> char {
         if self.read_position >= self.input.len() {
-            return 0 as char;
+            0 as char
         } else {
-            return self
+            self
                 .input
                 .get(self.read_position..self.read_position + 1)
                 .unwrap()
                 .parse()
-                .unwrap();
+                .unwrap()
         }
     }
 }
