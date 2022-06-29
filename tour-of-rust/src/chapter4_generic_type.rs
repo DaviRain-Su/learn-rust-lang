@@ -181,7 +181,7 @@ pub mod content {
     /// # 优雅地错误处理
     ///
     /// Result 如此常见以至于 Rust 有个强大的操作符 ? 来与之配合。 以下两个表达式是等价的：
-    ///```rust
+    ///```none
     /// fn do_something_that_might_fail(i: i32) -> Result<f32, String> {
     ///     if i == 42 {
     ///         Ok(13.0)
@@ -226,7 +226,7 @@ pub mod content {
     /// 如果枚举的类型是 None/Err， 则会 panic!
     /// 这两段代码是等价的：
     ///
-    /// ```rust
+    /// ```none
     /// my_option.unwrap();
     /// match my_option {
     ///     Some(v) => v,
@@ -235,7 +235,7 @@ pub mod content {
     /// ```
     /// 类似的：
     ///
-    /// ```rust
+    /// ```none
     /// my_result.unwrap();
     /// match my_result {
     ///     Ok(v) => v,

@@ -50,7 +50,8 @@ pub mod content {
     /// loop {
     ///     x += 1;
     ///     if x == 42 {
-    ///     break;
+    ///         break;
+    ///    }
     /// }
     ///
     /// println!("x = {}", x);
