@@ -1,4 +1,5 @@
 /// # 第四章 - 泛型
+///
 /// 泛型在 Rust 中非常重要。它们用于表示可空值（即可能还没有值的变量）、错误处理、集合等等！
 /// 在本章中，我们将学习你可能将会经常使用的基本泛型知识。
 pub mod content {
@@ -40,11 +41,11 @@ pub mod content {
 
     /// # 表示空
     ///
-    /// 在其他语言中，关键字 null 用于表示没有值。它给编程语言带来了困难，因为它使我们的程序在与变量字段交互时可能失败。
+    /// 在其他语言中，关键字 `null` 用于表示没有值。它给编程语言带来了困难，因为它使我们的程序在与变量字段交互时可能失败。
     ///
-    /// Rust 没有 null，但这并不代表我们不知道表示空的重要性！我们可以使用一个我们已经了解过的工具来简单地表示这一点。
+    /// Rust 没有 `null`，但这并不代表我们不知道表示空的重要性！我们可以使用一个我们已经了解过的工具来简单地表示这一点。
     ///
-    /// 因为缺少 null 值，这种为一个或多个替代值提供 None 替代表示的模式非常常见， 泛型有助于解决这一难题。
+    /// 因为缺少 `null` 值，这种为一个或多个替代值提供 `None` 替代表示的模式非常常见， 泛型有助于解决这一难题。
     pub fn represent_empty() {
         #[allow(dead_code)]
         enum Item {
@@ -65,7 +66,7 @@ pub mod content {
     }
 
     /// Option
-    /// Rust 有一个内置的泛型枚举叫做 Option，它可以让我们不使用 null 就可以表示可以为空的值。
+    /// Rust 有一个内置的泛型枚举叫做 `Option`，它可以让我们不使用 `null` 就可以表示可以为空的值。
     ///
     /// ```rust
     /// enum Option<T> {
@@ -113,7 +114,7 @@ pub mod content {
     }
 
     /// # Result
-    /// Rust 有一个内置的泛型枚举叫做 Result，它可以让我们返回一个可能包含错误的值。 这是编程语言进行错误处理的惯用方法。
+    /// Rust 有一个内置的泛型枚举叫做 `Result`，它可以让我们返回一个可能包含错误的值。 这是编程语言进行错误处理的惯用方法。
     ///
     /// ```rust
     /// enum Result<T, E> {
@@ -123,7 +124,7 @@ pub mod content {
     /// ```
     /// 注意我们的泛型有多个用逗号分隔的参数化的类型。
     ///
-    /// 这个枚举很常见，使用关键字 Ok 和 Err 可以在任何地方创建其实例。
+    /// 这个枚举很常见，使用关键字 `Ok` 和 `Err` 可以在任何地方创建其实例。
     pub fn result_type() {
         fn do_something_that_fail(i: i32) -> Result<f32, String> {
             if i == 42 {
@@ -148,7 +149,7 @@ pub mod content {
 
     /// # 可失败的主函数
     ///
-    /// main 函数有可以返回 Result 的能力！
+    /// `main` 函数有可以返回 `Result` 的能力！
     pub fn can_fail_function() -> Result<(), String> {
         fn do_something_that_fail(i: i32) -> Result<f32, String> {
             if i == 42 {
@@ -180,7 +181,7 @@ pub mod content {
 
     /// # 优雅地错误处理
     ///
-    /// Result 如此常见以至于 Rust 有个强大的操作符 ? 来与之配合。 以下两个表达式是等价的：
+    /// Result 如此常见以至于 Rust 有个强大的操作符 `?` 来与之配合。 以下两个表达式是等价的：
     ///```none
     /// fn do_something_that_might_fail(i: i32) -> Result<f32, String> {
     ///     if i == 42 {
@@ -191,9 +192,9 @@ pub mod content {
     /// }
     /// let ret = do_something_that_might_fail(23)?;
     ///
-    ///match do_something_that_might_fail(23) {
-    /// Ok(v) => todo!(),
-    /// Err(e) => todo!(),
+    /// match do_something_that_might_fail(23) {
+    ///     Ok(v) => todo!(),
+    ///     Err(e) => todo!(),
     /// }
     ///```
     pub fn handle_error() -> Result<(), String> {
@@ -219,11 +220,11 @@ pub mod content {
 
     /// # 丑陋的 Option/Result 处理
     ///
-    /// 当你只是试图快速地写一些代码时，Option/Result 对付起来可能比较无聊。
-    /// Option 和 Result 都有一个名为 unwrap 的函数：这个函数可以简单粗暴地获取其中的值。 unwrap 会：
+    /// 当你只是试图快速地写一些代码时，`Option/Result` 对付起来可能比较无聊。
+    /// `Option` 和 `Result` 都有一个名为 `unwrap` 的函数：这个函数可以简单粗暴地获取其中的值。 `unwrap` 会：
     ///
-    /// 获取 Option/Result 内部的值
-    /// 如果枚举的类型是 None/Err， 则会 panic!
+    /// 获取 `Option/Result` 内部的值
+    /// 如果枚举的类型是 `None/Err`， 则会 `panic!`
     /// 这两段代码是等价的：
     ///
     /// ```none
@@ -272,17 +273,18 @@ pub mod content {
 
     /// # Vectors
     ///
-    /// 一些经常使用的泛型是集合类型。一个 vector 是可变长度的元素集合，以 Vec 结构表示。
+    /// 一些经常使用的泛型是集合类型。一个 `vector` 是可变长度的元素集合，以 `Vec` 结构表示。
     ///
-    /// 比起手动构建，宏 vec! 让我们可以轻松地创建 vector。
+    /// 比起手动构建，宏 `vec!` 让我们可以轻松地创建 `vector`。
     ///
-    /// Vec 有一个形如 iter() 的方法可以为一个 vector 创建迭代器，这允许我们可以轻松地将 vector 用到 for 循环中去。
+    /// `Vec` 有一个形如 `iter()` 的方法可以为一个 `vector` 创建迭代器，这允许我们可以轻松地将 `vector` 用到 `for` 循环中去。
     ///
     /// 内存细节：
     ///
-    /// - Vec 是一个结构体，但是内部其实保存了在堆上固定长度数据的引用。
-    /// - 一个 vector 开始有默认大小容量，当更多的元素被添加进来后，
+    /// - `Vec` 是一个结构体，但是内部其实保存了在堆上固定长度数据的引用。
+    /// - 一个 `vector` 开始有默认大小容量，当更多的元素被添加进来后，
     /// 它会重新在堆上分配一个新的并具有更大容量的定长列表。（类似 C++ 的 vector）
+    ///
     /// ## Code
     ///```rust
     /// let mut i32_vec = Vec::<i32>::new();
@@ -323,6 +325,7 @@ pub mod content {
     }
 
     /// # 第四章 - 总结
+    ///
     /// 在这一章中，我们了解了泛型给我们带来的强大功能！如果你还不完全知道该如何使用这一切，
     /// 别担心，仅仅是了解这些将会在代码中反复出现的中心思想就足够了。我们的功能在日趋强大！
     /// 在下一章中，我们将讨论 Rust 中的一个重要概念：数据所有权。
