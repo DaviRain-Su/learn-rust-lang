@@ -31,7 +31,6 @@ pub mod content {
         }
     }
 
-
     /// # 使用方法进行封装
     /// Rust 支持对象的概念。“对象”是一个与一些函数（也称为方法）相关联的结构体。
     ///
@@ -176,7 +175,7 @@ pub mod content {
             }
         }
 
-        impl  LoudNoiseMaker for SeaCreature {}
+        impl LoudNoiseMaker for SeaCreature {}
 
         let creature = SeaCreature {
             name: String::from("Ferris"),
@@ -208,7 +207,6 @@ pub mod content {
             fn make_noise(&self);
         }
 
-
         impl NoiseMaker for SeaCreature {
             fn make_noise(&self) {
                 println!("{}", self.get_sound());
@@ -225,7 +223,6 @@ pub mod content {
             noise_maker.make_noise();
         }
 
-
         let creature = SeaCreature {
             name: String::from("Ferris"),
             noise: String::from("blub"),
@@ -236,10 +233,9 @@ pub mod content {
     }
 
     #[test]
-    fn test_dynamic_and_static_call(){
+    fn test_dynamic_and_static_call() {
         dynamic_and_static_call();
     }
-
 
     /// # Trait 对象
     /// 当我们将一个对象的实例传递给类型为 &dyn MyTrait 的参数时，我们传递的是所谓的 trait 对象。
@@ -292,17 +288,16 @@ pub mod content {
             fn make_noise(&self);
         }
 
-
         impl NoiseMaker for SeaCreature {
             fn make_noise(&self) {
                 println!("{}", self.get_sound());
             }
         }
 
-
         fn generic_make_noise<T>(creature: &T)
         where
-            T: NoiseMaker {
+            T: NoiseMaker,
+        {
             // 我们在编译期就已经知道其真实类型
             creature.make_noise();
         }
@@ -310,7 +305,6 @@ pub mod content {
         fn generic_make_noise_impl(creature: &impl NoiseMaker) {
             creature.make_noise();
         }
-
 
         let creature = SeaCreature {
             name: String::from("Ferris"),
@@ -324,9 +318,7 @@ pub mod content {
     #[test]
     fn test_generics_function() {
         generics_function();
-
     }
-
 
     /// Box
     /// Box 是一个允许我们将数据从栈上移到堆上的数据结构。
@@ -343,19 +335,15 @@ pub mod content {
             fn make_noise(&self);
         }
 
-
         impl NoiseMaker for SeaCreature {
             fn make_noise(&self) {
                 println!("{}", self.get_sound());
             }
         }
 
-
-        struct  Ocean {
+        struct Ocean {
             animals: Vec<Box<dyn NoiseMaker>>,
         }
-
-
 
         let creature = SeaCreature {
             name: String::from("Ferris"),
@@ -367,9 +355,9 @@ pub mod content {
             noise: String::from("Sarah"),
         };
 
-       let ocean = Ocean {
-           animals: vec![Box::new(creature), Box::new(sarah)],
-       };
+        let ocean = Ocean {
+            animals: vec![Box::new(creature), Box::new(sarah)],
+        };
 
         for a in ocean.animals.iter() {
             a.make_noise();
@@ -409,7 +397,8 @@ pub mod content {
     /// 视频 - [Object-oriented Programming in 7 minutes](https://www.youtube.com/watch?v=pTB0EiLXUC8)
     /// 文章 - ["The faster you unlearn OOP, the better for you and your software"](https://dpc.pw/the-faster-you-unlearn-oop-the-better-for-you-and-your-software)
     pub fn chapter1_summary() {
-        println!(r##"第七章 - 总结
+        println!(
+            r##"第七章 - 总结
 现在我们手头有了更多可以清晰地表达我们的想法的语言功能！ Rust 的抽象可能很简单，但它们强大到足以让我们写代码写得很愉快。 在本章中，我们通过 Box 简单瞥见了智能指针。在下一章中，我们将了解智能指针如何帮助我们处理其他特定的内存情况。
 
 其他资源（英文）：
@@ -417,6 +406,5 @@ pub mod content {
 视频 - Object-oriented Programming in 7 minutes
 文章 -    "The faster you unlearn OOP, the better for you and your software""##
         );
-
     }
 }
