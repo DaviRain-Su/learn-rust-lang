@@ -1,5 +1,3 @@
-/// # Chapter 10 The End
-pub mod chapter10_the_end;
 /// # Chapter 1 The Basic
 pub mod chapter1_the_basic;
 /// # Chapter 2 Basic Control Flow
