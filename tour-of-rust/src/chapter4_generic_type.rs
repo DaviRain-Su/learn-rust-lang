@@ -9,7 +9,7 @@ pub mod content {
     /// Rust 通常可以通过查看我们的实例化来推断出最终的类型，
     /// 但是如果需要帮助，你可以使用 `::<T>` 操作符来显式地进行操作，
     /// 该操作符也被称为 `turbofish` （它是我的好朋友！）。
-    fn generic_type() {
+    pub fn generic_type() {
         #[allow(dead_code)]
         #[derive(Debug)]
         struct BagOfHolding<T> {
@@ -45,7 +45,7 @@ pub mod content {
     /// Rust 没有 null，但这并不代表我们不知道表示空的重要性！我们可以使用一个我们已经了解过的工具来简单地表示这一点。
     ///
     /// 因为缺少 null 值，这种为一个或多个替代值提供 None 替代表示的模式非常常见， 泛型有助于解决这一难题。
-    fn represent_empty() {
+    pub fn represent_empty() {
         #[allow(dead_code)]
         enum Item {
             Inventory(String),
