@@ -26,6 +26,7 @@ impl Lexer {
             ..default()
         };
 
+        // use read_char() to init ch, position, read_position
         lexer.read_char();
 
         lexer

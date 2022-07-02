@@ -11,24 +11,21 @@ pub struct Token {
 }
 
 impl Token {
-    pub fn new(token_type: TokenType, ch: char) -> Self {
+    pub fn new(r#type: TokenType, ch: char) -> Self {
+        Self::from_char(r#type, ch)
+    }
+
+    pub fn from_char(r#type: TokenType, ch: char) -> Self {
         Self {
-            r#type: token_type,
-            literal: String::from(ch),
+            r#type,
+            literal: ch.into(),
         }
     }
 
-    pub fn from_char(token_type: TokenType, ch: char) -> Self {
+    pub fn from_string(r#type: TokenType, literal: String) -> Self {
         Self {
-            r#type: token_type,
-            literal: String::from(ch),
-        }
-    }
-
-    pub fn from_string(token_type: TokenType, literal: String) -> Self {
-        Self {
-            r#type: token_type,
-            literal: String::from(literal),
+            r#type,
+            literal,
         }
     }
 }
