@@ -10,7 +10,7 @@ mod tests;
 /// 字符，还需要进一步“查看”字符串，即查看字符串中的下一个字符。readPosition
 /// 始终指向所输入字符串中的“下一个”字符，position 则指向所输入字符串中与 ch
 /// 字节对应的字符。
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Lexer {
     input: String,
     position: usize,      // 所输入字符串中的当前位置（指向当前字符）
@@ -22,9 +22,7 @@ impl Lexer {
     pub fn new(input: &str) -> Self {
         let mut lexer = Self {
             input: String::from(input),
-            position: 0,
-            read_position: 0,
-            ch: 0 as char,
+            ..Default(),
         };
 
         lexer.read_char();
