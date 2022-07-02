@@ -1,3 +1,4 @@
+use std::default::default;
 use crate::token::token_type::TokenType;
 use crate::token::{token_type, Token};
 
@@ -22,7 +23,7 @@ impl Lexer {
     pub fn new(input: &str) -> Self {
         let mut lexer = Self {
             input: String::from(input),
-            ..Default(),
+            ..default()
         };
 
         lexer.read_char();
