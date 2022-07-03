@@ -2,6 +2,7 @@ use crate::ast::statement::expression_statement::ExpressionStatement;
 use crate::ast::statement::let_statement::LetStatement;
 use crate::ast::statement::return_statement::ReturnStatement;
 use crate::ast::statement::{Node, Statement};
+use crate::ast::statement::integer_literal::IntegerLiteral;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
 
@@ -168,6 +169,51 @@ fn test_identifier_expression() {
     }
 }
 
+
+fn test_integer_literal_expression() {
+    let input = "5;";
+
+    let lexer = Lexer::new(input);
+
+    let mut parser = Parser::new(lexer);
+
+    let program = parser.parse_program().unwrap();
+
+    println!("program: {}", program);
+
+    check_parser_errors(parser);
+
+    if program.statements.len() != 1 {
+        eprintln!(
+            "program has not enough statements. got = {}",
+            program.statements.len()
+        );
+    }
+
+    let stmt: Option<ExpressionStatement> = program.statements.get(0).map(|value| value.into());
+
+    println!("expression statement: {:#?}", stmt);
+
+    if stmt.is_none() {
+        eprintln!("program statement[0] is None");
+    }
+
+    let literal = IntegerLiteral::from(stmt.unwrap());
+
+    if literal.value != 5 {
+        eprintln!("ident.value not {}. got = {}", "foobar", literal.value);
+    }
+
+    if literal.token_literal() != "5" {
+        eprintln!(
+            "ident.token_literal not {}. got = {}",
+            "foobar",
+            literal.token_literal()
+        );
+    }
+
+}
+
 #[test]
 #[ignore]
 fn test_test_let_statements() {
@@ -184,4 +230,10 @@ fn test_test_return_statements() {
 #[ignore]
 fn test_test_identifier_expression() {
     test_identifier_expression();
+}
+
+
+#[test]
+fn test_test_integer_literal_expression() {
+    test_integer_literal_expression();
 }

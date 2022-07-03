@@ -13,18 +13,20 @@ use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::collections::HashMap;
 use std::default::default;
+use crate::ast::statement::integer_literal::IntegerLiteral;
 
 /// 前缀解析函数
 /// 前缀运算符左侧为空。
 /// 在前缀位置遇到关联的词法单元类型时会调用 prefixParseFn
-type PrefixParseFn = Box<fn(&Parser) -> Box<dyn Expression>>;
+type PrefixParseFn = Box<fn(&mut Parser) -> Option<Box<dyn Expression>>>;
 
 /// 中缀解析函数
 /// infixParseFn 接受另一个 ast.Expression 作为参数。该参数是所解析的中缀运算符
 /// 左侧的内容。
 /// 在中缀位置遇到词法单元类型时会调用 infixParseFn
-type InferParseFn = Box<fn(&Parser, Box<dyn Expression>) -> Box<dyn Expression>>;
+type InferParseFn = Box<fn(&mut Parser, Box<dyn Expression>) -> Box<dyn Expression>>;
 
+#[derive(Clone)]
 pub struct Parser {
     /// lexer 是指向词法分析器实例的指针，在该实例上重复调用NextToken()能不断获取输入中的下一个词法单元
     lexer: Lexer,
@@ -54,6 +56,7 @@ impl Parser {
         };
 
         parser.register_prefix(TokenType::IDENT, Box::new(Self::parse_identifier));
+        parser.register_prefix(TokenType::INT, Box::new(Self::parser_integer_literal));
 
         // 读取两个词法单元，以设置 curToken 和 peekToken
         parser.next_token();
@@ -62,12 +65,7 @@ impl Parser {
         parser
     }
 
-    fn parse_identifier(&self) -> Box<dyn Expression> {
-        Box::new(Identifier {
-            token: self.current_token.clone(),
-            value: self.current_token.literal.clone(),
-        })
-    }
+
 
     fn next_token(&mut self) {
         self.current_token = self.peek_token.clone();
@@ -175,19 +173,45 @@ impl Parser {
         Some(stmt)
     }
 
+    /// parse expression
     fn parse_expression(&self, precedence: OperatorPriority) -> Option<Box<dyn Expression>> {
-        let parser = (&*self).clone();
+        let mut parser = self.clone();
         let prefix = self.prefix_parse_fns.get(&self.current_token.r#type);
         if prefix.is_none() {
             None
         } else {
             let prefix = prefix.unwrap();
 
-            let left_exp = prefix(parser);
+            let left_exp = prefix(&mut parser);
 
-            Some(left_exp)
+            left_exp
         }
     }
+
+    /// parse identifier
+    fn parse_identifier(&mut self) -> Option<Box<dyn Expression>>{
+        Some(Box::new(Identifier {
+            token: self.current_token.clone(),
+            value: self.current_token.literal.clone(),
+        }))
+    }
+
+    /// parse integer literal
+    fn parser_integer_literal(&mut self) -> Option<Box<dyn Expression>> {
+        let mut literal = IntegerLiteral::new(self.current_token.clone());
+        let value = self.current_token.literal.parse::<i64>();
+        if value.is_err() {
+            let error_msg = format!("could not parse {} as integer", self.current_token.literal);
+            self.errors.push(error_msg);
+
+            None
+        } else {
+            literal.value = value.unwrap();
+
+            Some(Box::new(literal))
+        }
+    }
+
     fn cur_token_is(&self, t: TokenType) -> bool {
         self.peek_token.r#type == t
     }
