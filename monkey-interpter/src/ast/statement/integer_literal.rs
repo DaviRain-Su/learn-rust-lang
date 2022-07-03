@@ -1,5 +1,7 @@
 use crate::ast::statement::expression_statement::ExpressionStatement;
 use crate::ast::statement::{Expression, Node};
+use crate::ast::Identifier;
+use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::fmt::{Debug, Display, Formatter};
 
@@ -33,16 +35,27 @@ impl Expression for IntegerLiteral {
     fn expression_node(&self) {}
 }
 
-impl From<ExpressionStatement> for IntegerLiteral {
-    fn from(expression_statement: ExpressionStatement) -> Self {
-        let value = expression_statement
-            .expression
-            .value
-            .parse::<i64>()
-            .unwrap();
-        Self {
+impl TryFrom<ExpressionStatement> for IntegerLiteral {
+    type Error = anyhow::Error;
+
+    fn try_from(expression_statement: ExpressionStatement) -> Result<Self, Self::Error> {
+        let identifier = Identifier::try_from(expression_statement.expression).unwrap();
+        let value = identifier.value.parse::<i64>()?;
+
+        Ok(Self {
             token: expression_statement.token.clone(),
             value,
-        }
+        })
+    }
+}
+
+impl TryFrom<Box<dyn Expression>> for IntegerLiteral {
+    type Error = anyhow::Error;
+
+    fn try_from(value: Box<dyn Expression>) -> Result<Self, Self::Error> {
+        Ok(Self {
+            token: Token::from_string(TokenType::INT, value.token_literal()),
+            value: value.token_literal().parse::<i64>()?,
+        })
     }
 }

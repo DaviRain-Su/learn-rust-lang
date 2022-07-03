@@ -29,7 +29,7 @@ impl Token {
 
 impl Default for Token {
     fn default() -> Self {
-        Token::new(TokenType::EOF, 0 as char)
+        Token::from_string(TokenType::EOF, "".into())
     }
 }
 

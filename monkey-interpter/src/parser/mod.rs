@@ -5,11 +5,13 @@ mod tests;
 use crate::ast::statement::expression_statement::ExpressionStatement;
 use crate::ast::statement::integer_literal::IntegerLiteral;
 use crate::ast::statement::let_statement::LetStatement;
+use crate::ast::statement::prefix_expression::PrefixExpression;
 use crate::ast::statement::return_statement::ReturnStatement;
 use crate::ast::statement::{Expression, Statement};
 use crate::ast::{Identifier, Program};
 use crate::lexer::Lexer;
 use crate::parser::operator_priority::OperatorPriority;
+use crate::parser::operator_priority::OperatorPriority::PREFIX;
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::collections::HashMap;
@@ -57,6 +59,8 @@ impl Parser {
 
         parser.register_prefix(TokenType::IDENT, Box::new(Self::parse_identifier));
         parser.register_prefix(TokenType::INT, Box::new(Self::parser_integer_literal));
+        parser.register_prefix(TokenType::BANG, Box::new(Self::parse_prefix_expression));
+        parser.register_prefix(TokenType::MINUS, Box::new(Self::parse_prefix_expression));
 
         // 读取两个词法单元，以设置 curToken 和 peekToken
         parser.next_token();
@@ -158,6 +162,7 @@ impl Parser {
             token: self.current_token.clone(),
             ..default()
         };
+        println!("[parse_expression_statement] >> init stmt = {:?}", stmt);
 
         stmt.expression = self
             .parse_expression(OperatorPriority::LOWEST)
@@ -168,14 +173,22 @@ impl Parser {
             self.next_token();
         }
 
+        println!("[parse_expression_statement] >> stmt = {:?}", stmt);
+
         Some(stmt)
     }
 
+    fn no_prefix_parse_fn_error(&mut self, token_type: TokenType) {
+        let msg = format!("no prefix parse function for {:?} found.", token_type);
+        self.errors.push(msg);
+    }
+
     /// parse expression
-    fn parse_expression(&self, precedence: OperatorPriority) -> Option<Box<dyn Expression>> {
+    fn parse_expression(&mut self, _precedence: OperatorPriority) -> Option<Box<dyn Expression>> {
         let mut parser = self.clone();
         let prefix = self.prefix_parse_fns.get(&self.current_token.r#type);
         if prefix.is_none() {
+            self.no_prefix_parse_fn_error(self.current_token.r#type.clone());
             None
         } else {
             let prefix = prefix.unwrap();
@@ -208,6 +221,20 @@ impl Parser {
 
             Some(Box::new(literal))
         }
+    }
+
+    fn parse_prefix_expression(&mut self) -> Option<Box<dyn Expression>> {
+        let mut expression = PrefixExpression {
+            token: self.current_token.clone(),
+            operator: self.current_token.literal.clone(),
+            ..default()
+        };
+
+        self.next_token();
+
+        expression.right = self.parse_expression(PREFIX).unwrap();
+
+        Some(Box::new(expression))
     }
 
     fn cur_token_is(&self, t: TokenType) -> bool {

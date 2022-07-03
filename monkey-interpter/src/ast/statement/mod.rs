@@ -1,6 +1,7 @@
 pub mod expression_statement;
 pub mod integer_literal;
 pub mod let_statement;
+pub mod prefix_expression;
 pub mod return_statement;
 
 use crate::ast::Identifier;

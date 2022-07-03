@@ -1,8 +1,10 @@
 use crate::ast::statement::expression_statement::ExpressionStatement;
 use crate::ast::statement::integer_literal::IntegerLiteral;
 use crate::ast::statement::let_statement::LetStatement;
+use crate::ast::statement::prefix_expression::PrefixExpression;
 use crate::ast::statement::return_statement::ReturnStatement;
-use crate::ast::statement::{Node, Statement};
+use crate::ast::statement::{Expression, Node, Statement};
+use crate::ast::Identifier;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
 
@@ -154,7 +156,7 @@ fn test_identifier_expression() {
         eprintln!("program statement[0] is None");
     }
 
-    let identifier = stmt.unwrap().expression;
+    let identifier: Identifier = Identifier::from(stmt.unwrap().expression);
 
     if identifier.value != "foobar" {
         eprintln!("ident.value not {}. got = {}", "foobar", identifier.value);
@@ -197,7 +199,7 @@ fn test_integer_literal_expression() {
         eprintln!("program statement[0] is None");
     }
 
-    let literal = IntegerLiteral::from(stmt.unwrap());
+    let literal = IntegerLiteral::try_from(stmt.unwrap()).unwrap();
 
     if literal.value != 5 {
         eprintln!("ident.value not {}. got = {}", "foobar", literal.value);
@@ -210,6 +212,96 @@ fn test_integer_literal_expression() {
             literal.token_literal()
         );
     }
+}
+
+#[test]
+#[ignore]
+fn test_parsing_prefix_expression() {
+    struct PrefixTest {
+        input: String,
+        operator: String,
+        integer_value: i64,
+    }
+
+    impl PrefixTest {
+        fn new(input: String, operator: String, integer_value: i64) -> Self {
+            Self {
+                input,
+                operator,
+                integer_value,
+            }
+        }
+    }
+
+    let prefix_tests = vec![
+        PrefixTest::new("!5;".into(), "!".into(), 5),
+        PrefixTest::new("-15;".into(), "-".into(), 15),
+    ];
+
+    for tt in prefix_tests.iter() {
+        let lexer = Lexer::new(tt.input.as_str());
+        let mut parser = Parser::new(lexer);
+        let program = parser.parse_program();
+        check_parser_errors(parser);
+
+        let program = program.unwrap();
+
+        println!("Program = {:#?}", program);
+        println!("Program = {}", program);
+
+        let program_statements_len = program.statements.len();
+        if program_statements_len != 1 {
+            eprintln!(
+                "program statements does not contain {} statements. got = {}",
+                1, program_statements_len
+            );
+        }
+
+        let stmt: Option<ExpressionStatement> = program.statements.get(0).map(|value| value.into());
+        if stmt.is_none() {
+            eprintln!(
+                "program statements[0] is not expression statement. got = {:?}",
+                stmt
+            );
+        }
+
+        let exp = PrefixExpression::try_from(stmt.unwrap());
+        if exp.is_err() {
+            eprintln!("stmt is not prefix_expression. got = {:?}", exp);
+        }
+
+        let exp = exp.unwrap();
+
+        if exp.operator != tt.operator {
+            eprintln!(
+                "exp.operator is no '{}'. got = {}",
+                tt.operator, exp.operator
+            );
+        }
+
+        if !test_integer_literal(exp.right, tt.integer_value).unwrap() {
+            eprintln!("test_integer_literal error!");
+        }
+    }
+}
+
+fn test_integer_literal(il: Box<dyn Expression>, value: i64) -> anyhow::Result<bool> {
+    let integ = IntegerLiteral::try_from(il)?;
+    if integ.value != value {
+        eprintln!("integ value not {}. got = {}", value, integ.value);
+        return Ok(false);
+    }
+
+    if integ.token_literal() != format!("{}", value) {
+        eprintln!(
+            "integ token_literal not {}. got = {}",
+            value,
+            integ.token_literal()
+        );
+        return Ok(false);
+    }
+
+    Ok(true)
 }
 
 #[test]
