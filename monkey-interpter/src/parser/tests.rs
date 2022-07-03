@@ -1,4 +1,7 @@
-use crate::ast::{LetStatement, Node, ReturnStatement, Statement, ExpressionStatement};
+use crate::ast::statement::expression_statement::ExpressionStatement;
+use crate::ast::statement::let_statement::LetStatement;
+use crate::ast::statement::return_statement::ReturnStatement;
+use crate::ast::statement::{Node, Statement};
 use crate::lexer::Lexer;
 use crate::parser::Parser;
 
@@ -128,19 +131,24 @@ pub fn test_identifier_expression() {
 
     let lexer = Lexer::new(input);
 
-    let mut  parser = Parser::new(lexer);
+    let mut parser = Parser::new(lexer);
 
     let program = parser.parse_program().unwrap();
+
+    println!("program: {}", program);
 
     check_parser_errors(parser);
 
     if program.statements.len() != 1 {
-        eprintln!("program has not enough statements. got = {}", program.statements.len());
+        eprintln!(
+            "program has not enough statements. got = {}",
+            program.statements.len()
+        );
     }
 
-    let stmt: Option<ExpressionStatement> = program.statements
-        .get(0)
-        .map(|value| value.into());
+    let stmt: Option<ExpressionStatement> = program.statements.get(0).map(|value| value.into());
+
+    println!("expression statement: {:#?}", stmt);
 
     if stmt.is_none() {
         eprintln!("program statement[0] is None");
@@ -153,7 +161,11 @@ pub fn test_identifier_expression() {
     }
 
     if identifier.token_literal() != "foobar" {
-        eprintln!("ident.token_literal not {}. got = {}", "foobar", identifier.token_literal());
+        eprintln!(
+            "ident.token_literal not {}. got = {}",
+            "foobar",
+            identifier.token_literal()
+        );
     }
 }
 

@@ -23,10 +23,7 @@ impl Token {
     }
 
     pub fn from_string(r#type: TokenType, literal: String) -> Self {
-        Self {
-            r#type,
-            literal,
-        }
+        Self { r#type, literal }
     }
 }
 

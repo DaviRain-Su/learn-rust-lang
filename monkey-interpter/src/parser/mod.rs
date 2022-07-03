@@ -1,14 +1,18 @@
+mod operator_priority;
 #[cfg(test)]
 mod tests;
-mod operator_priority;
 
-use std::collections::HashMap;
-use crate::ast::{Expression, ExpressionStatement, Identifier, LetStatement, Program, ReturnStatement, Statement};
+use crate::ast::statement::expression_statement::ExpressionStatement;
+use crate::ast::statement::let_statement::LetStatement;
+use crate::ast::statement::return_statement::ReturnStatement;
+use crate::ast::statement::{Expression, Statement};
+use crate::ast::{Identifier, Program};
 use crate::lexer::Lexer;
+use crate::parser::operator_priority::OperatorPriority;
 use crate::token::token_type::TokenType;
 use crate::token::Token;
+use std::collections::HashMap;
 use std::default::default;
-use crate::parser::operator_priority::OperatorPriority;
 
 pub struct Parser {
     /// lexer 是指向词法分析器实例的指针，在该实例上重复调用NextToken()能不断获取输入中的下一个词法单元
@@ -23,13 +27,13 @@ pub struct Parser {
     /// error handle
     errors: Vec<String>,
 
-    prefix_parse_fns : HashMap<TokenType, Box<fn(&Parser) -> Box<dyn Expression>>>,
-    infix_parse_fns: HashMap<TokenType, Box<fn(&Parser, Box<dyn Expression>) -> Box<dyn Expression>>>,
+    prefix_parse_fns: HashMap<TokenType, Box<fn(&Parser) -> Box<dyn Expression>>>,
+    infix_parse_fns:
+        HashMap<TokenType, Box<fn(&Parser, Box<dyn Expression>) -> Box<dyn Expression>>>,
 }
 
 impl Parser {
     pub fn new(lexer: Lexer) -> Self {
-
         let mut parser = Parser {
             lexer,
             current_token: Token::default(),
@@ -41,7 +45,6 @@ impl Parser {
 
         parser.register_prefix(TokenType::IDENT, Box::new(Self::parse_identifier));
 
-
         // 读取两个词法单元，以设置 curToken 和 peekToken
         parser.next_token();
         parser.next_token();
@@ -52,7 +55,7 @@ impl Parser {
     fn parse_identifier(&self) -> Box<dyn Expression> {
         Box::new(Identifier {
             token: self.current_token.clone(),
-            value: self.current_token.literal.clone()
+            value: self.current_token.literal.clone(),
         })
     }
 
@@ -81,7 +84,7 @@ impl Parser {
         match self.current_token.r#type {
             TokenType::LET => Some(Box::new(self.parse_let_statement().unwrap())),
             TokenType::RETURN => Some(Box::new(self.parse_return_statement().unwrap())),
-            _ => None,
+            _ => Some(Box::new(self.parse_expression_statement().unwrap())),
         }
     }
 
@@ -139,13 +142,18 @@ impl Parser {
         Some(stmt)
     }
 
+    /// 解析表达式语句
+    /// 这是因为表达式语句不是真正的语句，而是仅由表达式构成的语句，相当于一层封装
     fn parse_expression_statement(&mut self) -> Option<ExpressionStatement> {
-        let stmt = ExpressionStatement {
+        let mut stmt = ExpressionStatement {
             token: self.current_token.clone(),
             ..default()
         };
 
-        // stmt.expression = self.parse_expression(LOWEST);
+        stmt.expression = self
+            .parse_expression(OperatorPriority::LOWEST)
+            .unwrap()
+            .into();
 
         if self.peek_token_is(TokenType::SEMICOLON) {
             self.next_token();
@@ -154,8 +162,7 @@ impl Parser {
         Some(stmt)
     }
 
-    fn parse_expression(&self, precedence: OperatorPriority)  -> Option<Box<dyn Expression>> {
-
+    fn parse_expression(&self, precedence: OperatorPriority) -> Option<Box<dyn Expression>> {
         let parser = (&*self).clone();
         let prefix = self.prefix_parse_fns.get(&self.current_token.r#type);
         if prefix.is_none() {
@@ -202,12 +209,20 @@ impl Parser {
     }
 
     /// register prefix
-    fn register_prefix(&mut self, token_type: TokenType, prefix_parse_fn: Box<fn(&Parser) -> Box<dyn Expression>>) {
+    fn register_prefix(
+        &mut self,
+        token_type: TokenType,
+        prefix_parse_fn: Box<fn(&Parser) -> Box<dyn Expression>>,
+    ) {
         self.prefix_parse_fns.insert(token_type, prefix_parse_fn);
     }
 
     /// register infix
-    fn register_infix(&mut self, token_type: TokenType, infix_parse_fn: Box<fn(&Parser, Box<dyn Expression>) -> Box<dyn Expression>>) {
+    fn register_infix(
+        &mut self,
+        token_type: TokenType,
+        infix_parse_fn: Box<fn(&Parser, Box<dyn Expression>) -> Box<dyn Expression>>,
+    ) {
         self.infix_parse_fns.insert(token_type, infix_parse_fn);
     }
 }

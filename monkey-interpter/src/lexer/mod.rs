@@ -1,6 +1,6 @@
-use std::default::default;
 use crate::token::token_type::TokenType;
 use crate::token::{token_type, Token};
+use std::default::default;
 
 #[cfg(test)]
 mod tests;

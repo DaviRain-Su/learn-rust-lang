@@ -1,17 +1,17 @@
-
 #[derive(Debug)]
 #[repr(C)]
 pub enum OperatorPriority {
     LOWEST = 1,
-    EQUALS = 2, // ==
+    EQUALS = 2,      // ==
     LESSGREATER = 3, // < or >
-    SUM = 4, // +
-    PRODUCT = 5, // *
-    PREFIX = 6, // -X or !x
-    CALL = 7, // myFcuntion(x)
+    SUM = 4,         // +
+    PRODUCT = 5,     // *
+    PREFIX = 6,      // -X or !x
+    CALL = 7,        // myFcuntion(x)
 }
 
 #[test]
+#[ignore]
 fn test_operator_priority_type() {
     let lowest = OperatorPriority::LOWEST;
     println!("lowest: {:?}", lowest as u8);
