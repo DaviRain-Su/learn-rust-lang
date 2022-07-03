@@ -1,8 +1,8 @@
-use std::fmt::Debug;
+use std::fmt::{Debug, Display, Formatter};
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 
-pub trait Node: Debug {
+pub trait Node: Debug + Display {
     /// 必须提供 TokenLiteral()方法，该方法返回与其
     /// 关联的词法单元的字面量
     fn token_literal(&self) -> String;
@@ -12,7 +12,7 @@ pub trait Statement: Node {
     fn statement_node(&self);
 
     // must be have this function
-    fn identifier(&self) -> &Identifier;
+    fn identifier(&self) -> Identifier;
 }
 
 pub trait Expression: Node {
@@ -25,6 +25,16 @@ pub trait Expression: Node {
 #[derive(Debug)] // add debug trait for debug
 pub struct Program {
     pub(crate) statements: Vec<Box<dyn Statement>>,
+}
+
+impl Display for Program {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        for statement in self.statements.iter() {
+            write!(f, "{}", statement)?;
+        }
+
+        Ok(())
+    }
 }
 
 impl Program {
@@ -54,7 +64,7 @@ impl Program {
 pub struct LetStatement {
     pub token: Token, // token.LET 词法单元
     pub name: Identifier,
-    pub value: ExpressionId,
+    pub value: Identifier,
 }
 
 impl From<&Box<dyn Statement>> for LetStatement {
@@ -62,8 +72,14 @@ impl From<&Box<dyn Statement>> for LetStatement {
         Self {
             token: Token::from_string(TokenType::LET, "let".into()),
             name: value.identifier().clone(),
-            value: ExpressionId,
+            value: value.identifier().clone(),
         }
+    }
+}
+
+impl Display for LetStatement {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {} = {};", self.token_literal(), self.name, self.value)
     }
 }
 
@@ -76,8 +92,8 @@ impl Node for LetStatement {
 impl Statement for LetStatement {
     fn statement_node(&self) {}
 
-    fn identifier(&self) -> &Identifier {
-        &self.name
+    fn identifier(&self) -> Identifier {
+        self.name.clone()
     }
 }
 
@@ -87,9 +103,24 @@ pub struct Identifier {
     pub value: String,
 }
 
+impl Display for Identifier {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
+}
+
 impl Identifier {
     pub fn new(token: Token, value: String) -> Self {
         Self { token, value }
+    }
+}
+
+impl From<Token> for Identifier {
+    fn from(token : Token) -> Self {
+        Self {
+            token: token.clone(),
+            value: token.literal.clone(),
+        }
     }
 }
 
@@ -103,14 +134,18 @@ impl Expression for Identifier {
     fn expression_node(&self) {}
 }
 
-#[derive(Debug, Default)]
-pub struct ExpressionId;
 
 /// return statement
 #[derive(Debug, Default)]
 pub struct ReturnStatement {
     pub token: Token, //  return 词法单元
-    pub return_value: ExpressionId,
+    pub return_value: Identifier,
+}
+
+impl Display for ReturnStatement {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f,"{} {};", self.token_literal(), self.return_value)
+    }
 }
 
 impl Node for ReturnStatement {
@@ -122,8 +157,8 @@ impl Node for ReturnStatement {
 impl Statement for ReturnStatement {
     fn statement_node(&self) {}
 
-    fn identifier(&self) -> &Identifier {
-        todo!()
+    fn identifier(&self) -> Identifier {
+        Identifier::from(self.token.clone())
     }
 }
 
@@ -131,7 +166,7 @@ impl From<Box<dyn Statement>> for ReturnStatement {
     fn from(value: Box<dyn Statement>) -> Self {
         Self {
             token: Token::from_string(TokenType::LET, value.token_literal()),
-            return_value: ExpressionId,
+            return_value: value.identifier().clone(),
         }
     }
 }
@@ -140,7 +175,13 @@ impl From<Box<dyn Statement>> for ReturnStatement {
 #[derive(Debug)]
 pub struct ExpressionStatement {
     pub token: Token,  // 该表达式中的第一个词法单元
-    expression: ExpressionId,
+    pub expression: Identifier,
+}
+
+impl Display for ExpressionStatement {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{};", self.expression)
+    }
 }
 
 impl Node for ExpressionStatement {
@@ -150,11 +191,41 @@ impl Node for ExpressionStatement {
 }
 
 impl Statement for ExpressionStatement {
-    fn statement_node(&self) {
-        todo!()
-    }
+    fn statement_node(&self) {}
 
-    fn identifier(&self) -> &Identifier {
-        todo!()
+    fn identifier(&self) -> Identifier {
+        Identifier::from(self.token.clone())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::ast::{Identifier, LetStatement, Program};
+    use crate::token::Token;
+    use crate::token::token_type::TokenType;
+
+    #[test]
+    fn test_display() {
+        let let_statement = LetStatement {
+            token: Token::from_string(TokenType::LET, "let".into()),
+            name: Identifier {
+                token: Token::from_string(TokenType::IDENT, "myVar".into()),
+                value: "myVar".into(),
+            },
+            value: Identifier {
+                token: Token::from_string(TokenType::IDENT, "anotherVar".into()),
+                value: "anotherVar".into(),
+            },
+        };
+
+        println!("let statement debug = {:#?}", let_statement);
+        println!("let statement display = {}",let_statement);
+
+        let program = Program {
+            statements: vec![Box::new(let_statement)]
+        };
+
+        println!("program debug = {:#?}", program);
+        println!("program display = {}", program);
     }
 }

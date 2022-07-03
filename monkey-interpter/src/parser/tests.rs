@@ -129,6 +129,7 @@ fn test_test_let_statements() {
 }
 
 #[test]
+#[ignore]
 fn test_test_return_statements() {
     test_return_statements();
 }
