@@ -1,7 +1,8 @@
+use std::fmt::Debug;
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 
-pub trait Node {
+pub trait Node: Debug {
     /// 必须提供 TokenLiteral()方法，该方法返回与其
     /// 关联的词法单元的字面量
     fn token_literal(&self) -> String;
@@ -21,6 +22,7 @@ pub trait Expression: Node {
 /// 这个 Program 节点将成为语法分析器生成的每个 AST 的根节点。每个有效的
 /// Monkey 程序都是一系列位于 Program.Statements 中的语句。Program.Statements
 /// 是一个切片，其中有实现 Statement 接口的 AST 节点。
+#[derive(Debug)] // add debug trait for debug
 pub struct Program {
     pub(crate) statements: Vec<Box<dyn Statement>>,
 }
@@ -47,6 +49,7 @@ impl Program {
     }
 }
 
+/// let statement
 #[derive(Debug, Default)]
 pub struct LetStatement {
     pub token: Token, // token.LET 词法单元
@@ -103,9 +106,10 @@ impl Expression for Identifier {
 #[derive(Debug, Default)]
 pub struct ExpressionId;
 
+/// return statement
 #[derive(Debug, Default)]
 pub struct ReturnStatement {
-    pub token: Token, //  'return'词法单元
+    pub token: Token, //  return 词法单元
     pub return_value: ExpressionId,
 }
 
@@ -129,5 +133,28 @@ impl From<Box<dyn Statement>> for ReturnStatement {
             token: Token::from_string(TokenType::LET, value.token_literal()),
             return_value: ExpressionId,
         }
+    }
+}
+
+/// expression statement
+#[derive(Debug)]
+pub struct ExpressionStatement {
+    pub token: Token,  // 该表达式中的第一个词法单元
+    expression: ExpressionId,
+}
+
+impl Node for ExpressionStatement {
+    fn token_literal(&self) -> String {
+        self.token.literal.clone()
+    }
+}
+
+impl Statement for ExpressionStatement {
+    fn statement_node(&self) {
+        todo!()
+    }
+
+    fn identifier(&self) -> &Identifier {
+        todo!()
     }
 }
