@@ -14,6 +14,17 @@ use crate::token::Token;
 use std::collections::HashMap;
 use std::default::default;
 
+/// 前缀解析函数
+/// 前缀运算符左侧为空。
+/// 在前缀位置遇到关联的词法单元类型时会调用 prefixParseFn
+type PrefixParseFn = Box<fn(&Parser) -> Box<dyn Expression>>;
+
+/// 中缀解析函数
+/// infixParseFn 接受另一个 ast.Expression 作为参数。该参数是所解析的中缀运算符
+/// 左侧的内容。
+/// 在中缀位置遇到词法单元类型时会调用 infixParseFn
+type InferParseFn = Box<fn(&Parser, Box<dyn Expression>) -> Box<dyn Expression>>;
+
 pub struct Parser {
     /// lexer 是指向词法分析器实例的指针，在该实例上重复调用NextToken()能不断获取输入中的下一个词法单元
     lexer: Lexer,
@@ -27,9 +38,8 @@ pub struct Parser {
     /// error handle
     errors: Vec<String>,
 
-    prefix_parse_fns: HashMap<TokenType, Box<fn(&Parser) -> Box<dyn Expression>>>,
-    infix_parse_fns:
-        HashMap<TokenType, Box<fn(&Parser, Box<dyn Expression>) -> Box<dyn Expression>>>,
+    prefix_parse_fns: HashMap<TokenType, PrefixParseFn>,
+    infix_parse_fns: HashMap<TokenType, InferParseFn>,
 }
 
 impl Parser {
@@ -209,20 +219,12 @@ impl Parser {
     }
 
     /// register prefix
-    fn register_prefix(
-        &mut self,
-        token_type: TokenType,
-        prefix_parse_fn: Box<fn(&Parser) -> Box<dyn Expression>>,
-    ) {
+    fn register_prefix(&mut self, token_type: TokenType, prefix_parse_fn: PrefixParseFn) {
         self.prefix_parse_fns.insert(token_type, prefix_parse_fn);
     }
 
     /// register infix
-    fn register_infix(
-        &mut self,
-        token_type: TokenType,
-        infix_parse_fn: Box<fn(&Parser, Box<dyn Expression>) -> Box<dyn Expression>>,
-    ) {
+    fn register_infix(&mut self, token_type: TokenType, infix_parse_fn: InferParseFn) {
         self.infix_parse_fns.insert(token_type, infix_parse_fn);
     }
 }

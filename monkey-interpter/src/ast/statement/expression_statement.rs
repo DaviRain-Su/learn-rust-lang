@@ -5,6 +5,8 @@ use crate::token::Token;
 use std::fmt::{Display, Formatter};
 
 /// expression statement
+/// ExpressionStatement 类型具有两个字段，分别是每个节点都具有的token字段
+/// 和保存表达的expression字段。
 #[derive(Debug, Default)]
 pub struct ExpressionStatement {
     pub token: Token, // 该表达式中的第一个词法单元
@@ -23,6 +25,8 @@ impl Node for ExpressionStatement {
     }
 }
 
+/// ExpressionStatement 实现了 Statement 接口，这意味着表达式语句可以添加到Program
+/// 的statements vector中。
 impl Statement for ExpressionStatement {
     fn statement_node(&self) {}
 
