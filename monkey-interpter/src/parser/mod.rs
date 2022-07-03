@@ -1,7 +1,8 @@
 #[cfg(test)]
 mod tests;
 
-use crate::ast::{Identifier, LetStatement, Program, ReturnStatement, Statement};
+use std::collections::HashMap;
+use crate::ast::{Expression, Identifier, LetStatement, Program, ReturnStatement, Statement};
 use crate::lexer::Lexer;
 use crate::token::token_type::TokenType;
 use crate::token::Token;
@@ -20,6 +21,9 @@ pub struct Parser {
     peek_token: Token,
     /// error handle
     errors: Vec<String>,
+
+    prefix_parse_fns : HashMap<TokenType, Box<fn() -> Box<dyn Expression>>>,
+    infix_parse_fns: HashMap<TokenType, Box<fn(Box<dyn Expression>) -> Box<dyn Expression>>>,
 }
 
 impl Parser {
@@ -29,6 +33,8 @@ impl Parser {
             current_token: Token::default(),
             peek_token: Token::default(),
             errors: vec![],
+            prefix_parse_fns: HashMap::default(),
+            infix_parse_fns: HashMap::default(),
         };
 
         // 读取两个词法单元，以设置 curToken 和 peekToken
@@ -149,5 +155,13 @@ impl Parser {
             t, self.peek_token.r#type
         );
         self.errors.push(msg);
+    }
+
+    fn register_prefix(&mut self, token_type: TokenType, prefix_parse_fn: Box<fn() ->Box<dyn Expression>>) {
+        self.prefix_parse_fns.insert(token_type, prefix_parse_fn);
+    }
+
+    fn register_infix(&mut self, token_type: TokenType, infix_parse_fn: Box<fn(Box<dyn Expression>) -> Box<dyn Expression>>) {
+        self.infix_parse_fns.insert(token_type, infix_parse_fn);
     }
 }

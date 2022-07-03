@@ -19,6 +19,21 @@ pub trait Expression: Node {
     fn expression_node(&self);
 }
 
+/// 解析函数
+pub trait ParseFunction {
+
+    /// 前缀解析函数
+    /// 前缀运算符左侧为空。
+    /// 在前缀位置遇到关联的词法单元类型时会调用 prefixParseFn
+    fn prefix_parse_fn(&self) -> Box<dyn Expression>;
+
+    /// 中缀解析函数
+    /// infixParseFn 接受另一个 ast.Expression 作为参数。该参数是所解析的中缀运算符
+    /// 左侧的内容。
+    /// 在中缀位置遇到词法单元类型时会调用 infixParseFn
+    fn infix_parse_fn(&self, expression: Box<dyn Expression>) -> Box<dyn Expression>;
+}
+
 /// 这个 Program 节点将成为语法分析器生成的每个 AST 的根节点。每个有效的
 /// Monkey 程序都是一系列位于 Program.Statements 中的语句。Program.Statements
 /// 是一个切片，其中有实现 Statement 接口的 AST 节点。
@@ -227,5 +242,7 @@ mod tests {
 
         println!("program debug = {:#?}", program);
         println!("program display = {}", program);
+
+        assert_eq!(format!("{}", program), "let myVar = anotherVar;");
     }
 }
