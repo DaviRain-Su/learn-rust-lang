@@ -187,7 +187,7 @@ impl From<Box<dyn Statement>> for ReturnStatement {
 }
 
 /// expression statement
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct ExpressionStatement {
     pub token: Token,  // 该表达式中的第一个词法单元
     pub expression: Identifier,
@@ -213,6 +213,18 @@ impl Statement for ExpressionStatement {
     }
 }
 
+impl From<&Box<dyn Statement>> for ExpressionStatement {
+    fn from(value: &Box<dyn Statement>) -> Self {
+        Self {
+            // TODO ILLEGAL
+            token: Token::from_string(TokenType::ILLEGAL, value.token_literal()),
+            expression: value.identifier().clone(),
+        }
+    }
+}
+
+
+
 #[cfg(test)]
 mod tests {
     use crate::ast::{Identifier, LetStatement, Program};
@@ -220,6 +232,7 @@ mod tests {
     use crate::token::token_type::TokenType;
 
     #[test]
+    #[ignore]
     fn test_display() {
         let let_statement = LetStatement {
             token: Token::from_string(TokenType::LET, "let".into()),

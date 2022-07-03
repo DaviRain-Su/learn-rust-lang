@@ -1,14 +1,15 @@
 #[cfg(test)]
 mod tests;
+mod operator_priority;
 
 use std::collections::HashMap;
-use crate::ast::{Expression, Identifier, LetStatement, Program, ReturnStatement, Statement};
+use crate::ast::{Expression, ExpressionStatement, Identifier, LetStatement, Program, ReturnStatement, Statement};
 use crate::lexer::Lexer;
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::default::default;
+use crate::parser::operator_priority::OperatorPriority;
 
-#[derive(Debug)]
 pub struct Parser {
     /// lexer 是指向词法分析器实例的指针，在该实例上重复调用NextToken()能不断获取输入中的下一个词法单元
     lexer: Lexer,
@@ -22,12 +23,13 @@ pub struct Parser {
     /// error handle
     errors: Vec<String>,
 
-    prefix_parse_fns : HashMap<TokenType, Box<fn() -> Box<dyn Expression>>>,
-    infix_parse_fns: HashMap<TokenType, Box<fn(Box<dyn Expression>) -> Box<dyn Expression>>>,
+    prefix_parse_fns : HashMap<TokenType, Box<fn(&Parser) -> Box<dyn Expression>>>,
+    infix_parse_fns: HashMap<TokenType, Box<fn(&Parser, Box<dyn Expression>) -> Box<dyn Expression>>>,
 }
 
 impl Parser {
     pub fn new(lexer: Lexer) -> Self {
+
         let mut parser = Parser {
             lexer,
             current_token: Token::default(),
@@ -37,11 +39,21 @@ impl Parser {
             infix_parse_fns: HashMap::default(),
         };
 
+        parser.register_prefix(TokenType::IDENT, Box::new(Self::parse_identifier));
+
+
         // 读取两个词法单元，以设置 curToken 和 peekToken
         parser.next_token();
         parser.next_token();
 
         parser
+    }
+
+    fn parse_identifier(&self) -> Box<dyn Expression> {
+        Box::new(Identifier {
+            token: self.current_token.clone(),
+            value: self.current_token.literal.clone()
+        })
     }
 
     fn next_token(&mut self) {
@@ -79,6 +91,8 @@ impl Parser {
     /// 元，用于构造一个*ast.Identifier 节点。然后期望下一个词法单元是等号。之后跳
     /// 过了一些表达式，直到遇见分号为止。目前的代码跳过了表达式的处理，后面介绍完
     /// 如何解析表达式后会返回来替换这里的代码。
+    ///
+    /// # 解析let 语句
     fn parse_let_statement(&mut self) -> Option<LetStatement> {
         let mut stmt = LetStatement {
             token: self.current_token.clone(),
@@ -108,6 +122,7 @@ impl Parser {
         Some(stmt)
     }
 
+    /// 解析return 语句
     fn parse_return_statement(&mut self) -> Option<ReturnStatement> {
         let stmt = ReturnStatement {
             token: self.current_token.clone(),
@@ -124,6 +139,35 @@ impl Parser {
         Some(stmt)
     }
 
+    fn parse_expression_statement(&mut self) -> Option<ExpressionStatement> {
+        let stmt = ExpressionStatement {
+            token: self.current_token.clone(),
+            ..default()
+        };
+
+        // stmt.expression = self.parse_expression(LOWEST);
+
+        if self.peek_token_is(TokenType::SEMICOLON) {
+            self.next_token();
+        }
+
+        Some(stmt)
+    }
+
+    fn parse_expression(&self, precedence: OperatorPriority)  -> Option<Box<dyn Expression>> {
+
+        let parser = (&*self).clone();
+        let prefix = self.prefix_parse_fns.get(&self.current_token.r#type);
+        if prefix.is_none() {
+            None
+        } else {
+            let prefix = prefix.unwrap();
+
+            let left_exp = prefix(parser);
+
+            Some(left_exp)
+        }
+    }
     fn cur_token_is(&self, t: TokenType) -> bool {
         self.peek_token.r#type == t
     }
@@ -157,11 +201,13 @@ impl Parser {
         self.errors.push(msg);
     }
 
-    fn register_prefix(&mut self, token_type: TokenType, prefix_parse_fn: Box<fn() ->Box<dyn Expression>>) {
+    /// register prefix
+    fn register_prefix(&mut self, token_type: TokenType, prefix_parse_fn: Box<fn(&Parser) -> Box<dyn Expression>>) {
         self.prefix_parse_fns.insert(token_type, prefix_parse_fn);
     }
 
-    fn register_infix(&mut self, token_type: TokenType, infix_parse_fn: Box<fn(Box<dyn Expression>) -> Box<dyn Expression>>) {
+    /// register infix
+    fn register_infix(&mut self, token_type: TokenType, infix_parse_fn: Box<fn(&Parser, Box<dyn Expression>) -> Box<dyn Expression>>) {
         self.infix_parse_fns.insert(token_type, infix_parse_fn);
     }
 }
