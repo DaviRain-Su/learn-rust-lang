@@ -1,8 +1,8 @@
 use crate::ast::statement::expression_statement::ExpressionStatement;
+use crate::ast::statement::integer_literal::IntegerLiteral;
 use crate::ast::statement::let_statement::LetStatement;
 use crate::ast::statement::return_statement::ReturnStatement;
 use crate::ast::statement::{Node, Statement};
-use crate::ast::statement::integer_literal::IntegerLiteral;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
 
@@ -169,7 +169,6 @@ fn test_identifier_expression() {
     }
 }
 
-
 fn test_integer_literal_expression() {
     let input = "5;";
 
@@ -211,7 +210,6 @@ fn test_integer_literal_expression() {
             literal.token_literal()
         );
     }
-
 }
 
 #[test]
@@ -231,7 +229,6 @@ fn test_test_return_statements() {
 fn test_test_identifier_expression() {
     test_identifier_expression();
 }
-
 
 #[test]
 fn test_test_integer_literal_expression() {

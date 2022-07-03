@@ -3,6 +3,7 @@ mod operator_priority;
 mod tests;
 
 use crate::ast::statement::expression_statement::ExpressionStatement;
+use crate::ast::statement::integer_literal::IntegerLiteral;
 use crate::ast::statement::let_statement::LetStatement;
 use crate::ast::statement::return_statement::ReturnStatement;
 use crate::ast::statement::{Expression, Statement};
@@ -13,7 +14,6 @@ use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::collections::HashMap;
 use std::default::default;
-use crate::ast::statement::integer_literal::IntegerLiteral;
 
 /// 前缀解析函数
 /// 前缀运算符左侧为空。
@@ -64,8 +64,6 @@ impl Parser {
 
         parser
     }
-
-
 
     fn next_token(&mut self) {
         self.current_token = self.peek_token.clone();
@@ -189,7 +187,7 @@ impl Parser {
     }
 
     /// parse identifier
-    fn parse_identifier(&mut self) -> Option<Box<dyn Expression>>{
+    fn parse_identifier(&mut self) -> Option<Box<dyn Expression>> {
         Some(Box::new(Identifier {
             token: self.current_token.clone(),
             value: self.current_token.literal.clone(),

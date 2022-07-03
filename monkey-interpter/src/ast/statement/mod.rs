@@ -1,7 +1,7 @@
 pub mod expression_statement;
+pub mod integer_literal;
 pub mod let_statement;
 pub mod return_statement;
-pub mod integer_literal;
 
 use crate::ast::Identifier;
 use std::fmt::{Debug, Display};
