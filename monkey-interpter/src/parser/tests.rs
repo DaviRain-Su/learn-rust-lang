@@ -125,8 +125,7 @@ fn check_parser_errors(p: Parser) {
     }
 }
 
-#[test]
-pub fn test_identifier_expression() {
+fn test_identifier_expression() {
     let input = "foobar;";
 
     let lexer = Lexer::new(input);
@@ -179,4 +178,10 @@ fn test_test_let_statements() {
 #[ignore]
 fn test_test_return_statements() {
     test_return_statements();
+}
+
+#[test]
+#[ignore]
+fn test_test_identifier_expression() {
+    test_identifier_expression();
 }

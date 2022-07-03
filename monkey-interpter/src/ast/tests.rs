@@ -1,5 +1,5 @@
 use crate::ast::statement::let_statement::LetStatement;
-use crate::ast::{Identifier, LetStatement, Program};
+use crate::ast::{Identifier, Program};
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 

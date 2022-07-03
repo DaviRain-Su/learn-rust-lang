@@ -94,7 +94,10 @@ impl Parser {
         match self.current_token.r#type {
             TokenType::LET => Some(Box::new(self.parse_let_statement().unwrap())),
             TokenType::RETURN => Some(Box::new(self.parse_return_statement().unwrap())),
-            _ => Some(Box::new(self.parse_expression_statement().unwrap())),
+            _ => {
+                // default parse expression statement
+                Some(Box::new(self.parse_expression_statement().unwrap()))
+            }
         }
     }
 

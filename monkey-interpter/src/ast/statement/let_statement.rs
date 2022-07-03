@@ -12,13 +12,17 @@ pub struct LetStatement {
     pub value: Identifier,
 }
 
-impl From<&Box<dyn Statement>> for LetStatement {
-    fn from(value: &Box<dyn Statement>) -> Self {
-        Self {
-            token: Token::from_string(TokenType::LET, "let".into()),
-            name: value.identifier().clone(),
-            value: value.identifier().clone(),
-        }
+impl Node for LetStatement {
+    fn token_literal(&self) -> String {
+        self.token.literal.clone()
+    }
+}
+
+impl Statement for LetStatement {
+    fn statement_node(&self) {}
+
+    fn identifier(&self) -> Identifier {
+        self.name.clone()
     }
 }
 
@@ -34,16 +38,12 @@ impl Display for LetStatement {
     }
 }
 
-impl Node for LetStatement {
-    fn token_literal(&self) -> String {
-        self.token.literal.clone()
-    }
-}
-
-impl Statement for LetStatement {
-    fn statement_node(&self) {}
-
-    fn identifier(&self) -> Identifier {
-        self.name.clone()
+impl From<&Box<dyn Statement>> for LetStatement {
+    fn from(value: &Box<dyn Statement>) -> Self {
+        Self {
+            token: Token::from_string(TokenType::LET, "let".into()),
+            name: value.identifier().clone(),
+            value: value.identifier().clone(),
+        }
     }
 }
