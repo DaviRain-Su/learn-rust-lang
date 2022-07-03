@@ -7,5 +7,4 @@ members = [
     "workspace",
     "tour-of-rust",
     "monkey-interpter",
-    "futures-explained-in-200-lines-of-rust",
 ]
