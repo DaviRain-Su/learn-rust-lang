@@ -2,7 +2,7 @@ use crate::lexer::Lexer;
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 
-fn test_next_token() {
+fn test_next_token() -> anyhow::Result<()> {
     // example 1
     // let input = "=+(){},;";
     let input = "let five = 5;
@@ -100,9 +100,9 @@ if ( 5 < 10 ) {
         Token::from_string(TokenType::SEMICOLON, ";".into()),
     ];
 
-    let mut l = Lexer::new(input);
+    let mut l = Lexer::new(input)?;
     for (i, tt) in tests.iter().enumerate() {
-        let tok = l.next_token();
+        let tok = l.next_token()?;
 
         println!("token = {:?}", tok);
 
@@ -124,10 +124,13 @@ if ( 5 < 10 ) {
             );
         }
     }
+
+    Ok(())
 }
 
 #[test]
 #[ignore]
 fn test_test_next_token() {
-    test_next_token();
+    let ret = test_next_token();
+    println!("{:?}", ret);
 }

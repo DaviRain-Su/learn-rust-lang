@@ -8,25 +8,18 @@ use crate::ast::Identifier;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
 
-fn test_let_statements() {
+fn test_let_statements() -> anyhow::Result<()>{
     let input = "
 let x  5;
 let  = 19;
 let  838383;
     ";
 
-    let lexer = Lexer::new(input);
-    let mut parser = Parser::new(lexer);
+    let lexer = Lexer::new(input)?;
+    let mut parser = Parser::new(lexer)?;
 
-    let program = parser.parse_program();
+    let program = parser.parse_program()?;
 
-    if program.is_err() {
-        panic!(
-            "parse_program() returned None! ==== Program Error: {:?}",
-            program
-        );
-    }
-    let program = program.unwrap();
     let program_len = program.len();
 
     if program_len != 3 {
@@ -39,12 +32,14 @@ let  838383;
     let tests = vec!["x", "y", "foobar"];
 
     for (i, tt) in tests.into_iter().enumerate() {
-        let stmt = program.statements.get(i).unwrap();
+        let stmt = program.statements.get(i).ok_or(anyhow::anyhow!("read statements error"))?;
 
         if !test_let_statement(stmt, tt.into()) {
-            return;
+            return Ok(());
         }
     }
+
+    Ok(())
 }
 
 fn test_let_statement(s: &Box<dyn Statement>, name: String) -> bool {
@@ -78,25 +73,18 @@ fn test_let_statement(s: &Box<dyn Statement>, name: String) -> bool {
 
     true
 }
-fn test_return_statements() {
+fn test_return_statements() -> anyhow::Result<()>{
     let input = "
 return 3;
 return 10;
 return 233;
     ";
 
-    let lexer = Lexer::new(input);
-    let mut parser = Parser::new(lexer);
+    let lexer = Lexer::new(input)?;
+    let mut parser = Parser::new(lexer)?;
 
-    let program = parser.parse_program();
+    let program = parser.parse_program()?;
 
-    if program.is_err() {
-        panic!(
-            "parse_program() returned None! Program Error: {:?}",
-            program
-        );
-    }
-    let program = program.unwrap();
     let program_len = program.len();
 
     if program_len != 3 {
@@ -117,25 +105,19 @@ return 233;
             );
         }
     }
+
+    Ok(())
 }
 
-fn test_identifier_expression() {
+fn test_identifier_expression() -> anyhow::Result<()>{
     let input = "foobar;";
 
-    let lexer = Lexer::new(input);
+    let lexer = Lexer::new(input)?;
 
-    let mut parser = Parser::new(lexer);
+    let mut parser = Parser::new(lexer)?;
 
-    let program = parser.parse_program();
+    let program = parser.parse_program()?;
 
-    if program.is_err() {
-        panic!(
-            "parse_program() returned None! Program Error: {:?}",
-            program
-        );
-    }
-
-    let program = program.unwrap();
     println!("program: {}", program);
 
     if program.statements.len() != 1 {
@@ -166,25 +148,19 @@ fn test_identifier_expression() {
             identifier.token_literal()
         );
     }
+
+    Ok(())
 }
 
-fn test_integer_literal_expression() {
+fn test_integer_literal_expression() -> anyhow::Result<()>{
     let input = "5;";
 
-    let lexer = Lexer::new(input);
+    let lexer = Lexer::new(input)?;
 
-    let mut parser = Parser::new(lexer);
+    let mut parser = Parser::new(lexer)?;
 
-    let program = parser.parse_program();
+    let program = parser.parse_program()?;
 
-    if program.is_err() {
-        panic!(
-            "parse_program() returned None! Program Error: {:?}",
-            program
-        );
-    }
-
-    let program = program.unwrap();
     println!("program: {}", program);
 
     if program.statements.len() != 1 {
@@ -215,9 +191,11 @@ fn test_integer_literal_expression() {
             literal.token_literal()
         );
     }
+
+    Ok(())
 }
 
-fn test_parsing_prefix_expression() {
+fn test_parsing_prefix_expression() -> anyhow::Result<()> {
     struct PrefixTest {
         input: String,
         operator: String,
@@ -240,18 +218,9 @@ fn test_parsing_prefix_expression() {
     ];
 
     for tt in prefix_tests.iter() {
-        let lexer = Lexer::new(tt.input.as_str());
-        let mut parser = Parser::new(lexer);
-        let program = parser.parse_program();
-
-        if program.is_err() {
-            panic!(
-                "parse_program() returned None! Program Error: {:?}",
-                program
-            );
-        }
-
-        let program = program.unwrap();
+        let lexer = Lexer::new(tt.input.as_str())?;
+        let mut parser = Parser::new(lexer)?;
+        let program = parser.parse_program()?;
 
         println!("Program = {:#?}", program);
         println!("Program = {}", program);
@@ -295,6 +264,8 @@ fn test_parsing_prefix_expression() {
             }
         }
     }
+
+    Ok(())
 }
 
 fn test_integer_literal(il: Box<dyn Expression>, value: i64) -> anyhow::Result<bool> {
@@ -319,29 +290,34 @@ fn test_integer_literal(il: Box<dyn Expression>, value: i64) -> anyhow::Result<b
 #[test]
 #[ignore]
 fn test_test_let_statements() {
-    test_let_statements();
+    let ret = test_let_statements();
+    println!("test_test_let_statements : Ret = {:?}", ret);
 }
 
 #[test]
 #[ignore]
 fn test_test_return_statements() {
-    test_return_statements();
+    let ret = test_return_statements();
+    println!("test_test_return_statements : Ret = {:?}", ret);
 }
 
 #[test]
-#[ignore]
+// #[ignore]
 fn test_test_identifier_expression() {
-    test_identifier_expression();
+    let ret = test_identifier_expression();
+    println!("test_test_identifier_expression: Ret = {:?}", ret);
 }
 
 #[test]
 #[ignore]
 fn test_test_integer_literal_expression() {
-    test_integer_literal_expression();
+    let ret = test_integer_literal_expression();
+    println!("test_test_integer_literal_expression : Ret = {:?}", ret);
 }
 
 #[test]
-// #[ignore]
+#[ignore]
 fn test_test_parsing_prefix_expression() {
-    test_parsing_prefix_expression();
+    let ret = test_parsing_prefix_expression();
+    println!("test_test_parsing_prefix_expression : Ret = {:?}", ret);
 }
