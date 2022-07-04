@@ -20,7 +20,7 @@ use std::default::default;
 /// 前缀解析函数
 /// 前缀运算符左侧为空。
 /// 在前缀位置遇到关联的词法单元类型时会调用 prefixParseFn
-type PrefixParseFn = Box<fn(&mut Parser) -> Option<Box<dyn Expression>>>;
+type PrefixParseFn = Box<fn(&mut Parser) -> anyhow::Result<Box<dyn Expression>>>;
 
 /// 中缀解析函数
 /// infixParseFn 接受另一个 ast.Expression 作为参数。该参数是所解析的中缀运算符
@@ -39,9 +39,6 @@ pub struct Parser {
     /// 策。
     current_token: Token,
     peek_token: Token,
-    /// error handle
-    errors: Vec<String>,
-
     prefix_parse_fns: HashMap<TokenType, PrefixParseFn>,
     infix_parse_fns: HashMap<TokenType, InferParseFn>,
 }
@@ -52,7 +49,6 @@ impl Parser {
             lexer,
             current_token: Token::default(),
             peek_token: Token::default(),
-            errors: vec![],
             prefix_parse_fns: HashMap::default(),
             infix_parse_fns: HashMap::default(),
         };
@@ -73,7 +69,6 @@ impl Parser {
         self.lexer = parse.lexer;
         self.current_token = parse.current_token;
         self.peek_token = parse.peek_token;
-        self.errors =parse.errors;
         self.prefix_parse_fns = parse.prefix_parse_fns;
         self.infix_parse_fns = parse.infix_parse_fns;
     }
@@ -124,7 +119,7 @@ impl Parser {
             ..default()
         };
 
-        if !self.expect_peek(TokenType::IDENT) {
+        if self.expect_peek(TokenType::IDENT).is_err() {
             return Some(stmt);
         }
 
@@ -133,7 +128,7 @@ impl Parser {
             self.current_token.literal.clone(),
         );
 
-        if !self.expect_peek(TokenType::ASSIGN) {
+        if self.expect_peek(TokenType::ASSIGN).is_err() {
             return Some(stmt);
         }
 
@@ -187,20 +182,20 @@ impl Parser {
         Some(stmt)
     }
 
-    fn no_prefix_parse_fn_error(&mut self, token_type: TokenType) {
-        let msg = format!("no prefix parse function for {:?} found.", token_type);
-        self.errors.push(msg);
-    }
-
     /// parse expression
-    fn parse_expression(&mut self, _precedence: OperatorPriority) -> Option<Box<dyn Expression>> {
+    fn parse_expression(
+        &mut self,
+        _precedence: OperatorPriority,
+    ) -> anyhow::Result<Box<dyn Expression>> {
         // clone evn to temp value
         let mut parser = self.clone(); // todo
         let prefix = self.prefix_parse_fns.get(&self.current_token.r#type);
 
         if prefix.is_none() {
-            self.no_prefix_parse_fn_error(self.current_token.r#type.clone());
-            None
+            Err(anyhow::anyhow!(format!(
+                "no prefix parse function for {:?} found.",
+                self.current_token.r#type.clone()
+            )))
         } else {
             let prefix = prefix.unwrap();
 
@@ -214,30 +209,30 @@ impl Parser {
     }
 
     /// parse identifier
-    fn parse_identifier(&mut self) -> Option<Box<dyn Expression>> {
-        Some(Box::new(Identifier {
+    fn parse_identifier(&mut self) -> anyhow::Result<Box<dyn Expression>> {
+        Ok(Box::new(Identifier {
             token: self.current_token.clone(),
             value: self.current_token.literal.clone(),
         }))
     }
 
     /// parse integer literal
-    fn parser_integer_literal(&mut self) -> Option<Box<dyn Expression>> {
+    fn parser_integer_literal(&mut self) -> anyhow::Result<Box<dyn Expression>> {
         let mut literal = IntegerLiteral::new(self.current_token.clone());
         let value = self.current_token.literal.parse::<i64>();
         if value.is_err() {
-            let error_msg = format!("could not parse {} as integer", self.current_token.literal);
-            self.errors.push(error_msg);
-
-            None
+            Err(anyhow::anyhow!(format!(
+                "could not parse {} as integer",
+                self.current_token.literal
+            )))
         } else {
             literal.value = value.unwrap();
 
-            Some(Box::new(literal))
+            Ok(Box::new(literal))
         }
     }
 
-    fn parse_prefix_expression(&mut self) -> Option<Box<dyn Expression>> {
+    fn parse_prefix_expression(&mut self) -> anyhow::Result<Box<dyn Expression>> {
         let mut expression = PrefixExpression {
             token: self.current_token.clone(),
             operator: self.current_token.literal.clone(),
@@ -248,7 +243,7 @@ impl Parser {
 
         expression.right = self.parse_expression(PREFIX).unwrap();
 
-        Some(Box::new(expression))
+        Ok(Box::new(expression))
     }
 
     fn cur_token_is(&self, t: TokenType) -> bool {
@@ -262,26 +257,16 @@ impl Parser {
     /// 断言函数的主要目的是通过检查下一个词法单元的
     /// 类型，确保词法单元顺序的正确性。这里的 expectPeek 会检查 peekToken 的类型，
     /// 并且只有在类型正确的情况下，它才会调用 nextToken 前移词法单元。
-    fn expect_peek(&mut self, t: TokenType) -> bool {
+    fn expect_peek(&mut self, t: TokenType) -> anyhow::Result<()> {
         if self.peek_token_is(t.clone()) {
             self.next_token();
-            true
+            Ok(())
         } else {
-            self.peek_error(t.clone());
-            false
+            Err(anyhow::anyhow!(format!(
+                "expected next token be {:?}, got {:?} instead",
+                t, self.peek_token.r#type
+            )))
         }
-    }
-
-    fn errors(&self) -> &Vec<String> {
-        &self.errors
-    }
-
-    fn peek_error(&mut self, t: TokenType) {
-        let msg = format!(
-            "expected next token be {:?}, got {:?} instead",
-            t, self.peek_token.r#type
-        );
-        self.errors.push(msg);
     }
 
     /// register prefix

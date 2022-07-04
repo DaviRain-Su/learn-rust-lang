@@ -19,7 +19,6 @@ let  838383;
     let mut parser = Parser::new(lexer);
 
     let program = parser.parse_program();
-    check_parser_errors(parser);
 
     if program.is_none() {
         panic!("parse_program() returned None!")
@@ -87,7 +86,6 @@ return 233;
     let mut parser = Parser::new(lexer);
 
     let program = parser.parse_program();
-    check_parser_errors(parser);
 
     if program.is_none() {
         panic!("parse_program() returned None!")
@@ -115,19 +113,6 @@ return 233;
     }
 }
 
-fn check_parser_errors(p: Parser) {
-    let errors = p.errors();
-    if errors.is_empty() {
-        return;
-    }
-
-    eprintln!("parser has {} errors", errors.len());
-
-    for (_index, msg) in errors.iter().enumerate() {
-        eprintln!("parser error: {:?}", msg);
-    }
-}
-
 fn test_identifier_expression() {
     let input = "foobar;";
 
@@ -138,8 +123,6 @@ fn test_identifier_expression() {
     let program = parser.parse_program().unwrap();
 
     println!("program: {}", program);
-
-    check_parser_errors(parser);
 
     if program.statements.len() != 1 {
         eprintln!(
@@ -181,8 +164,6 @@ fn test_integer_literal_expression() {
     let program = parser.parse_program().unwrap();
 
     println!("program: {}", program);
-
-    check_parser_errors(parser);
 
     if program.statements.len() != 1 {
         eprintln!(
@@ -240,7 +221,6 @@ fn test_parsing_prefix_expression() {
         let lexer = Lexer::new(tt.input.as_str());
         let mut parser = Parser::new(lexer);
         let program = parser.parse_program();
-        check_parser_errors(parser);
 
         let program = program.unwrap();
 

@@ -61,6 +61,5 @@ impl TryFrom<Box<dyn Expression>> for IntegerLiteral {
             token: Token::from_string(TokenType::INT, value.token_literal()),
             value: value.token_literal().parse::<i64>()?,
         })
-
     }
 }
