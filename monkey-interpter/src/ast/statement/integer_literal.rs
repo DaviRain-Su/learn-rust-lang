@@ -28,7 +28,8 @@ impl Display for IntegerLiteral {
 
 impl Node for IntegerLiteral {
     fn token_literal(&self) -> String {
-        self.token.literal.clone()
+        print!("[integer literal] token_literal");
+        format!("{}", self.value)
     }
 }
 impl Expression for IntegerLiteral {
@@ -53,9 +54,13 @@ impl TryFrom<Box<dyn Expression>> for IntegerLiteral {
     type Error = anyhow::Error;
 
     fn try_from(value: Box<dyn Expression>) -> Result<Self, Self::Error> {
+        let temp_value = value.token_literal();
+        println!("[integer_literal] try_from temp_value: {:?}", temp_value);
+
         Ok(Self {
             token: Token::from_string(TokenType::INT, value.token_literal()),
             value: value.token_literal().parse::<i64>()?,
         })
+
     }
 }

@@ -30,7 +30,8 @@ impl Display for ExpressionStatement {
 
 impl Node for ExpressionStatement {
     fn token_literal(&self) -> String {
-        self.token.literal.clone()
+        print!("[expression_statement] token_literal");
+        self.expression.token_literal()
     }
 }
 

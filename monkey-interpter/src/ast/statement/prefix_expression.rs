@@ -33,7 +33,8 @@ impl Display for PrefixExpression {
 
 impl Node for PrefixExpression {
     fn token_literal(&self) -> String {
-        self.token.literal.clone()
+        print!("[prefix expression] token_literal");
+        self.right.token_literal()
     }
 }
 

@@ -277,8 +277,13 @@ fn test_parsing_prefix_expression() {
             );
         }
 
-        if !test_integer_literal(exp.right, tt.integer_value).unwrap() {
-            eprintln!("test_integer_literal error!");
+        let ret = test_integer_literal(exp.right, tt.integer_value);
+        if ret.is_err() {
+            println!("test_integer_literal error = {:?}", ret);
+        } else {
+            if ret.unwrap() == false {
+                eprintln!("test_integer_literal error!");
+            }
         }
     }
 }

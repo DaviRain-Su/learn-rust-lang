@@ -20,6 +20,6 @@ pub trait Statement: Node {
     fn identifier(&self) -> Identifier;
 }
 
-pub trait Expression: Node {
+pub trait Expression: Node  {
     fn expression_node(&self);
 }

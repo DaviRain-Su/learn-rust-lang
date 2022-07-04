@@ -14,6 +14,7 @@ pub struct LetStatement {
 
 impl Node for LetStatement {
     fn token_literal(&self) -> String {
+        print!("[let statement] token_literal");
         self.token.literal.clone()
     }
 }

@@ -19,6 +19,7 @@ impl Display for ReturnStatement {
 
 impl Node for ReturnStatement {
     fn token_literal(&self) -> String {
+        print!("[return statement] token_literal");
         self.token.literal.clone()
     }
 }
