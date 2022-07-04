@@ -20,16 +20,16 @@ pub struct Lexer {
 }
 
 impl Lexer {
-    pub fn new(input: &str) -> Self {
+    pub fn new(input: &str) -> anyhow::Result<Self> {
         let mut lexer = Self {
             input: String::from(input),
             ..default()
         };
 
         // use read_char() to init ch, position, read_position
-        lexer.read_char();
+        lexer.read_char()?;
 
-        lexer
+        Ok(lexer)
     }
 
     /// readChar 的目的是读取 input 中的下一个字符，并前移其在 input 中的位置。
@@ -39,36 +39,37 @@ impl Lexer {
     /// 指向的字符.
     /// TODO, 在谈到 readChar 时，值得指出的是，该词法分析器仅支持 ASCII 字符，不能
     /// 支持所有的 Unicode 字符。
-    pub fn read_char(&mut self) {
+    pub fn read_char(&mut self) -> anyhow::Result<()> {
         if self.read_position >= self.input.len() {
             self.ch = 0 as char;
         } else {
             self.ch = (*self
                 .input
                 .get(self.read_position..self.read_position + 1)
-                .unwrap())
-            .parse()
-            .unwrap();
+                .ok_or(anyhow::anyhow!("read_char error"))?)
+            .parse()?;
         }
 
         self.position = self.read_position;
         self.read_position += 1;
+
+        Ok(())
     }
 
     /// 这就是 NextToken()方法的基本结构。它首先检查了当前正在查看的字符 l.ch，
     /// 根据具体的字符来返回对应的词法单元。在返回词法单元之前，位于所输入字符串中
     /// 的指针会前移，所以之后再次调用 NextToken()时，l.ch 字段就已经更新过了。
-    pub fn next_token(&mut self) -> Token {
+    pub fn next_token(&mut self) -> anyhow::Result<Token> {
         let mut tok = Token::default();
 
         // skip whitespace
-        self.skip_whitespace();
+        self.skip_whitespace()?;
 
         match self.ch {
             '=' => {
                 if self.peek_char() == '=' {
                     let ch = self.ch;
-                    self.read_char();
+                    self.read_char()?;
                     let literal = String::from(ch) + &String::from(self.ch);
                     tok = Token::from_string(TokenType::EQ, literal);
                 } else {
@@ -81,7 +82,7 @@ impl Lexer {
             '!' => {
                 if self.peek_char() == '=' {
                     let ch = self.ch;
-                    self.read_char();
+                    self.read_char()?;
                     let literal = String::from(ch) + &String::from(self.ch);
                     tok = Token::from_string(TokenType::NOTEQ, literal);
                 } else {
@@ -123,23 +124,23 @@ impl Lexer {
             }
             _ => {
                 if Self::is_letter(self.ch) {
-                    let literal = self.read_identifier();
+                    let literal = self.read_identifier()?;
                     tok.r#type = token_type::lookup_ident(literal);
                     tok.literal = literal.into();
-                    return tok;
+                    return Ok(tok);
                 } else if Self::is_digit(self.ch) {
                     tok.r#type = TokenType::INT;
-                    tok.literal = self.read_number().into();
-                    return tok;
+                    tok.literal = self.read_number()?.into();
+                    return Ok(tok);
                 } else {
                     tok = Token::new(TokenType::ILLEGAL, self.ch);
                 }
             }
         }
 
-        self.read_char();
+        let _ret = self.read_char()?;
 
-        tok
+        Ok(tok)
     }
 
     /// 先处理标识符和关键字。对于这两者，词法分析器需要识别当前字符是否为字母。
@@ -148,35 +149,43 @@ impl Lexer {
     /// token.TokenType。
     /// readIdentifier()函数顾名思义，就是读入一个标识符并前移词法分析器的扫描
     /// 位置，直到遇见非字母字符。
-    fn read_identifier(&mut self) -> &str {
+    fn read_identifier(&mut self) -> anyhow::Result<&str> {
         let position = self.position;
         while Self::is_letter(self.ch) {
-            self.read_char();
+            let _ret = self.read_char()?;
         }
 
-        let literal = self.input.get(position..self.position).unwrap();
+        let literal = self
+            .input
+            .get(position..self.position)
+            .ok_or(anyhow::anyhow!("read_identifier error"))?;
 
-        literal
+        Ok(literal)
     }
 
-    fn skip_whitespace(&mut self) {
+    fn skip_whitespace(&mut self) -> anyhow::Result<()> {
         loop {
             if self.ch == ' ' || self.ch == '\t' || self.ch == '\n' || self.ch == '\r' {
-                self.read_char();
+                self.read_char()?;
             } else {
                 break;
             }
         }
+
+        Ok(())
     }
 
-    fn read_number(&mut self) -> &str {
+    fn read_number(&mut self) -> anyhow::Result<&str> {
         let position = self.position;
         while Self::is_digit(self.ch) {
-            self.read_char();
+            let _ = self.read_char()?;
         }
 
-        let number = self.input.get(position..self.position).unwrap();
-        number
+        let number = self
+            .input
+            .get(position..self.position)
+            .ok_or(anyhow::anyhow!("read_number error"))?;
+        Ok(number)
     }
 
     /// isDigit 函数与 isLetter 一样简单，只是判断传入的内容是否为 Latin 字符集中

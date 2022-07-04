@@ -44,7 +44,7 @@ pub struct Parser {
 }
 
 impl Parser {
-    pub fn new(lexer: Lexer) -> Self {
+    pub fn new(lexer: Lexer) -> anyhow::Result<Self> {
         let mut parser = Parser {
             lexer,
             current_token: Token::default(),
@@ -59,10 +59,10 @@ impl Parser {
         parser.register_prefix(TokenType::MINUS, Box::new(Self::parse_prefix_expression));
 
         // 读取两个词法单元，以设置 curToken 和 peekToken
-        parser.next_token();
-        parser.next_token();
+        parser.next_token()?;
+        parser.next_token()?;
 
-        parser
+        Ok(parser)
     }
 
     pub fn update_parser(&mut self, parse: Parser) {
@@ -73,34 +73,34 @@ impl Parser {
         self.infix_parse_fns = parse.infix_parse_fns;
     }
 
-    fn next_token(&mut self) {
+    fn next_token(&mut self) -> anyhow::Result<()> {
         self.current_token = self.peek_token.clone();
-        self.peek_token = self.lexer.next_token();
+        self.peek_token = self.lexer.next_token()?;
+
+        Ok(())
     }
 
-    fn parse_program(&mut self) -> Option<Program> {
+    fn parse_program(&mut self) -> anyhow::Result<Program> {
         let mut program = Program::new();
 
         // TODO this should be EOF, but this is ILLEGAL
         while !self.cur_token_is(TokenType::ILLEGAL) {
             // println!("current_token = {:?}", self.current_token);
-            let stmt = self.parse_statement();
-            if stmt.is_some() {
-                program.statements.push(stmt.unwrap());
-            }
-            self.next_token();
+            let stmt = self.parse_statement()?;
+            program.statements.push(stmt);
+            self.next_token()?;
         }
 
-        Some(program)
+        Ok(program)
     }
 
-    fn parse_statement(&mut self) -> Option<Box<dyn Statement>> {
+    fn parse_statement(&mut self) -> anyhow::Result<Box<dyn Statement>> {
         match self.current_token.r#type {
-            TokenType::LET => Some(Box::new(self.parse_let_statement().unwrap())),
-            TokenType::RETURN => Some(Box::new(self.parse_return_statement().unwrap())),
+            TokenType::LET => Ok(Box::new(self.parse_let_statement()?)),
+            TokenType::RETURN => Ok(Box::new(self.parse_return_statement()?)),
             _ => {
                 // default parse expression statement
-                Some(Box::new(self.parse_expression_statement().unwrap()))
+                Ok(Box::new(self.parse_expression_statement()?))
             }
         }
     }
@@ -113,14 +113,14 @@ impl Parser {
     /// 如何解析表达式后会返回来替换这里的代码。
     ///
     /// # 解析let 语句
-    fn parse_let_statement(&mut self) -> Option<LetStatement> {
+    fn parse_let_statement(&mut self) -> anyhow::Result<LetStatement> {
         let mut stmt = LetStatement {
             token: self.current_token.clone(),
             ..default()
         };
 
         if self.expect_peek(TokenType::IDENT).is_err() {
-            return Some(stmt);
+            return Ok(stmt);
         }
 
         stmt.name = Identifier::new(
@@ -129,57 +129,54 @@ impl Parser {
         );
 
         if self.expect_peek(TokenType::ASSIGN).is_err() {
-            return Some(stmt);
+            return Ok(stmt);
         }
 
         // TODO: 跳过对表达式的处理，直到遇见分号
         while !self.cur_token_is(TokenType::SEMICOLON) {
-            self.next_token();
+            self.next_token()?;
         }
 
         println!("stmt = {:?}", stmt);
 
-        Some(stmt)
+        Ok(stmt)
     }
 
     /// 解析return 语句
-    fn parse_return_statement(&mut self) -> Option<ReturnStatement> {
+    fn parse_return_statement(&mut self) -> anyhow::Result<ReturnStatement> {
         let stmt = ReturnStatement {
             token: self.current_token.clone(),
             ..default()
         };
 
-        self.next_token();
+        self.next_token()?;
 
         // TODO: 跳过对表达式的处理，直到遇见分号
         while !self.cur_token_is(TokenType::SEMICOLON) {
-            self.next_token();
+            self.next_token()?;
         }
 
-        Some(stmt)
+        Ok(stmt)
     }
 
     /// 解析表达式语句
     /// 这是因为表达式语句不是真正的语句，而是仅由表达式构成的语句，相当于一层封装
-    fn parse_expression_statement(&mut self) -> Option<ExpressionStatement> {
+    fn parse_expression_statement(&mut self) -> anyhow::Result<ExpressionStatement> {
         let mut stmt = ExpressionStatement {
             token: self.current_token.clone(),
             ..default()
         };
         println!("[parse_expression_statement] >> init stmt = {:?}", stmt);
 
-        stmt.expression = self
-            .parse_expression(OperatorPriority::LOWEST)
-            .unwrap()
-            .into();
+        stmt.expression = self.parse_expression(OperatorPriority::LOWEST)?.into();
 
         if self.peek_token_is(TokenType::SEMICOLON) {
-            self.next_token();
+            self.next_token()?;
         }
 
         println!("[parse_expression_statement] >> stmt = {:?}", stmt);
 
-        Some(stmt)
+        Ok(stmt)
     }
 
     /// parse expression
@@ -197,6 +194,7 @@ impl Parser {
                 self.current_token.r#type.clone()
             )))
         } else {
+            // FIXME: THIS IS OK
             let prefix = prefix.unwrap();
 
             let left_exp = prefix(&mut parser);
@@ -219,17 +217,10 @@ impl Parser {
     /// parse integer literal
     fn parser_integer_literal(&mut self) -> anyhow::Result<Box<dyn Expression>> {
         let mut literal = IntegerLiteral::new(self.current_token.clone());
-        let value = self.current_token.literal.parse::<i64>();
-        if value.is_err() {
-            Err(anyhow::anyhow!(format!(
-                "could not parse {} as integer",
-                self.current_token.literal
-            )))
-        } else {
-            literal.value = value.unwrap();
+        let value = self.current_token.literal.parse::<i64>()?;
 
-            Ok(Box::new(literal))
-        }
+        literal.value = value;
+        Ok(Box::new(literal))
     }
 
     fn parse_prefix_expression(&mut self) -> anyhow::Result<Box<dyn Expression>> {
@@ -239,9 +230,9 @@ impl Parser {
             ..default()
         };
 
-        self.next_token();
+        self.next_token()?;
 
-        expression.right = self.parse_expression(PREFIX).unwrap();
+        expression.right = self.parse_expression(PREFIX)?;
 
         Ok(Box::new(expression))
     }
@@ -259,7 +250,7 @@ impl Parser {
     /// 并且只有在类型正确的情况下，它才会调用 nextToken 前移词法单元。
     fn expect_peek(&mut self, t: TokenType) -> anyhow::Result<()> {
         if self.peek_token_is(t.clone()) {
-            self.next_token();
+            self.next_token()?;
             Ok(())
         } else {
             Err(anyhow::anyhow!(format!(

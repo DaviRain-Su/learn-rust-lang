@@ -38,8 +38,8 @@ impl Default for Token {
 fn test_token_struct() {
     let temp_struct = Token {
         r#type: TokenType::LET,
-        literal: String::from("literal"),
+        literal: String::from("let"),
     };
 
-    println!("token = {:?}", temp_struct);
+    println!("token = {:#?}", temp_struct);
 }

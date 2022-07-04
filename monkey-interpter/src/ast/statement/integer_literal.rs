@@ -40,7 +40,7 @@ impl TryFrom<ExpressionStatement> for IntegerLiteral {
     type Error = anyhow::Error;
 
     fn try_from(expression_statement: ExpressionStatement) -> Result<Self, Self::Error> {
-        let identifier = Identifier::try_from(expression_statement.expression).unwrap();
+        let identifier = Identifier::try_from(expression_statement.expression)?;
         let value = identifier.value.parse::<i64>()?;
 
         Ok(Self {

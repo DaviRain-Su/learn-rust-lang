@@ -20,8 +20,11 @@ let  838383;
 
     let program = parser.parse_program();
 
-    if program.is_none() {
-        panic!("parse_program() returned None!")
+    if program.is_err() {
+        panic!(
+            "parse_program() returned None! ==== Program Error: {:?}",
+            program
+        );
     }
     let program = program.unwrap();
     let program_len = program.len();
@@ -87,8 +90,11 @@ return 233;
 
     let program = parser.parse_program();
 
-    if program.is_none() {
-        panic!("parse_program() returned None!")
+    if program.is_err() {
+        panic!(
+            "parse_program() returned None! Program Error: {:?}",
+            program
+        );
     }
     let program = program.unwrap();
     let program_len = program.len();
@@ -120,8 +126,16 @@ fn test_identifier_expression() {
 
     let mut parser = Parser::new(lexer);
 
-    let program = parser.parse_program().unwrap();
+    let program = parser.parse_program();
 
+    if program.is_err() {
+        panic!(
+            "parse_program() returned None! Program Error: {:?}",
+            program
+        );
+    }
+
+    let program = program.unwrap();
     println!("program: {}", program);
 
     if program.statements.len() != 1 {
@@ -161,8 +175,16 @@ fn test_integer_literal_expression() {
 
     let mut parser = Parser::new(lexer);
 
-    let program = parser.parse_program().unwrap();
+    let program = parser.parse_program();
 
+    if program.is_err() {
+        panic!(
+            "parse_program() returned None! Program Error: {:?}",
+            program
+        );
+    }
+
+    let program = program.unwrap();
     println!("program: {}", program);
 
     if program.statements.len() != 1 {
@@ -221,6 +243,13 @@ fn test_parsing_prefix_expression() {
         let lexer = Lexer::new(tt.input.as_str());
         let mut parser = Parser::new(lexer);
         let program = parser.parse_program();
+
+        if program.is_err() {
+            panic!(
+                "parse_program() returned None! Program Error: {:?}",
+                program
+            );
+        }
 
         let program = program.unwrap();
 

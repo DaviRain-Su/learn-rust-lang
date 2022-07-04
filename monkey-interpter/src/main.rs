@@ -13,11 +13,13 @@ pub mod parser;
 pub mod repl;
 pub mod token;
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     println!(
         "Hello {}! This is the Monkey programming language!",
         whoami::username()
     );
     println!("Feel free to type in commands");
-    repl::start(io::stdin(), io::stdout());
+    let _ = repl::start(io::stdin(), io::stdout())?;
+
+    Ok(())
 }
