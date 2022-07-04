@@ -214,8 +214,6 @@ fn test_integer_literal_expression() {
     }
 }
 
-#[test]
-#[ignore]
 fn test_parsing_prefix_expression() {
     struct PrefixTest {
         input: String,
@@ -323,6 +321,13 @@ fn test_test_identifier_expression() {
 }
 
 #[test]
+#[ignore]
 fn test_test_integer_literal_expression() {
     test_integer_literal_expression();
+}
+
+#[test]
+// #[ignore]
+fn test_test_parsing_prefix_expression() {
+    test_parsing_prefix_expression();
 }

@@ -69,6 +69,15 @@ impl Parser {
         parser
     }
 
+    pub fn update_parser(&mut self, parse: Parser) {
+        self.lexer = parse.lexer;
+        self.current_token = parse.current_token;
+        self.peek_token = parse.peek_token;
+        self.errors =parse.errors;
+        self.prefix_parse_fns = parse.prefix_parse_fns;
+        self.infix_parse_fns = parse.infix_parse_fns;
+    }
+
     fn next_token(&mut self) {
         self.current_token = self.peek_token.clone();
         self.peek_token = self.lexer.next_token();
@@ -185,8 +194,10 @@ impl Parser {
 
     /// parse expression
     fn parse_expression(&mut self, _precedence: OperatorPriority) -> Option<Box<dyn Expression>> {
-        let mut parser = self.clone();
+        // clone evn to temp value
+        let mut parser = self.clone(); // todo
         let prefix = self.prefix_parse_fns.get(&self.current_token.r#type);
+
         if prefix.is_none() {
             self.no_prefix_parse_fn_error(self.current_token.r#type.clone());
             None
@@ -194,6 +205,9 @@ impl Parser {
             let prefix = prefix.unwrap();
 
             let left_exp = prefix(&mut parser);
+
+            // update env with temp value
+            self.update_parser(parser);
 
             left_exp
         }
