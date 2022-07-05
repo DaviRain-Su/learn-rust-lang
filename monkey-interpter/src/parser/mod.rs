@@ -1,4 +1,5 @@
-mod operator_priority;
+pub mod operator_priority;
+pub mod parser_tracing;
 #[cfg(test)]
 mod tests;
 
@@ -16,8 +17,10 @@ use crate::parser::operator_priority::OperatorPriority;
 use crate::parser::operator_priority::OperatorPriority::PREFIX;
 use crate::token::token_type::TokenType;
 use crate::token::Token;
+use log::trace;
 use std::collections::HashMap;
 use std::default::default;
+// use crate::parser::parser_tracing::{trace, un_trace};
 
 /// 前缀解析函数
 /// 前缀运算符左侧为空。
@@ -93,7 +96,7 @@ impl Parser {
     }
 
     fn parse_program(&mut self) -> anyhow::Result<Program> {
-        println!("[parse_program] current_token = {:?}", self.current_token);
+        trace!("[parse_program] current_token = {:?}", self.current_token);
         let mut program = Program::new();
 
         // TODO this should be EOF, but this is ILLEGAL
@@ -107,7 +110,7 @@ impl Parser {
     }
 
     fn parse_statement(&mut self) -> anyhow::Result<Statement> {
-        println!("[parse_statement] current_token = {:?}", self.current_token);
+        trace!("[parse_statement] current_token = {:?}", self.current_token);
         match self.current_token.r#type {
             TokenType::LET => Ok(self.parse_let_statement()?.into()),
             TokenType::RETURN => Ok(self.parse_return_statement()?.into()),
@@ -127,7 +130,7 @@ impl Parser {
     ///
     /// # 解析let 语句
     fn parse_let_statement(&mut self) -> anyhow::Result<LetStatement> {
-        println!(
+        trace!(
             "[parse_let_statement] current_token = {:?}",
             self.current_token
         );
@@ -154,14 +157,14 @@ impl Parser {
             self.next_token()?;
         }
 
-        println!("stmt = {:?}", stmt);
+        trace!("stmt = {:?}", stmt);
 
         Ok(stmt)
     }
 
     /// 解析return 语句
     fn parse_return_statement(&mut self) -> anyhow::Result<ReturnStatement> {
-        println!(
+        trace!(
             "[parse_return_statement] current_token = {:?}",
             self.current_token
         );
@@ -183,7 +186,8 @@ impl Parser {
     /// 解析表达式语句
     /// 这是因为表达式语句不是真正的语句，而是仅由表达式构成的语句，相当于一层封装
     fn parse_expression_statement(&mut self) -> anyhow::Result<ExpressionStatement> {
-        println!(
+        // un_trace(trace("parseExpressionStatement".into()));
+        trace!(
             "[parse_expression_statement] current_token = {:?}",
             self.current_token
         );
@@ -192,7 +196,7 @@ impl Parser {
             ..default()
         };
 
-        println!(
+        trace!(
             "[parse_expression_statement] >> before ExpressionStatement = {:#?}",
             stmt
         );
@@ -203,7 +207,7 @@ impl Parser {
             self.next_token()?;
         }
 
-        println!(
+        trace!(
             "[parse_expression_statement] >> after ExpressionStatement = {:#?}",
             stmt
         );
@@ -213,7 +217,8 @@ impl Parser {
 
     /// parse expression
     fn parse_expression(&mut self, precedence: OperatorPriority) -> anyhow::Result<Expression> {
-        println!(
+        // un_trace(trace("parseExpression".into()));
+        trace!(
             "[parse_expression] current_token = {:?}",
             self.current_token
         );
@@ -240,10 +245,10 @@ impl Parser {
         self.update_parser(parser);
         // TODO 因为使用 PrefixParseFn 和InferParseFn 的原因，其中的第一个参数是parser
         let mut parser = self.clone();
-        println!("[parse_expression] left expression = {:?}", left_exp);
+        trace!("[parse_expression] left expression = {:?}", left_exp);
 
         while !self.peek_token_is(TokenType::SEMICOLON) && precedence < self.peek_precedence() {
-            println!("[parse_expression] peek_token = {:?}", self.peek_token);
+            trace!("[parse_expression] peek_token = {:?}", self.peek_token);
             let infix = temp_infix_parse_fns.get(&self.peek_token.r#type);
             if infix.is_none() {
                 return Ok(left_exp);
@@ -280,6 +285,8 @@ impl Parser {
 
     /// parse integer literal
     fn parser_integer_literal(&mut self) -> anyhow::Result<Expression> {
+        // un_trace(trace("parseIntegerLiteral".into()));
+
         let mut literal = IntegerLiteral::new(self.current_token.clone());
         let value = self.current_token.literal.parse::<i64>()?;
 
@@ -288,6 +295,7 @@ impl Parser {
     }
 
     fn parse_prefix_expression(&mut self) -> anyhow::Result<Expression> {
+        // un_trace(trace("parsePrefixExpression".into()));
         let mut expression = PrefixExpression {
             token: self.current_token.clone(),
             operator: self.current_token.literal.clone(),
@@ -302,13 +310,15 @@ impl Parser {
     }
 
     fn parse_infix_expression(&mut self, left_exp: Expression) -> anyhow::Result<Expression> {
+        // un_trace(trace("parseInfixExpression".into()));
+
         let mut expression = InfixExpression {
             token: self.current_token.clone(),
             left: Box::new(left_exp),
             operator: self.current_token.literal.clone(),
             ..default()
         };
-        println!(
+        trace!(
             "[parse_infix_expression] before InfixExpression = {:#?}",
             expression
         );
@@ -319,7 +329,7 @@ impl Parser {
 
         expression.right = Box::new(self.parse_expression(precedence)?);
 
-        println!(
+        trace!(
             "[parse_infix_expression] after InfixExpression = {:#?}",
             expression
         );

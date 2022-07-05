@@ -10,7 +10,6 @@ use crate::ast::Identifier;
 use crate::ast::Node;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
-use std::fmt::format;
 
 fn test_let_statements() -> anyhow::Result<()> {
     struct LetStatementTest {
@@ -381,46 +380,46 @@ fn test_operator_precedence_parsing() -> anyhow::Result<()> {
     }
 
     let tests = vec![
-        TempTest {
-            input: "-a * b".into(),
-            expected: "((-a) * b)".into(),
-        },
-        TempTest {
-            input: "!-a".into(),
-            expected: "(!(-a))".into(),
-        },
+        // TempTest {
+        //     input: "-a * b".into(),
+        //     expected: "((-a) * b)".into(),
+        // },
+        // TempTest {
+        //     input: "!-a".into(),
+        //     expected: "(!(-a))".into(),
+        // },
         TempTest {
             input: "a + b + c".into(),
             expected: "((a + b) + c)".into(),
         },
-        TempTest {
-            input: "a * b * c".into(),
-            expected: "((a * b) * c)".into(),
-        },
-        TempTest {
-            input: "a * b / c".into(),
-            expected: "((a * b) / c)".into(),
-        },
-        TempTest {
-            input: "a + b / c".into(),
-            expected: "(a + (b /c))".into(),
-        },
-        TempTest {
-            input: "a + b * c + d / e - f".into(),
-            expected: "(((a + (b * c)) + (d / e) - f)".into(),
-        },
-        TempTest {
-            input: "3 + 4; -5 * 5".into(),
-            expected: "(3 + 4)((-5) * 5)".into(),
-        },
-        TempTest {
-            input: "5 > 4 == 3 < 4".into(),
-            expected: "((5 > 4) == (3 < 4))".into(),
-        },
-        TempTest {
-            input: "3 + 4 * 5 == 3 * 1 + 4 * 5".into(),
-            expected: "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))".into(),
-        },
+        // TempTest {
+        //     input: "a * b * c".into(),
+        //     expected: "((a * b) * c)".into(),
+        // },
+        // TempTest {
+        //     input: "a * b / c".into(),
+        //     expected: "((a * b) / c)".into(),
+        // },
+        // TempTest {
+        //     input: "a + b / c".into(),
+        //     expected: "(a + (b /c))".into(),
+        // },
+        // TempTest {
+        //     input: "a + b * c + d / e - f".into(),
+        //     expected: "(((a + (b * c)) + (d / e) - f)".into(),
+        // },
+        // TempTest {
+        //     input: "3 + 4; -5 * 5".into(),
+        //     expected: "(3 + 4)((-5) * 5)".into(),
+        // },
+        // TempTest {
+        //     input: "5 > 4 == 3 < 4".into(),
+        //     expected: "((5 > 4) == (3 < 4))".into(),
+        // },
+        // TempTest {
+        //     input: "3 + 4 * 5 == 3 * 1 + 4 * 5".into(),
+        //     expected: "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))".into(),
+        // },
     ];
 
     for tt in tests.into_iter() {
@@ -483,7 +482,9 @@ fn test_test_parsing_infix_expression() {
 }
 
 #[test]
+// #[ignore]
 fn test_test_operator_precedence_parsing() {
+    env_logger::init();
     let ret = test_operator_precedence_parsing();
     println!("test_operator_precedence_parsing: Ret = {:?}", ret);
 }
