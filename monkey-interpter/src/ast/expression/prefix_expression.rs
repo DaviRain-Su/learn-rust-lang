@@ -39,10 +39,9 @@ impl TryFrom<ExpressionStatement> for PrefixExpression {
     type Error = anyhow::Error;
 
     fn try_from(value: ExpressionStatement) -> Result<Self, Self::Error> {
-        Ok(Self {
-            token: Token::from_string(TokenType::IDENT, value.token_literal()),
-            operator: value.token_literal(),
-            right: Box::new(value.expression.clone()),
-        })
+        match value.expression.clone() {
+            Expression::PrefixExpression(pre_exp) => Ok(pre_exp.clone()),
+            _ => unimplemented!(),
+        }
     }
 }

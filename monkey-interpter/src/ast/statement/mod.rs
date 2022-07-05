@@ -57,14 +57,3 @@ impl AsRef<Statement> for &Statement {
         self
     }
 }
-
-// pub trait Statement: Node {
-//     fn statement_node(&self);
-//
-//     must be have this function
-// fn identifier(&self) -> Identifier;
-// }
-
-// pub trait Expression: Node {
-//     fn expression_node(&self);
-// }

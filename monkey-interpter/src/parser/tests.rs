@@ -246,11 +246,12 @@ fn test_parsing_prefix_expression() -> anyhow::Result<()> {
             );
         }
 
-        let exp = PrefixExpcression::try_from(stmt.unwrap());
+        let exp = PrefixExpression::try_from(stmt.unwrap());
         if exp.is_err() {
             eprintln!("stmt is not prefix_expression. got = {:?}", exp);
         }
 
+        println!("PrefixExpression = {:#?}", exp);
         let exp = exp.unwrap();
 
         if exp.operator != tt.operator {
