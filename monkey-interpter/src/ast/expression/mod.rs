@@ -1,8 +1,7 @@
 use crate::ast::expression::integer_literal::IntegerLiteral;
 use crate::ast::expression::prefix_expression::PrefixExpression;
 use crate::ast::{Identifier, Node};
-use std::fmt::{write, Display, Formatter};
-use std::process::id;
+use std::fmt::{Display, Formatter};
 
 pub mod integer_literal;
 pub mod prefix_expression;

@@ -1,6 +1,5 @@
 use crate::ast::statement::Statement;
 use crate::ast::{Identifier, Node};
-use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::fmt::{Display, Formatter};
 

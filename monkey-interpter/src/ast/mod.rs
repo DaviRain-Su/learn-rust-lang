@@ -6,9 +6,7 @@ mod tests;
 
 use crate::ast::expression::Expression;
 use crate::ast::statement::Statement;
-use crate::token::token_type::TokenType;
 use crate::token::Token;
-use std::any::Any;
 use std::fmt::{Debug, Display, Formatter};
 
 pub trait Node: Debug + Display {
@@ -42,13 +40,12 @@ impl Program {
 
     pub fn token_literal(&self) -> String {
         if self.statements.is_empty() {
-            return String::new();
+            String::new()
         } else {
-            return self
-                .statements
+            self.statements
                 .first()
                 .expect("never failed")
-                .token_literal();
+                .token_literal()
         }
     }
 
@@ -89,15 +86,6 @@ impl Node for Identifier {
         self.token.literal.clone()
     }
 }
-
-// impl From<Box<dyn Expression>> for Identifier {
-//     fn from(value: Box<dyn Expression>) -> Self {
-//         Self {
-//             token: Token::from_string(TokenType::IDENT, value.token_literal()),
-//             value: value.token_literal(),
-//         }
-//     }
-// }
 
 impl From<Expression> for Identifier {
     fn from(expression: Expression) -> Self {

@@ -1,7 +1,6 @@
 use crate::ast::expression::Expression;
 use crate::ast::statement::expression_statement::ExpressionStatement;
 use crate::ast::{Identifier, Node};
-use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::fmt::{Debug, Display, Formatter};
 

@@ -246,13 +246,9 @@ fn test_parsing_prefix_expression() -> anyhow::Result<()> {
             );
         }
 
-        let exp = PrefixExpression::try_from(stmt.unwrap());
-        if exp.is_err() {
-            eprintln!("stmt is not prefix_expression. got = {:?}", exp);
-        }
+        let exp = PrefixExpression::try_from(stmt.unwrap())?;
 
         println!("PrefixExpression = {:#?}", exp);
-        let exp = exp.unwrap();
 
         if exp.operator != tt.operator {
             eprintln!(
@@ -261,13 +257,10 @@ fn test_parsing_prefix_expression() -> anyhow::Result<()> {
             );
         }
 
-        let ret = test_integer_literal(*exp.right.clone(), tt.integer_value);
-        if ret.is_err() {
-            println!("test_integer_literal error = {:?}", ret);
-        } else {
-            if ret.unwrap() == false {
-                eprintln!("test_integer_literal error!");
-            }
+        let ret = test_integer_literal(*exp.right.clone(), tt.integer_value)?;
+
+        if ret == false {
+            eprintln!("test_integer_literal error!");
         }
     }
 
