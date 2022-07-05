@@ -46,3 +46,14 @@ impl TryFrom<ExpressionStatement> for InfixExpression {
         }
     }
 }
+
+impl TryFrom<Expression> for InfixExpression {
+    type Error = anyhow::Error;
+
+    fn try_from(value: Expression) -> Result<Self, Self::Error> {
+        match value {
+            Expression::InfixExpression(infix_exp) => Ok(infix_exp),
+            _ => unimplemented!(),
+        }
+    }
+}

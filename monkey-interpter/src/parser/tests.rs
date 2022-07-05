@@ -10,6 +10,7 @@ use crate::ast::Identifier;
 use crate::ast::Node;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
+use std::any::{Any, TypeId};
 
 fn test_let_statements() -> anyhow::Result<()> {
     struct LetStatementTest {
@@ -278,25 +279,6 @@ fn test_parsing_prefix_expression() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn test_integer_literal(il: Expression, value: i64) -> anyhow::Result<bool> {
-    let integ = IntegerLiteral::try_from(il)?;
-    if integ.value != value {
-        eprintln!("integ value not {}. got = {}", value, integ.value);
-        return Ok(false);
-    }
-
-    if integ.token_literal() != format!("{}", value) {
-        eprintln!(
-            "integ token_literal not {}. got = {}",
-            value,
-            integ.token_literal()
-        );
-        return Ok(false);
-    }
-
-    Ok(true)
-}
-
 fn test_parsing_infix_expression() -> anyhow::Result<()> {
     struct InfixTest {
         input: String,
@@ -437,6 +419,115 @@ fn test_operator_precedence_parsing() -> anyhow::Result<()> {
     }
 
     Ok(())
+}
+
+fn test_integer_literal(il: Expression, value: i64) -> anyhow::Result<bool> {
+    let integ = IntegerLiteral::try_from(il)?;
+    if integ.value != value {
+        eprintln!("integ value not {}. got = {}", value, integ.value);
+        return Ok(false);
+    }
+
+    if integ.token_literal() != format!("{}", value) {
+        eprintln!(
+            "integ token_literal not {}. got = {}",
+            value,
+            integ.token_literal()
+        );
+        return Ok(false);
+    }
+
+    Ok(true)
+}
+
+fn test_identifier(exp: Expression, value: String) -> anyhow::Result<bool> {
+    let ident = Identifier::try_from(exp)?;
+
+    if ident.value != value {
+        eprintln!("identifier value not {}. got = {}", value, ident.value);
+        return Ok(false);
+    }
+
+    if ident.token_literal() != value {
+        eprintln!(
+            "identifier token_literal not {}. got = {}",
+            value,
+            ident.token_literal()
+        );
+        return Ok(false);
+    }
+    Ok(true)
+}
+
+trait Interface {
+    fn as_any(&self) -> &dyn Any;
+}
+
+impl Interface for i64 {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+}
+impl Interface for String {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+}
+
+impl Interface for &'static str {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+}
+
+fn test_literal_expression(exp: Expression, expected: Box<dyn Interface>) -> anyhow::Result<bool> {
+    let t = expected.as_any().type_id();
+    if TypeId::of::<i64>() == t {
+        let value = expected
+            .as_any()
+            .downcast_ref::<i64>()
+            .expect("downcast_ref error");
+        test_integer_literal(exp, *value)
+    } else if TypeId::of::<String>() == t {
+        let value = expected
+            .as_any()
+            .downcast_ref::<String>()
+            .expect("downcast_ref error");
+        test_identifier(exp, value.clone())
+    } else if TypeId::of::<&str>() == t {
+        let value = expected
+            .as_any()
+            .downcast_ref::<&str>()
+            .expect("downcast_ref error");
+        test_identifier(exp, value.to_string())
+    } else {
+        eprintln!("type of exp not handle.got = {}", exp);
+        Ok(false)
+    }
+}
+
+fn test_infix_expression(
+    exp: Expression,
+    left: Box<dyn Interface>,
+    operator: String,
+    right: Box<dyn Interface>,
+) -> anyhow::Result<bool> {
+    let op_exp = InfixExpression::try_from(exp)?;
+
+    if !test_literal_expression(*op_exp.left, left)? {
+        return Ok(false);
+    }
+
+    if op_exp.operator != operator {
+        eprintln!("exp.operator is not '{}'. got = {}", operator,op_exp.operator);
+        return Ok(false);
+    }
+
+    if !test_literal_expression(*op_exp.right, right)? {
+        return Ok(false)
+    }
+
+    Ok(true)
 }
 
 #[test]
