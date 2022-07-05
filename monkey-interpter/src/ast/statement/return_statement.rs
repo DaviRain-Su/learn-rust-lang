@@ -1,12 +1,11 @@
-use std::any::Any;
-use crate::ast::statement::{Node, Statement};
-use crate::ast::Identifier;
+use crate::ast::{Identifier, Node};
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::fmt::{Display, Formatter};
+use crate::ast::statement::Statement;
 
 /// return statement
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct ReturnStatement {
     pub token: Token, //  return 词法单元
     pub return_value: Identifier,
@@ -20,28 +19,16 @@ impl Display for ReturnStatement {
 
 impl Node for ReturnStatement {
     fn token_literal(&self) -> String {
-        println!("[return statement] token_literal --> type_id = {:?}", self.type_id());
         self.token.literal.clone()
     }
-
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
 }
 
-impl Statement for ReturnStatement {
-    fn statement_node(&self) {}
 
-    fn identifier(&self) -> Identifier {
-        Identifier::from(self.token.clone())
-    }
-}
-
-impl From<Box<dyn Statement>> for ReturnStatement {
-    fn from(value: Box<dyn Statement>) -> Self {
-        Self {
-            token: Token::from_string(TokenType::LET, value.token_literal()),
-            return_value: value.identifier().clone(),
+impl From<Statement> for ReturnStatement {
+    fn from(value: Statement) -> Self {
+        match value {
+            Statement::ReturnStatement(return_value) => return_value.clone(),
+            _ => unimplemented!()
         }
     }
 }

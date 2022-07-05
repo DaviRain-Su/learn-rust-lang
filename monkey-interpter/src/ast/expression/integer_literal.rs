@@ -1,12 +1,11 @@
-use std::any::Any;
 use crate::ast::statement::expression_statement::ExpressionStatement;
-use crate::ast::statement::{Expression, Node};
-use crate::ast::Identifier;
+use crate::ast::{Identifier, Node};
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::fmt::{Debug, Display, Formatter};
+use crate::ast::expression::Expression;
 
-#[derive(Debug)]
+#[derive(Debug, Default, Clone)]
 pub struct IntegerLiteral {
     pub token: Token,
     pub value: i64,
@@ -29,16 +28,8 @@ impl Display for IntegerLiteral {
 
 impl Node for IntegerLiteral {
     fn token_literal(&self) -> String {
-        println!("[integer literal] token_literal --> type_id = {:?}", self.type_id());
         format!("{}", self.value)
     }
-
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-}
-impl Expression for IntegerLiteral {
-    fn expression_node(&self) {}
 }
 
 impl TryFrom<ExpressionStatement> for IntegerLiteral {
@@ -55,16 +46,13 @@ impl TryFrom<ExpressionStatement> for IntegerLiteral {
     }
 }
 
-impl TryFrom<Box<dyn Expression>> for IntegerLiteral {
+impl TryFrom<Expression> for IntegerLiteral {
     type Error = anyhow::Error;
 
-    fn try_from(value: Box<dyn Expression>) -> Result<Self, Self::Error> {
-        let temp_value = (value).token_literal();
-        println!("[integer_literal] try_from temp_value: {:?}", temp_value);
-
-        Ok(Self {
-            token: Token::from_string(TokenType::INT, temp_value.clone()),
-            value: temp_value.parse::<i64>()?,
-        })
+    fn try_from(value: Expression) -> Result<Self, Self::Error> {
+       match value {
+           Expression::IntegerLiteralExpression(integ_exp) => Ok(integ_exp.clone()),
+           _ => unimplemented!()
+       }
     }
 }

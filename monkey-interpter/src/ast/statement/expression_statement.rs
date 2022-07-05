@@ -1,24 +1,25 @@
-use std::any::Any;
-use crate::ast::statement::{Expression, Node, Statement};
-use crate::ast::Identifier;
+use crate::ast::{Identifier, Node};
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::fmt::{Display, Formatter};
+use crate::ast::expression::Expression;
+use crate::ast::expression::integer_literal::IntegerLiteral;
+use crate::ast::statement::Statement;
 
 /// expression statement
 /// ExpressionStatement 类型具有两个字段，分别是每个节点都具有的token字段
 /// 和保存表达的expression字段。
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ExpressionStatement {
     pub token: Token, // 该表达式中的第一个词法单元
-    pub expression: Box<dyn Expression>,
+    pub expression: Expression ,
 }
 
 impl Default for ExpressionStatement {
     fn default() -> Self {
         Self {
             token: Token::default(),
-            expression: Box::new(Identifier::default()),
+            expression: Expression::IntegerLiteralExpression(IntegerLiteral::default()),
         }
     }
 }
@@ -31,36 +32,24 @@ impl Display for ExpressionStatement {
 
 impl Node for ExpressionStatement {
     fn token_literal(&self) -> String {
-        println!("[expression_statement] token_literal --> type_id = {:?}", self.type_id());
-
         self.expression.token_literal()
     }
+}
 
-    fn as_any(&self) -> &dyn Any {
-        self
+impl From<Statement> for ExpressionStatement {
+    fn from(value: Statement) -> Self {
+      match value {
+          Statement::ExpressionStatement(exp_s) => exp_s.clone(),
+          _ => unimplemented!()
+      }
     }
 }
 
-/// ExpressionStatement 实现了 Statement 接口，这意味着表达式语句可以添加到Program
-/// 的statements vector中。
-impl Statement for ExpressionStatement {
-    fn statement_node(&self) {}
-
-    fn identifier(&self) -> Identifier {
-        Identifier::from(self.token.clone())
-    }
-}
-
-impl Expression for ExpressionStatement {
-    fn expression_node(&self) {}
-
-}
-
-impl From<&Box<dyn Statement>> for ExpressionStatement {
-    fn from(value: &Box<dyn Statement>) -> Self {
-        Self {
-            token: Token::from_string(TokenType::IDENT, value.token_literal()),
-            expression: Box::new(value.identifier()),
+impl From<&Statement> for ExpressionStatement {
+    fn from(value: &Statement) -> Self {
+        match value {
+            Statement::ExpressionStatement(exp_s) => exp_s.clone(),
+            _ => unimplemented!()
         }
     }
 }

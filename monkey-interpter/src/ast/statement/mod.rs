@@ -1,26 +1,74 @@
 pub mod expression_statement;
 pub mod let_statement;
 pub mod return_statement;
+use crate::ast::{Identifier, Node};
+use std::fmt::{Debug, Display, Formatter, write};
+use crate::ast::statement::expression_statement::ExpressionStatement;
+use crate::ast::statement::let_statement::LetStatement;
+use crate::ast::statement::return_statement::ReturnStatement;
 
-use std::any::Any;
-use crate::ast::Identifier;
-use std::fmt::{Debug, Display};
 
-pub trait Node: Debug + Display {
-    /// 必须提供 TokenLiteral()方法，该方法返回与其
-    /// 关联的词法单元的字面量
-    fn token_literal(&self) -> String;
-
-    fn as_any(&self) -> &dyn Any;
+#[derive(Debug)]
+pub enum  Statement {
+    ExpressionStatement(ExpressionStatement),
+    LetStatement(LetStatement),
+    ReturnStatement(ReturnStatement),
 }
 
-pub trait Statement: Node {
-    fn statement_node(&self);
-
-    // must be have this function
-    fn identifier(&self) -> Identifier;
+impl Node for Statement {
+    fn token_literal(&self) -> String {
+        match self {
+            Self::ExpressionStatement(exp_s) => exp_s.token_literal(),
+            Self::LetStatement(let_s) => let_s.token_literal(),
+            Self::ReturnStatement(ret_s) => ret_s.token_literal(),
+        }
+    }
 }
 
-pub trait Expression: Node {
-    fn expression_node(&self);
+
+impl Display for Statement {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Statement::ExpressionStatement(exp_s) => write!(f, "{}", exp_s),
+            Statement::LetStatement(let_s) => write!(f,"{}",let_s),
+            Statement::ReturnStatement(ret_s) => write!(f, "{}", ret_s),
+        }
+    }
 }
+
+impl From<ExpressionStatement> for Statement {
+    fn from(exp_s: ExpressionStatement) -> Self {
+        Self::ExpressionStatement(exp_s)
+    }
+}
+
+impl From<LetStatement> for Statement {
+    fn from(let_s: LetStatement) -> Self {
+        Self::LetStatement(let_s)
+    }
+}
+
+
+impl From<ReturnStatement> for Statement {
+    fn from(ret_s: ReturnStatement) -> Self {
+        Self::ReturnStatement(ret_s)
+    }
+}
+
+
+impl AsRef<Statement> for &Statement {
+    fn as_ref(&self) -> &Statement {
+        self
+    }
+}
+
+// pub trait Statement: Node {
+//     fn statement_node(&self);
+//
+//     must be have this function
+    // fn identifier(&self) -> Identifier;
+// }
+
+// pub trait Expression: Node {
+//     fn expression_node(&self);
+// }

@@ -1,15 +1,16 @@
-use std::any::Any;
 use crate::ast::statement::expression_statement::ExpressionStatement;
-use crate::ast::statement::{Expression, Node};
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::fmt::{Display, Formatter};
+use crate::ast::expression::Expression;
+use crate::ast::expression::integer_literal::IntegerLiteral;
+use crate::ast::Node;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PrefixExpression {
     pub token: Token,
     pub operator: String,
-    pub right: Box<dyn Expression>,
+    pub right: Box<Expression>,
 }
 
 impl Default for PrefixExpression {
@@ -17,13 +18,9 @@ impl Default for PrefixExpression {
         Self {
             token: Token::default(),
             operator: String::default(),
-            right: Box::new(ExpressionStatement::default()),
+            right: Box::new(IntegerLiteral::default().into()),
         }
     }
-}
-
-impl Expression for PrefixExpression {
-    fn expression_node(&self) {}
 }
 
 impl Display for PrefixExpression {
@@ -34,12 +31,7 @@ impl Display for PrefixExpression {
 
 impl Node for PrefixExpression {
     fn token_literal(&self) -> String {
-        println!("[prefix expression] token_literal --> type_id = {:?}", self.type_id());
         self.right.token_literal()
-    }
-
-    fn as_any(&self) -> &dyn Any {
-        self
     }
 }
 
@@ -50,7 +42,7 @@ impl TryFrom<ExpressionStatement> for PrefixExpression {
         Ok(Self {
             token: Token::from_string(TokenType::IDENT, value.token_literal()),
             operator: value.token_literal(),
-            right: Box::new(value),
+            right: Box::new(value.expression.clone()),
         })
     }
 }

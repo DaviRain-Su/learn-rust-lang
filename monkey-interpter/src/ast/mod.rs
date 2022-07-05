@@ -5,17 +5,24 @@ pub mod expression;
 mod tests;
 
 use std::any::Any;
-use crate::ast::statement::{Expression, Node, Statement};
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::fmt::{Debug, Display, Formatter};
+use crate::ast::expression::Expression;
+use crate::ast::statement::Statement;
+
+pub trait Node: Debug + Display {
+    /// 必须提供 TokenLiteral()方法，该方法返回与其
+    /// 关联的词法单元的字面量
+    fn token_literal(&self) -> String;
+}
 
 /// 这个 Program 节点将成为语法分析器生成的每个 AST 的根节点。每个有效的
 /// Monkey 程序都是一系列位于 Program.Statements 中的语句。Program.Statements
 /// 是一个切片，其中有实现 Statement 接口的 AST 节点。
 #[derive(Debug)] // add debug trait for debug
 pub struct Program {
-    pub(crate) statements: Vec<Box<dyn Statement>>,
+    pub(crate) statements: Vec<Statement>,
 }
 
 impl Display for Program {
@@ -81,21 +88,23 @@ impl Node for Identifier {
     fn token_literal(&self) -> String {
         self.token.literal.clone()
     }
-
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
 }
 
-impl Expression for Identifier {
-    fn expression_node(&self) {}
-}
+// impl From<Box<dyn Expression>> for Identifier {
+//     fn from(value: Box<dyn Expression>) -> Self {
+//         Self {
+//             token: Token::from_string(TokenType::IDENT, value.token_literal()),
+//             value: value.token_literal(),
+//         }
+//     }
+// }
 
-impl From<Box<dyn Expression>> for Identifier {
-    fn from(value: Box<dyn Expression>) -> Self {
-        Self {
-            token: Token::from_string(TokenType::IDENT, value.token_literal()),
-            value: value.token_literal(),
+impl From<Expression> for Identifier {
+    fn from(expression: Expression) -> Self {
+        match expression {
+            Expression::IdentifierExpression(ident) => ident.clone(),
+            _ => unimplemented!()
         }
     }
 }
+

@@ -22,7 +22,7 @@ fn test_display() {
     println!("let statement display = {}", let_statement);
 
     let program = Program {
-        statements: vec![Box::new(let_statement)],
+        statements: vec![let_statement.into()],
     };
 
     println!("program debug = {:#?}", program);

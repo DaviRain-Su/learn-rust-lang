@@ -1,34 +1,21 @@
-use std::any::Any;
-use crate::ast::statement::{Node, Statement};
-use crate::ast::Identifier;
+use crate::ast::{Identifier, Node};
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::fmt::{Display, Formatter};
+use crate::ast::statement::Statement;
 
 /// let statement
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct LetStatement {
     pub token: Token, // token.LET 词法单元
     pub name: Identifier,
     pub value: Identifier,
 }
 
+
 impl Node for LetStatement {
     fn token_literal(&self) -> String {
-        println!("[let statement] token_literal --> type_id = {:?}", self.type_id());
         self.token.literal.clone()
-    }
-
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-}
-
-impl Statement for LetStatement {
-    fn statement_node(&self) {}
-
-    fn identifier(&self) -> Identifier {
-        self.name.clone()
     }
 }
 
@@ -44,12 +31,20 @@ impl Display for LetStatement {
     }
 }
 
-impl From<&Box<dyn Statement>> for LetStatement {
-    fn from(value: &Box<dyn Statement>) -> Self {
-        Self {
-            token: Token::from_string(TokenType::LET, "let".into()),
-            name: value.identifier().clone(),
-            value: value.identifier().clone(),
+impl From<Statement> for LetStatement {
+    fn from(value: Statement) -> Self {
+       match value {
+           Statement::LetStatement(let_s) => let_s.clone(),
+           _ => unimplemented!()
+       }
+    }
+}
+
+impl From<&Statement> for LetStatement {
+    fn from(value: &Statement) -> Self {
+        match value {
+            Statement::LetStatement(let_s) => let_s.clone(),
+            _ => unimplemented!()
         }
     }
 }

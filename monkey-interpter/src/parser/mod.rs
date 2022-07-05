@@ -7,7 +7,7 @@ use crate::ast::expression::integer_literal::IntegerLiteral;
 use crate::ast::statement::let_statement::LetStatement;
 use crate::ast::expression::prefix_expression::PrefixExpression;
 use crate::ast::statement::return_statement::ReturnStatement;
-use crate::ast::statement::{Expression, Statement};
+// use crate::ast::statement::{Expression, Statement};
 use crate::ast::{Identifier, Program};
 use crate::lexer::Lexer;
 use crate::parser::operator_priority::OperatorPriority;
@@ -16,17 +16,19 @@ use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::collections::HashMap;
 use std::default::default;
+use crate::ast::expression::Expression;
+use crate::ast::statement::Statement;
 
 /// 前缀解析函数
 /// 前缀运算符左侧为空。
 /// 在前缀位置遇到关联的词法单元类型时会调用 prefixParseFn
-type PrefixParseFn = Box<fn(&mut Parser) -> anyhow::Result<Box<dyn Expression>>>;
+type PrefixParseFn = Box<fn(&mut Parser) -> anyhow::Result<Expression>>;
 
 /// 中缀解析函数
 /// infixParseFn 接受另一个 ast.Expression 作为参数。该参数是所解析的中缀运算符
 /// 左侧的内容。
 /// 在中缀位置遇到词法单元类型时会调用 infixParseFn
-type InferParseFn = Box<fn(&mut Parser, Box<dyn Expression>) -> Box<dyn Expression>>;
+type InferParseFn = Box<fn(&mut Parser, Expression) -> Expression>;
 
 #[derive(Clone)]
 pub struct Parser {
@@ -94,13 +96,13 @@ impl Parser {
         Ok(program)
     }
 
-    fn parse_statement(&mut self) -> anyhow::Result<Box<dyn Statement>> {
+    fn parse_statement(&mut self) -> anyhow::Result<Statement> {
         match self.current_token.r#type {
-            TokenType::LET => Ok(Box::new(self.parse_let_statement()?)),
-            TokenType::RETURN => Ok(Box::new(self.parse_return_statement()?)),
+            TokenType::LET => Ok(self.parse_let_statement()?.into()),
+            TokenType::RETURN => Ok(self.parse_return_statement()?.into()),
             _ => {
                 // default parse expression statement
-                Ok(Box::new(self.parse_expression_statement()?))
+                Ok(self.parse_expression_statement()?.into())
             }
         }
     }
@@ -183,7 +185,7 @@ impl Parser {
     fn parse_expression(
         &mut self,
         _precedence: OperatorPriority,
-    ) -> anyhow::Result<Box<dyn Expression>> {
+    ) -> anyhow::Result<Expression> {
         // clone evn to temp value
         let mut parser = self.clone(); // todo
         let prefix = self.prefix_parse_fns.get(&self.current_token.r#type);
@@ -207,23 +209,23 @@ impl Parser {
     }
 
     /// parse identifier
-    fn parse_identifier(&mut self) -> anyhow::Result<Box<dyn Expression>> {
-        Ok(Box::new(Identifier {
+    fn parse_identifier(&mut self) -> anyhow::Result<Expression> {
+        Ok(Identifier {
             token: self.current_token.clone(),
             value: self.current_token.literal.clone(),
-        }))
+        }.into())
     }
 
     /// parse integer literal
-    fn parser_integer_literal(&mut self) -> anyhow::Result<Box<dyn Expression>> {
+    fn parser_integer_literal(&mut self) -> anyhow::Result<Expression> {
         let mut literal = IntegerLiteral::new(self.current_token.clone());
         let value = self.current_token.literal.parse::<i64>()?;
 
         literal.value = value;
-        Ok(Box::new(literal))
+        Ok(literal.into())
     }
 
-    fn parse_prefix_expression(&mut self) -> anyhow::Result<Box<dyn Expression>> {
+    fn parse_prefix_expression(&mut self) -> anyhow::Result<Expression> {
         let mut expression = PrefixExpression {
             token: self.current_token.clone(),
             operator: self.current_token.literal.clone(),
@@ -232,9 +234,9 @@ impl Parser {
 
         self.next_token()?;
 
-        expression.right = self.parse_expression(PREFIX)?;
+        expression.right = Box::new(self.parse_expression(PREFIX)?);
 
-        Ok(Box::new(expression))
+        Ok(expression.into())
     }
 
     fn cur_token_is(&self, t: TokenType) -> bool {

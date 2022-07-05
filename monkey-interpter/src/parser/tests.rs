@@ -1,12 +1,14 @@
+use crate::ast::expression::Expression;
 use crate::ast::statement::expression_statement::ExpressionStatement;
 use crate::ast::expression::integer_literal::IntegerLiteral;
 use crate::ast::statement::let_statement::LetStatement;
 use crate::ast::expression::prefix_expression::PrefixExpression;
 use crate::ast::statement::return_statement::ReturnStatement;
-use crate::ast::statement::{Expression, Node, Statement};
+use crate::ast::statement::Statement;
 use crate::ast::Identifier;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
+use crate::ast::Node;
 
 fn test_let_statements() -> anyhow::Result<()>{
     let input = "
@@ -42,7 +44,7 @@ let  838383;
     Ok(())
 }
 
-fn test_let_statement(s: &Box<dyn Statement>, name: String) -> bool {
+fn test_let_statement(s: &Statement, name: String) -> bool {
     if s.token_literal() != "let" {
         eprint!(
             "Statement token_literal not 'let'. got = {}",
@@ -255,7 +257,7 @@ fn test_parsing_prefix_expression() -> anyhow::Result<()> {
             );
         }
 
-        let ret = test_integer_literal(exp.right, tt.integer_value);
+        let ret = test_integer_literal(*exp.right.clone(), tt.integer_value);
         if ret.is_err() {
             println!("test_integer_literal error = {:?}", ret);
         } else {
@@ -268,7 +270,7 @@ fn test_parsing_prefix_expression() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn test_integer_literal(il: Box<dyn Expression>, value: i64) -> anyhow::Result<bool> {
+fn test_integer_literal(il: Expression, value: i64) -> anyhow::Result<bool> {
     let integ = IntegerLiteral::try_from(il)?;
     if integ.value != value {
         eprintln!("integ value not {}. got = {}", value, integ.value);
