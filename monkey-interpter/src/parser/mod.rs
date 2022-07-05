@@ -76,7 +76,8 @@ impl Parser {
         Ok(parser)
     }
 
-    pub fn update_parser(&mut self, parse: Parser) {
+    // TODO 因为使用 PrefixParseFn 和InferParseFn 的原因，其中的第一个参数是parser
+    fn update_parser(&mut self, parse: Parser) {
         self.lexer = parse.lexer;
         self.current_token = parse.current_token;
         self.peek_token = parse.peek_token;
@@ -217,6 +218,7 @@ impl Parser {
             self.current_token
         );
         // TODO clone evn to temp value
+        // TODO 因为使用 PrefixParseFn 和InferParseFn 的原因，其中的第一个参数是parser
         let mut parser = self.clone();
 
         let prefix = self.prefix_parse_fns.get(&self.current_token.r#type);
@@ -225,40 +227,40 @@ impl Parser {
         let temp_infix_parse_fns = self.infix_parse_fns.clone();
 
         if prefix.is_none() {
-            return Err(anyhow::anyhow!(format!(
+            Err(anyhow::anyhow!(format!(
                 "no prefix parse function for {} found.",
                 self.current_token.r#type.clone()
-            )));
-        }
+            )))
+        } else {
+            // FIXME: THIS IS OK
+            let prefix = prefix.unwrap();
 
-        // FIXME: THIS IS OK
-        let prefix = prefix.unwrap();
+            let mut left_exp = prefix(&mut parser)?;
+            println!("[parse_expression] left expression = {:?}", left_exp);
 
-        let mut left_exp = prefix(&mut parser)?;
-        println!("[parse_expression] left expression = {:?}", left_exp);
+            while !self.peek_token_is(TokenType::SEMICOLON) && precedence < self.peek_precedence() {
+                println!("[parse_expression] peek_token = {:?}", self.peek_token);
+                let infix = temp_infix_parse_fns.get(&self.peek_token.r#type);
+                if infix.is_none() {
+                    return Ok(left_exp);
+                }
 
-        while !self.peek_token_is(TokenType::SEMICOLON) && precedence < self.peek_precedence() {
-            println!("[parse_expression] peek_token = {:?}", self.peek_token);
-            let infix = temp_infix_parse_fns.get(&self.peek_token.r#type);
-            if infix.is_none() {
-                return Ok(left_exp);
+                self.next_token()?;
+                // TODO
+                // 第二次分析道这里的bug
+                // then update parser, because there update self useed by next_token
+                //  因为使用 PrefixParseFn 和InferParseFn 的原因，其中的第一个参数是parser
+                parser = self.clone();
+
+                let infix = infix.unwrap();
+                left_exp = infix(&mut parser, left_exp)?;
             }
 
-            self.next_token()?;
-            // TODO
-            // 第二次分析道这里的bug
-            // then update parser, because there update self useed by next_token
-            parser = self.clone();
-
-            let infix = infix.unwrap();
-            left_exp = infix(&mut parser, left_exp)?;
+            // TODO 因为使用 PrefixParseFn 和InferParseFn 的原因，其中的第一个参数是parser
+            // update env with temp value
+            self.update_parser(parser);
+            Ok(left_exp)
         }
-
-        // TODO
-        // update env with temp value
-        self.update_parser(parser);
-
-        Ok(left_exp)
     }
 
     /// parse identifier

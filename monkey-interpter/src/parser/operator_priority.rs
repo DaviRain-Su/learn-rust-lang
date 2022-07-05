@@ -14,6 +14,7 @@ pub enum OperatorPriority {
 }
 
 // precedences 就是优先级表，用于将词法单元类型与其优先级相关联。
+// TODO 这里不理解
 lazy_static! {
     static ref PRECEDENCES: HashMap<TokenType, OperatorPriority> = {
         let mut m = HashMap::new();
