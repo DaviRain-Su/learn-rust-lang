@@ -1,7 +1,7 @@
-use std::fmt::{Display, Formatter};
 use crate::ast::expression::Expression;
 use crate::ast::Node;
 use crate::token::Token;
+use std::fmt::{Display, Formatter};
 
 #[derive(Debug, Clone)]
 pub struct Boolean {
@@ -27,7 +27,7 @@ impl TryFrom<Expression> for Boolean {
     fn try_from(value: Expression) -> Result<Self, Self::Error> {
         match value {
             Expression::BooleanExpression(boolean) => Ok(boolean),
-            _ => unimplemented!()
+            _ => unimplemented!(),
         }
     }
 }

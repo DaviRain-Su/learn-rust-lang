@@ -20,6 +20,7 @@ use crate::token::Token;
 use log::trace;
 use std::collections::HashMap;
 use std::default::default;
+use crate::ast::expression::boolean::Boolean;
 // use crate::parser::parser_tracing::{trace, un_trace};
 
 /// 前缀解析函数
@@ -62,6 +63,11 @@ impl Parser {
         parser.register_prefix(TokenType::INT, Box::new(Self::parser_integer_literal));
         parser.register_prefix(TokenType::BANG, Box::new(Self::parse_prefix_expression));
         parser.register_prefix(TokenType::MINUS, Box::new(Self::parse_prefix_expression));
+
+        parser.register_prefix(TokenType::TRUE, Box::new(Self::parse_boolean));
+        parser.register_prefix(TokenType::FALSE, Box::new(Self::parse_boolean));
+
+
 
         parser.register_infix(TokenType::PLUS, Box::new(Self::parse_infix_expression));
         parser.register_infix(TokenType::MINUS, Box::new(Self::parse_infix_expression));
@@ -281,6 +287,13 @@ impl Parser {
             value: self.current_token.literal.clone(),
         }
         .into())
+    }
+
+    fn parse_boolean(&mut self) -> anyhow::Result<Expression> {
+        Ok(Boolean {
+            token: self.current_token.clone(),
+            value: self.cur_token_is(TokenType::TRUE),
+        }.into())
     }
 
     /// parse integer literal

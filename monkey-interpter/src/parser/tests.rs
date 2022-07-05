@@ -1,3 +1,4 @@
+use crate::ast::expression::boolean::Boolean;
 use crate::ast::expression::infix_expression::InfixExpression;
 use crate::ast::expression::integer_literal::IntegerLiteral;
 use crate::ast::expression::prefix_expression::PrefixExpression;
@@ -11,7 +12,6 @@ use crate::ast::Node;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
 use std::any::{Any, TypeId};
-use crate::ast::expression::boolean::Boolean;
 
 fn test_let_statements() -> anyhow::Result<()> {
     struct LetStatementTest {
@@ -166,7 +166,6 @@ fn test_identifier_expression() -> anyhow::Result<()> {
     Ok(())
 }
 
-
 fn test_integer_literal_expression() -> anyhow::Result<()> {
     let input = "5;";
 
@@ -284,13 +283,18 @@ fn test_parsing_prefix_expression() -> anyhow::Result<()> {
 fn test_parsing_infix_expression() -> anyhow::Result<()> {
     struct InfixTest {
         input: String,
-        left_value: i64,
+        left_value: Box<dyn Interface>,
         operator: String,
-        right_value: i64,
+        right_value: Box<dyn Interface>,
     }
 
     impl InfixTest {
-        fn new(input: String, left_value: i64, operator: String, right_value: i64) -> Self {
+        fn new(
+            input: String,
+            left_value: Box<dyn Interface>,
+            operator: String,
+            right_value: Box<dyn Interface>,
+        ) -> Self {
             Self {
                 input,
                 left_value,
@@ -300,15 +304,42 @@ fn test_parsing_infix_expression() -> anyhow::Result<()> {
         }
     }
 
+    // {"5 + 5;", 5, "+", 5},
+    // {"5 - 5;", 5, "-", 5},
+    // {"5 * 5;", 5, "*", 5},
+    // {"5 / 5;", 5, "/", 5},
+    // {"5 > 5;", 5, ">", 5},
+    // {"5 < 5;", 5, "<", 5},
+    // {"5 == 5;", 5, "==", 5},
+    // {"5 != 5;", 5, "!=", 5},
+    // {"foobar + barfoo;", "foobar", "+", "barfoo"},
+    // {"foobar - barfoo;", "foobar", "-", "barfoo"},
+    // {"foobar * barfoo;", "foobar", "*", "barfoo"},
+    // {"foobar / barfoo;", "foobar", "/", "barfoo"},
+    // {"foobar > barfoo;", "foobar", ">", "barfoo"},
+    // {"foobar < barfoo;", "foobar", "<", "barfoo"},
+    // {"foobar == barfoo;", "foobar", "==", "barfoo"},
+    // {"foobar != barfoo;", "foobar", "!=", "barfoo"},
+    // {"true == true", true, "==", true},
+    // {"true != false", true, "!=", false},
+    // {"false == false", false, "==", false},
+
     let infix_tests = vec![
-        InfixTest::new("5 + 5;".into(), 5, "+".into(), 5),
-        InfixTest::new("5 - 5;".into(), 5, "-".into(), 5),
-        InfixTest::new("5 * 5;".into(), 5, "*".into(), 5),
-        InfixTest::new("5 / 5;".into(), 5, "/".into(), 5),
-        InfixTest::new("5 > 5;".into(), 5, ">".into(), 5),
-        InfixTest::new("5 < 5;".into(), 5, "<".into(), 5),
-        InfixTest::new("5 == 5;".into(), 5, "==".into(), 5),
-        InfixTest::new("5 != 5;".into(), 5, "!=".into(), 5),
+        InfixTest::new("5 + 5;".into(), 5.into(), "+".into(), 5.into()),
+        InfixTest::new("5 - 5;".into(), 5.into(), "-".into(), 5.into()),
+        InfixTest::new("5 * 5;".into(), 5.into(), "*".into(), 5.into()),
+        InfixTest::new("5 / 5;".into(), 5.into(), "/".into(), 5.into()),
+        InfixTest::new("5 > 5;".into(), 5.into(), ">".into(), 5.into()),
+        InfixTest::new("5 < 5;".into(), 5.into(), "<".into(), 5.into()),
+        InfixTest::new("5 == 5;".into(), 5.into(), "==".into(), 5.into()),
+        InfixTest::new("5 != 5;".into(), 5.into(), "!=".into(), 5.into()),
+        InfixTest::new(
+            "foobar + barfoo;".into(),
+            "foobar".into(),
+            "+".into(),
+            "barfoo".into(),
+        ),
+        InfixTest::new("true == true".into(), true.into(), "==".into(), true.into()),
     ];
 
     for tt in infix_tests.iter() {
@@ -334,25 +365,34 @@ fn test_parsing_infix_expression() -> anyhow::Result<()> {
             eprintln!("program statements[0] is not ExpressionStatement. got = None");
         }
 
-        let exp = InfixExpression::try_from(stmt.unwrap())?;
-
-        let ret = test_integer_literal(*exp.left.clone(), tt.left_value)?;
-
-        if ret == false {
-            eprintln!("test_integer_literal error!");
+        if !test_infix_expression(
+            stmt.unwrap().expression,
+            &*tt.left_value,
+            tt.operator.clone(),
+            &*tt.right_value,
+        )? {
+            return Err(anyhow::anyhow!("test_infix_expression error"));
         }
 
-        if exp.operator != tt.operator {
-            eprintln!(
-                "exp.operator is not `{}`. got = {}",
-                tt.operator, exp.operator
-            );
-        }
-
-        let ret = test_integer_literal(*exp.right.clone(), tt.right_value)?;
-        if ret == false {
-            eprintln!("test_integer_literal error!");
-        }
+        // let exp = InfixExpression::try_from(stmt.unwrap())?;
+        //
+        // let ret = test_integer_literal(*exp.left.clone(), tt.left_value)?;
+        //
+        // if ret == false {
+        //     eprintln!("test_integer_literal error!");
+        // }
+        //
+        // if exp.operator != tt.operator {
+        //     eprintln!(
+        //         "exp.operator is not `{}`. got = {}",
+        //         tt.operator, exp.operator
+        //     );
+        // }
+        //
+        // let ret = test_integer_literal(*exp.right.clone(), tt.right_value)?;
+        // if ret == false {
+        //     eprintln!("test_integer_literal error!");
+        // }
     }
     Ok(())
 }
@@ -461,7 +501,6 @@ fn test_identifier(exp: Expression, value: String) -> anyhow::Result<bool> {
     Ok(true)
 }
 
-
 fn test_boolean_literal(exp: Expression, value: bool) -> anyhow::Result<bool> {
     let boolean = Boolean::try_from(exp)?;
 
@@ -490,9 +529,22 @@ impl Interface for i64 {
         self
     }
 }
+
+impl From<i64> for Box<dyn Interface> {
+    fn from(value: i64) -> Self {
+        Box::new(value)
+    }
+}
+
 impl Interface for String {
     fn as_any(&self) -> &dyn Any {
         self
+    }
+}
+
+impl From<String> for Box<dyn Interface> {
+    fn from(value: String) -> Self {
+        Box::new(value)
     }
 }
 
@@ -502,11 +554,25 @@ impl Interface for &'static str {
     }
 }
 
-impl Interface for bool {
-    fn as_any(&self) -> &dyn Any { self }
+impl From<&'static str> for Box<dyn Interface> {
+    fn from(value: &'static str) -> Self {
+        Box::new(value)
+    }
 }
 
-fn test_literal_expression(exp: Expression, expected: Box<dyn Interface>) -> anyhow::Result<bool> {
+impl Interface for bool {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+}
+
+impl From<bool> for Box<dyn Interface> {
+    fn from(value: bool) -> Self {
+        Box::new(value)
+    }
+}
+
+fn test_literal_expression(exp: Expression, expected: &dyn Interface) -> anyhow::Result<bool> {
     let t = expected.as_any().type_id();
     if TypeId::of::<i64>() == t {
         let value = expected
@@ -540,9 +606,9 @@ fn test_literal_expression(exp: Expression, expected: Box<dyn Interface>) -> any
 
 fn test_infix_expression(
     exp: Expression,
-    left: Box<dyn Interface>,
+    left: &dyn Interface,
     operator: String,
-    right: Box<dyn Interface>,
+    right: &dyn Interface,
 ) -> anyhow::Result<bool> {
     let op_exp = InfixExpression::try_from(exp)?;
 
@@ -551,12 +617,15 @@ fn test_infix_expression(
     }
 
     if op_exp.operator != operator {
-        eprintln!("exp.operator is not '{}'. got = {}", operator,op_exp.operator);
+        eprintln!(
+            "exp.operator is not '{}'. got = {}",
+            operator, op_exp.operator
+        );
         return Ok(false);
     }
 
     if !test_literal_expression(*op_exp.right, right)? {
-        return Ok(false)
+        return Ok(false);
     }
 
     Ok(true)
@@ -598,14 +667,14 @@ fn test_test_parsing_prefix_expression() {
 }
 
 #[test]
-#[ignore]
+// #[ignore]
 fn test_test_parsing_infix_expression() {
     let ret = test_parsing_infix_expression();
     println!("test_parsing_infix_expression: Ret = {:?}", ret);
 }
 
 #[test]
-// #[ignore]
+#[ignore]
 fn test_test_operator_precedence_parsing() {
     env_logger::init();
     let ret = test_operator_precedence_parsing();
