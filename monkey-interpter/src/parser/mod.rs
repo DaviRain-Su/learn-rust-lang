@@ -2,13 +2,13 @@ mod operator_priority;
 #[cfg(test)]
 mod tests;
 
+use crate::ast::expression::infix_expression::InfixExpression;
 use crate::ast::expression::integer_literal::IntegerLiteral;
 use crate::ast::expression::prefix_expression::PrefixExpression;
+use crate::ast::expression::Expression;
 use crate::ast::statement::expression_statement::ExpressionStatement;
 use crate::ast::statement::let_statement::LetStatement;
 use crate::ast::statement::return_statement::ReturnStatement;
-// use crate::ast::statement::{Expression, Statement};
-use crate::ast::expression::Expression;
 use crate::ast::statement::Statement;
 use crate::ast::{Identifier, Program};
 use crate::lexer::Lexer;
@@ -28,7 +28,7 @@ type PrefixParseFn = Box<fn(&mut Parser) -> anyhow::Result<Expression>>;
 /// infixParseFn 接受另一个 ast.Expression 作为参数。该参数是所解析的中缀运算符
 /// 左侧的内容。
 /// 在中缀位置遇到词法单元类型时会调用 infixParseFn
-type InferParseFn = Box<fn(&mut Parser, Expression) -> Expression>;
+type InferParseFn = Box<fn(&mut Parser, Expression) -> anyhow::Result<Expression>>;
 
 #[derive(Clone)]
 pub struct Parser {
@@ -60,6 +60,15 @@ impl Parser {
         parser.register_prefix(TokenType::BANG, Box::new(Self::parse_prefix_expression));
         parser.register_prefix(TokenType::MINUS, Box::new(Self::parse_prefix_expression));
 
+        parser.register_infix(TokenType::PLUS, Box::new(Self::parse_infix_expression));
+        parser.register_infix(TokenType::MINUS, Box::new(Self::parse_infix_expression));
+        parser.register_infix(TokenType::SLASH, Box::new(Self::parse_infix_expression));
+        parser.register_infix(TokenType::ASTERISK, Box::new(Self::parse_infix_expression));
+        parser.register_infix(TokenType::EQ, Box::new(Self::parse_infix_expression));
+        parser.register_infix(TokenType::NOTEQ, Box::new(Self::parse_infix_expression));
+        parser.register_infix(TokenType::LT, Box::new(Self::parse_infix_expression));
+        parser.register_infix(TokenType::GT, Box::new(Self::parse_infix_expression));
+
         // 读取两个词法单元，以设置 curToken 和 peekToken
         parser.next_token()?;
         parser.next_token()?;
@@ -87,7 +96,7 @@ impl Parser {
 
         // TODO this should be EOF, but this is ILLEGAL
         while !self.cur_token_is(TokenType::ILLEGAL) {
-            // println!("current_token = {:?}", self.current_token);
+            println!("[parse_program] current_token = {:?}", self.current_token);
             let stmt = self.parse_statement()?;
             program.statements.push(stmt);
             self.next_token()?;
@@ -182,27 +191,46 @@ impl Parser {
     }
 
     /// parse expression
-    fn parse_expression(&mut self, _precedence: OperatorPriority) -> anyhow::Result<Expression> {
+    fn parse_expression(&mut self, precedence: OperatorPriority) -> anyhow::Result<Expression> {
         // clone evn to temp value
         let mut parser = self.clone();
+        println!(
+            "[parse_expression] current_token type = {:?}",
+            self.current_token.r#type
+        );
         let prefix = self.prefix_parse_fns.get(&self.current_token.r#type);
 
+        // create temp infix parse fns for immutable checks
+        let temp_infix_parse_fns = self.infix_parse_fns.clone();
+
         if prefix.is_none() {
-            Err(anyhow::anyhow!(format!(
-                "no prefix parse function for {:?} found.",
+            return Err(anyhow::anyhow!(format!(
+                "no prefix parse function for {} found.",
                 self.current_token.r#type.clone()
-            )))
-        } else {
-            // FIXME: THIS IS OK
-            let prefix = prefix.unwrap();
-
-            let left_exp = prefix(&mut parser);
-
-            // update env with temp value
-            self.update_parser(parser);
-
-            left_exp
+            )));
         }
+
+        // FIXME: THIS IS OK
+        let prefix = prefix.unwrap();
+
+        let mut left_exp = prefix(&mut parser)?;
+
+        while !self.peek_token_is(TokenType::SEMICOLON) && precedence < self.peek_precedence() {
+            let infix = temp_infix_parse_fns.get(&self.peek_token.r#type);
+            if infix.is_none() {
+                return Ok(left_exp);
+            }
+
+            self.next_token()?;
+
+            let infix = infix.unwrap();
+            left_exp = infix(&mut parser, left_exp)?;
+        }
+
+        // update env with temp value
+        self.update_parser(parser);
+
+        Ok(left_exp)
     }
 
     /// parse identifier
@@ -237,6 +265,23 @@ impl Parser {
         Ok(expression.into())
     }
 
+    fn parse_infix_expression(&mut self, left_exp: Expression) -> anyhow::Result<Expression> {
+        let mut expression = InfixExpression {
+            token: self.current_token.clone(),
+            left: Box::new(left_exp),
+            operator: self.current_token.literal.clone(),
+            ..default()
+        };
+
+        let precedence = self.cur_precedence();
+
+        self.next_token()?;
+
+        expression.right = Box::new(self.parse_expression(precedence)?);
+
+        Ok(expression.into())
+    }
+
     fn cur_token_is(&self, t: TokenType) -> bool {
         self.peek_token.r#type == t
     }
@@ -258,6 +303,18 @@ impl Parser {
                 t, self.peek_token.r#type
             )))
         }
+    }
+
+    /// peekPrecedence 方法根据 p.peekToken 中的词法单元类型，返回所关联的优先
+    /// 级。如果在 p.peekToken 中没有存储对应的优先级，则使用默认值 LOWEST，这是所
+    /// 有运算符都可能具有的最低优先级。
+    fn peek_precedence(&self) -> OperatorPriority {
+        operator_priority::precedence(self.peek_token.r#type.clone())
+    }
+
+    /// same peek precedence
+    fn cur_precedence(&self) -> OperatorPriority {
+        operator_priority::precedence(self.current_token.r#type.clone())
     }
 
     /// register prefix

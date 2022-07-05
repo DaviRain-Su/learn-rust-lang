@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fmt::{Display, Formatter};
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash)]
 pub enum TokenType {
@@ -40,6 +41,48 @@ pub enum TokenType {
     IF,       // if
     ELSE,     // else
     RETURN,   // return
+}
+
+impl Display for TokenType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::ILLEGAL => write!(f, "illegal"), // illegal
+            Self::EOF => write!(f, "eof"),         // eof
+            // identifier + literals
+            Self::IDENT => write!(f, "ident"), // add，foobar, x, y, z,...
+            Self::INT => write!(f, "int"),     // 12345
+            // 运算符
+            Self::ASSIGN => write!(f, "="),   // =
+            Self::PLUS => write!(f, "+"),     // +
+            Self::MINUS => write!(f, "-"),    // -
+            Self::BANG => write!(f, "!"),     // !
+            Self::ASTERISK => write!(f, "*"), // *
+            Self::SLASH => write!(f, "/"),    //  /
+            Self::LT => write!(f, "<"),       // <
+            Self::GT => write!(f, ">"),       // >
+
+            Self::EQ => write!(f, "=="),    // ==
+            Self::NOTEQ => write!(f, "!="), // !=
+
+            // 分隔符
+            Self::COMMA => write!(f, ","),     // ,
+            Self::SEMICOLON => write!(f, ";"), // ;
+
+            Self::LPAREN => write!(f, "("),  // (
+            Self::RPAREN => write!(f, ")"),  // )
+            Self::LBRACE => write!(f, "{{"), // {
+            Self::RBRACE => write!(f, "}}"), // }
+
+            // 关键字
+            Self::FUNCTION => write!(f, "fn"),   // fn
+            Self::LET => write!(f, "let"),       // let
+            Self::TRUE => write!(f, "true"),     // true
+            Self::FALSE => write!(f, "false"),   // false
+            Self::IF => write!(f, "if"),         // if
+            Self::ELSE => write!(f, "else"),     // else
+            Self::RETURN => write!(f, "return"), // return
+        }
+    }
 }
 
 lazy_static! {

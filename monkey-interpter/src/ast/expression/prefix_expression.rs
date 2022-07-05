@@ -7,7 +7,7 @@ use std::fmt::{Display, Formatter};
 
 #[derive(Debug, Clone)]
 pub struct PrefixExpression {
-    pub token: Token,  // 前缀词法单元，如!
+    pub token: Token, // 前缀词法单元，如!
     pub operator: String,
     pub right: Box<Expression>,
 }
