@@ -2,13 +2,16 @@ use crate::ast::expression::integer_literal::IntegerLiteral;
 use crate::ast::expression::prefix_expression::PrefixExpression;
 use crate::ast::{Identifier, Node};
 use std::fmt::{Display, Formatter};
+use crate::ast::expression::infix_expression::InfixExpression;
 
 pub mod integer_literal;
 pub mod prefix_expression;
+pub mod infix_expression;
 
 #[derive(Debug, Clone)]
 pub enum Expression {
     PrefixExpression(PrefixExpression),
+    InfixExpression(InfixExpression),
     IntegerLiteralExpression(IntegerLiteral),
     IdentifierExpression(Identifier),
 }
@@ -17,6 +20,7 @@ impl Display for Expression {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Expression::PrefixExpression(pre_exp) => write!(f, "{}", pre_exp),
+            Expression::InfixExpression(infix_exp) => write!(f, "{}", infix_exp),
             Expression::IntegerLiteralExpression(integ_exp) => write!(f, "{}", integ_exp),
             Expression::IdentifierExpression(ident) => write!(f, "{}", ident),
         }
@@ -27,6 +31,7 @@ impl Node for Expression {
     fn token_literal(&self) -> String {
         match self {
             Self::PrefixExpression(pre_exp) => pre_exp.token_literal(),
+            Expression::InfixExpression(infix_exp) => infix_exp.token_literal(),
             Self::IntegerLiteralExpression(integ_exp) => integ_exp.token_literal(),
             Self::IdentifierExpression(ident) => ident.token_literal(),
         }
@@ -48,5 +53,11 @@ impl From<IntegerLiteral> for Expression {
 impl From<Identifier> for Expression {
     fn from(identifier: Identifier) -> Self {
         Self::IdentifierExpression(identifier)
+    }
+}
+
+impl From<InfixExpression> for Expression {
+    fn from(infix_exp: InfixExpression) -> Self {
+        Self::InfixExpression(infix_exp)
     }
 }

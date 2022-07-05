@@ -184,7 +184,7 @@ impl Parser {
     /// parse expression
     fn parse_expression(&mut self, _precedence: OperatorPriority) -> anyhow::Result<Expression> {
         // clone evn to temp value
-        let mut parser = self.clone(); // todo
+        let mut parser = self.clone();
         let prefix = self.prefix_parse_fns.get(&self.current_token.r#type);
 
         if prefix.is_none() {

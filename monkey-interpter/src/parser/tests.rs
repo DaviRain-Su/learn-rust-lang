@@ -1,6 +1,7 @@
 use crate::ast::expression::integer_literal::IntegerLiteral;
 use crate::ast::expression::prefix_expression::PrefixExpression;
 use crate::ast::expression::Expression;
+use crate::ast::expression::infix_expression::InfixExpression;
 use crate::ast::statement::expression_statement::ExpressionStatement;
 use crate::ast::statement::let_statement::LetStatement;
 use crate::ast::statement::return_statement::ReturnStatement;
@@ -286,6 +287,77 @@ fn test_integer_literal(il: Expression, value: i64) -> anyhow::Result<bool> {
     Ok(true)
 }
 
+
+fn test_parsing_infix_expression() -> anyhow::Result<()> {
+    struct InfixTest {
+        input: String,
+        left_value: i64,
+        operator: String,
+        right_value: i64,
+    }
+
+
+    impl InfixTest {
+        fn new(input: String, left_value: i64, operator: String, right_value: i64) -> Self {
+            Self {
+                input,
+                left_value,
+                operator,
+                right_value
+            }
+        }
+    }
+
+
+    let infix_tests  = vec![
+        InfixTest::new("5 + 5".into(), 5, "+".into(), 5),
+        InfixTest::new("5 - 5".into(), 5, "-".into(), 5),
+        InfixTest::new("5 * 5".into(), 5, "*".into(), 5),
+        InfixTest::new("5 / 5".into(), 5, "/".into(), 5),
+        InfixTest::new("5 > 5".into(), 5, ">".into(), 5),
+        InfixTest::new("5 < 5".into(), 5, "<".into(), 5),
+        InfixTest::new("5 == 5".into(), 5, "==".into(), 5),
+        InfixTest::new("5 != 5".into(), 5, "!=".into(), 5),
+    ];
+
+    for tt in infix_tests.iter() {
+        let lexer = Lexer::new(tt.input.as_str())?;
+
+        let mut parser = Parser::new(lexer)?;
+
+        let program = parser.parse_program()?;
+
+        if program.statements.len() != 1 {
+            eprintln!("program statements does not contain {} statemtns. got = {}", 1, program.statements.len());
+        }
+
+        let stmt: Option<ExpressionStatement> = program.statements.get(0).map(|value| value.into());
+
+        if stmt.is_none() {
+            eprintln!("program statements[0] is not ExpressionStatement. got = None");
+        }
+
+        let exp = InfixExpression::try_from(stmt.unwrap())?;
+
+        let ret = test_integer_literal(*exp.left.clone(), tt.left_value)?;
+
+        if ret == false {
+            eprintln!("test_integer_literal error!");
+        }
+
+        if exp.operator != tt.operator {
+            eprintln!("exp.operator is not `{}`. got = {}", tt.operator, exp.operator);
+        }
+
+        let ret = test_integer_literal(*exp.right.clone(), tt.right_value)?;
+        if ret == false {
+            eprintln!("test_integer_literal error!");
+        }
+
+    }
+    Ok(())
+}
+
 #[test]
 #[ignore]
 fn test_test_let_statements() {
@@ -315,8 +387,14 @@ fn test_test_integer_literal_expression() {
 }
 
 #[test]
-// #[ignore]
+#[ignore]
 fn test_test_parsing_prefix_expression() {
     let ret = test_parsing_prefix_expression();
     println!("test_test_parsing_prefix_expression : Ret = {:?}", ret);
+}
+
+#[test]
+fn test_test_parsing_infix_expression() {
+    let ret = test_parsing_infix_expression();
+    println!("test_parsing_infix_expression: Ret = {:?}", ret);
 }
