@@ -1,4 +1,5 @@
 pub mod statement;
+pub mod expression;
 
 #[cfg(test)]
 mod tests;

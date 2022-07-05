@@ -5,7 +5,6 @@ use crate::ast::Identifier;
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::fmt::{Debug, Display, Formatter};
-use crate::ast::statement::prefix_expression::PrefixExpression;
 
 #[derive(Debug)]
 pub struct IntegerLiteral {
@@ -60,25 +59,7 @@ impl TryFrom<Box<dyn Expression>> for IntegerLiteral {
     type Error = anyhow::Error;
 
     fn try_from(value: Box<dyn Expression>) -> Result<Self, Self::Error> {
-        let type_id = value.type_id();
-        println!("[integer_literal ] try_from type_id: {:?}", type_id);
-        let temp_value = value
-            .as_ref()
-            .as_any()
-            .downcast_ref::<ExpressionStatement>()
-            .ok_or(anyhow::anyhow!("downcast_ref error ExpressionStatement"))?
-            // .expression
-            // .as_ref()
-            // .as_any()
-            // .downcast_ref::<PrefixExpression>()
-            // .ok_or(anyhow::anyhow!("downcast_ref error PrefixExpression"))?
-            // .right
-            // .as_ref()
-            // .as_any()
-            // .downcast_ref::<IntegerLiteral>()
-            // .ok_or(anyhow::anyhow!("downcast_ref error IntegerLiteral"))?
-            .token_literal();
-        // let temp_value = (value).token_literal();
+        let temp_value = (value).token_literal();
         println!("[integer_literal] try_from temp_value: {:?}", temp_value);
 
         Ok(Self {

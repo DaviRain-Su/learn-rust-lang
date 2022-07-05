@@ -3,9 +3,9 @@ mod operator_priority;
 mod tests;
 
 use crate::ast::statement::expression_statement::ExpressionStatement;
-use crate::ast::statement::integer_literal::IntegerLiteral;
+use crate::ast::expression::integer_literal::IntegerLiteral;
 use crate::ast::statement::let_statement::LetStatement;
-use crate::ast::statement::prefix_expression::PrefixExpression;
+use crate::ast::expression::prefix_expression::PrefixExpression;
 use crate::ast::statement::return_statement::ReturnStatement;
 use crate::ast::statement::{Expression, Statement};
 use crate::ast::{Identifier, Program};
