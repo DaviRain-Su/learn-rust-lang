@@ -72,44 +72,87 @@ fn main() {
 
 下面是如何使用类型ID来模拟动态类型检查的。
 ```rust
+use core::any::{Any, TypeId};
+use std::ops::Deref;
+
+struct Rectangle;
+struct Triangle;
+
+trait Shape: Any {}
+
+impl Shape for Rectangle {}
+impl Shape for Triangle {}
+
+fn main() {
+  let shapes: Vec<Box<dyn Shape>> =
+          vec![Box::new(Rectangle), Box::new(Triangle), Box::new(Rectangle)];
+  let n = count_rectangles(&shapes);
+  assert_eq!(2, n);
+}
+
 fn count_rectangles(shapes: &[Box<dyn Shape>]) -> usize {
-    let mut n = 0;
-    for shape in shapes {
-        // Need to derefernce once or we will get the type of the Box!
-        let type_of_shape = shape.deref().type_id();
-        if type_of_shape == TypeId::of::<Rectangle>() {
-            n += 1;
-        } else {
-            println!("{:?} is not a Rectangle!", type_of_shape);
-        }
+  let mut n = 0;
+  for shape in shapes {
+    // Need to derefernce once or we will get the type of the Box!
+    let type_of_shape = shape.deref().type_id();
+    if type_of_shape == TypeId::of::<Rectangle>() {
+      n += 1;
+    } else {
+      println!("{:?} is not a Rectangle!", type_of_shape);
     }
-    n
+  }
+  n
 }
 ```
 type_id()方法是在Any属性上定义的，它对任何类型都有一个全面的实现，这并不奇怪。(对类型有一个小的限制，但这不在本文的讨论范围之内）。
 
-当我们使用 dyn Any 的特质对象时，真正的动态类型化就开始了。它可以执行所谓的checked downcast，从一个一般类型到一个更具体的类型。(参见官方文档中的 downcast_ref 和 downcast）。
+当我们使用 `dyn Any` 的特质对象时，真正的动态类型化就开始了。它可以执行所谓的`checked downcast`，从一个一般类型到一个更具体的类型。(参见官方文档中的 [`downcast_ref`](https://doc.rust-lang.org/std/any/trait.Any.html#method.downcast_ref) 和 [`downcast`](https://doc.rust-lang.org/std/boxed/struct.Box.html#method.downcast)）。
 
 下面是一个使用例子。
 ```rust
-fn remove_first_rectangle(shapes: &mut Vec<Box<dyn Any>>)
-    -> Option<Box<Rectangle>>
-{
-    let idx = shapes
-        .iter()
-        .position(|shape| shape.deref().type_id() == TypeId::of::<Rectangle>())?;
-    let rectangle_as_unknown_shape = shapes.remove(idx);
-    rectangle_as_unknown_shape.downcast().ok()
+use core::any::{Any, TypeId};
+use std::ops::Deref;
+
+#[derive(Debug)]
+struct Rectangle;
+
+#[derive(Debug)]
+struct Triangle;
+
+trait Shape: Any {}
+
+impl Shape for Rectangle {}
+impl Shape for Triangle {}
+
+fn main() {
+  let mut shapes: Vec<Box<dyn Any>> =
+          vec![Box::new(Rectangle), Box::new(Triangle), Box::new(Rectangle)];
+
+  println!("shapes length  operator before = {:?}", shapes.len());
+
+
+  remove_first_rectangle(&mut shapes).expect("No rectangle found to be removed");
+
+  println!("shapes length operator after = {:?}", shapes.len());
+}
+
+fn remove_first_rectangle(shapes: &mut Vec<Box<dyn Any>>) -> Option<Box<Rectangle>> {
+  let idx = shapes
+          .iter()
+          .position(|shape| shape.deref().type_id() == TypeId::of::<Rectangle>())?;
+  let rectangle_as_unknown_shape = shapes.remove(idx);
+  rectangle_as_unknown_shape.downcast().ok()
 }
 ```
-不过，这里的降序并不神奇。如果我们想手动实现它（没有编译器的帮助），我们也可以检查类型ID是否符合我们的期望，然后用[transmute](https://doc.rust-lang.org/std/mem/fn.transmute.html)调用来跟进。
+不过，这里的`downcast`并不神奇。如果我们想手动实现它（没有编译器的帮助），我们也可以检查类型ID是否符合我们的期望，然后用[transmute](https://doc.rust-lang.org/std/mem/fn.transmute.html)调用来跟进。
 
 但现在背景已经足够了。让我们在下面的三个部分中对这些概念进行创新吧
 
 ## Section 1: A Heterogenous Collection of Singletons
-本节展示了像这样的魔法如何在Rust中工作以及为什么它很重要。
-```
 
+本节展示了像这样的魔法如何在Rust中工作以及为什么它很重要。
+
+```rust
 // Putting two different types in the same collection, with no keys.
 collection.set( 3.14 );
 collection.set( 888 );
@@ -119,16 +162,20 @@ collection.set( 888 );
 assert_eq!( 3.14, *collection.get::<f32>() );
 assert_eq!(  888, *collection.get::<u32>() );
 ```
+
 ### Storing heterogenous data
-Rust中的大多数集合是同质的，也就是说，它们存储的对象都是同一类型的。例如，Vec<f32>只存储浮点数。但是我们可以通过使用指向特质对象的指针使其成为单向异质的。
 
-例如，Vec<Box<dyn ToString>存储一个指针集合。这个向量可以接受的指针类型包括Box<f32>、Box<u64>和许多其他类型。因此，我们可以放进去的数据类型是异质的。但我们得到的只是一个指向特质对象的指针（Box<dyn ToString>），内部值的实际类型无法恢复。
+Rust中的大多数集合是同质的，也就是说，它们存储的对象都是同一类型的。例如，Vec<f32>只存储浮点数。但是我们可以通过使用指向`trait object`的指针使其成为单向异质的。
 
-为了拥有一个完全异质的集合，getter-方法应该能够返回不同类型的对象。这在动态类型的语言中是微不足道的，比如Python或JavaScript。然而，在静态类型语言中，一个函数只能返回一种特定的类型，如函数签名所定义的。
+例如， `Vec<Box<dyn ToString>`存储一个指针集合。这个向量可以接受的指针类型包括`Box<f32>`、`Box<u64>`和许多其他类型。因此，我们可以放进去的数据类型是异质的。
+但我们得到的只是一个指向trait object的指针（`Box<dyn ToString>`），内部值的实际类型无法恢复。
+
+为了拥有一个完全`heterogenous`的集合，getter-方法应该能够返回不同类型的对象。这在动态类型的语言中是微不足道的，比如Python或JavaScript。然而，在静态类型语言中，一个函数只能返回一种特定的类型，如函数签名所定义的。
 
 作为一个简单的方法，具有子类型的语言通常有一个最一般的类型，它是所有其他类型的超级类型。例如，Java中的Object是所有类的超级类型。这可以在函数签名中用来定义返回类型。然后，调用者可以对返回的值进行下转换。
 
-在Rust中，dyn Any类型的trait对象可以被认为是最通用的类型。它是唯一的类型，（几乎）所有其他类型都可以被胁迫为它。正如在背景部分所解释的，Any也是（唯一的）允许下移的特质。因此，我们可以在getter方法中返回&Box<dyn Any>，而调用者可以进行下转换。
+在Rust中，`dyn Any`类型的trait对象可以被认为是最通用的类型。它是唯一的类型，（几乎）所有其他类型都可以被胁迫为它。
+正如在背景部分所解释的，Any也是（唯一的）允许下移的特质。因此，我们可以在getter方法中返回&Box<dyn Any>，而调用者可以进行下转换。
 
 不过直接返回Box<dyn Any>并不是一个好的接口。为了避免在调用者一方手动下转换，可以把它隐藏在一个泛型函数后面。这里有一个完整的例子。
 
@@ -182,7 +229,7 @@ impl SingletonCollection {
     }
 }
 ```
-通过这种方法，通用类型充当钥匙。因此，这将集合限制在每个类型的单一元素上。但在许多情况下，这并不是一种限制。新的类型很便宜! 正如下面的片段所展示的，比较之前和之后。
+通过这种方法，通用类型充当key。因此，这将集合限制在每个类型的单一元素上。但在许多情况下，这并不是一种限制。新的类型很便宜! 正如下面的片段所展示的，比较之前和之后。
 ```rust
 /// Before
 collection.set("name", "Jakob");
@@ -227,13 +274,16 @@ enum DominantHand {
 
 在这种情况下，这种模式就很方便了，因为它允许用户存储任意多的任何类型的对象。而库可以管理它们，甚至不需要知道它们的类型。第二节也会有一些这方面的好例子。
 
-然而，值得注意的是，我并没有发明这种模式。事实上，它被广泛使用。我想我第一次看到它是在[Amethyst/Shred](https://github.com/amethyst/shred)的[struct world](https://github.com/amethyst/shred/blob/63778ae268970b7526f74fca7ec6e0364a7514c9/src/world/mod.rs)中。
+然而，值得注意的是，我并没有发明这种模式。事实上，它被广泛使用。
+我想我第一次看到它是在[Amethyst/Shred](https://github.com/amethyst/shred)的
+[struct world](https://github.com/amethyst/shred/blob/63778ae268970b7526f74fca7ec6e0364a7514c9/src/world/mod.rs)中。
 
 在写这篇文章的时候，我深入研究了一下，发现[Chris Morgan](https://chrismorgan.info/)将这种模式包装在一个通用的集合[AnyMap](https://github.com/chris-morgan/anymap)中。在写这篇文章的时候，这个板块已经有超过130万次的下载。我想说的是，这属于广泛使用。
 
 所以，类型可以作为键来使用，而且社区已经在这样做了。为了发掘未开发的潜力，让我们在下一节看一下除此之外的机会。
 
 ## Section 2: Type-Oriented Message Passing
+
 在本节中，我们将看到一些基于类型的动态调度。不是基于名字和类型的动态调度，不是，是只基于类型的调度。另外，即使是对象也将根据其类型进行动态查找，这意味着调用者甚至不需要访问对象！我将向你展示的是面向对象的方法。
 
 我将向你展示的东西可以被描述为面向对象的消息传递，其特点是类型被用作对象地址，同时也用于动态调度。
@@ -252,8 +302,8 @@ enum DominantHand {
 
 下面是一个人为的例子，说明了浏览器的代码如何使用回调闭包。
 
-```rust
-fn main() {
+```no
+fn main() {     
     let window = get_window_from_browser();
     let body = get_body_from_browser();
     let state = MyDummyState::new();
@@ -375,19 +425,21 @@ impl Nut {
 ```
 对于方法来说，它变得更加棘手。我们需要存储任意数量的具有不同类型的方法。为了将它们存储在一个集合中，我们需要找到一个涵盖所有这些方法的通用特征对象。
 
-Box<dyn Any>可以用来存储它们。但是我们需要在以后调用这些方法。这就需要对实际类型进行下转换。
+`Box<dyn Any>`可以用来存储它们。但是我们需要在以后调用这些方法。这就需要对实际类型进行下转换。
 
 说实话，这可能是可以这样做的。但是如果我们存储可调用的函数指针，我们的生活就会变得更容易。我们只需要找到一个足够普遍的可调用类型。
 
-首先，我们必须从特性Fn、FnOnce和FnMut中挑选一个作为我们的基础特性。[FnMut](https://doc.rust-lang.org/nomicon/hrtb.html)是其中最通用的，我们将使用它来不限制用户。(你可以在FnMut的文档中了解它们之间的区别，也可以在Rustonomicon的[Higher-Rank Trait Bounds](https://doc.rust-lang.org/nomicon/hrtb.html)一章中了解它们到底是什么）。
+首先，我们必须从特性`Fn`、`FnOnce`和`FnMut`中挑选一个作为我们的基础特性。[FnMut](https://doc.rust-lang.org/nomicon/hrtb.html)是其中最通用的，我们将使用它来不限制用户。
+(你可以在FnMut的文档中了解它们之间的区别，也可以在Rustonomicon的[Higher-Rank Trait Bounds](https://doc.rust-lang.org/nomicon/hrtb.html)一章中了解它们到底是什么）。
 
-接下来，参数是什么？每个方法都会有一个可被借用的对象作为第一个参数（&mut self），还有一些参数结构作为第二个参数。因此，我们可以尝试FnMut(&mut dyn Any, dyn Any)这样的方法。
+接下来，参数是什么？每个方法都会有一个可被借用的对象作为第一个参数（`&mut self`），还有一些参数结构作为第二个参数。因此，我们可以尝试`FnMut(&mut dyn Any, dyn Any)`这样的方法。
 
-但是像这样按值传递特质对象是行不通的，因为dyn Any的大小是未知的。至少对于第二个参数，我们需要把它包在一个盒子里。因为我们无论如何都要存储对象的盒子，所以我们也要把第一个参数包起来。这让我们看到了FnMut(&mut Box<dyn Any>, Box<dyn Any>)。
+但是像这样按值传递特质对象是行不通的，因为`dyn Any`的大小是未知的。至少对于第二个参数，我们需要把它包在一个盒子里。
+因为我们无论如何都要存储对象的盒子，所以我们也要把第一个参数包起来。这让我们看到了`FnMut(&mut Box<dyn Any>, Box<dyn Any>)`。
 
-最后，我们必须把它放在一个哈希图中。哈希图的值是 FnMut 特质的一个特质对象，所以它必须被包装成另一个 Box。
+最后，我们必须把它放在一个哈希map 中。哈希map的值是 `FnMut trait`的一个trait object，所以它必须被包装成另一个 `Box`。
 
-哈希图的键应该是两种类型的组合，（TypeId,TypeId）。第一个类型ID是对象的，第二个是方法参数的。这允许为每个对象存储许多方法。而查询仍然只有一个哈希值。
+哈希map的键应该是两种类型的组合，（`TypeId,TypeId`）。第一个类型ID是对象的，第二个是方法参数的。这允许为每个对象存储许多方法。而查询仍然只有一个哈希值。
 
 把这一切放在一起，Nut结构看起来是这样的。
 
@@ -460,6 +512,7 @@ where
 有了这种方法，我就能接受到处使用回调的事件驱动的浏览器世界了。任何注册的对象都可以从任何地方访问，包括从闭包内访问。
 
 ### More about Nuts
+
 我在前面提到的Nuts库，不仅仅涵盖了我到目前为止向你展示的案例。这个概念还可以进一步扩展到一个完整的发布-订阅库。这样就可以在不知道哪个对象有这样一个方法的情况下发送一个方法调用，如下图所示。
 
 ```rust
