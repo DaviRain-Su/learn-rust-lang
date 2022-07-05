@@ -1,15 +1,15 @@
-pub mod statement;
 pub mod expression;
+pub mod statement;
 
 #[cfg(test)]
 mod tests;
 
-use std::any::Any;
-use crate::token::token_type::TokenType;
-use crate::token::Token;
-use std::fmt::{Debug, Display, Formatter};
 use crate::ast::expression::Expression;
 use crate::ast::statement::Statement;
+use crate::token::token_type::TokenType;
+use crate::token::Token;
+use std::any::Any;
+use std::fmt::{Debug, Display, Formatter};
 
 pub trait Node: Debug + Display {
     /// 必须提供 TokenLiteral()方法，该方法返回与其
@@ -103,8 +103,7 @@ impl From<Expression> for Identifier {
     fn from(expression: Expression) -> Self {
         match expression {
             Expression::IdentifierExpression(ident) => ident.clone(),
-            _ => unimplemented!()
+            _ => unimplemented!(),
         }
     }
 }
-

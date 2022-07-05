@@ -1,8 +1,8 @@
+use crate::ast::statement::Statement;
 use crate::ast::{Identifier, Node};
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::fmt::{Display, Formatter};
-use crate::ast::statement::Statement;
 
 /// let statement
 #[derive(Debug, Default, Clone)]
@@ -11,7 +11,6 @@ pub struct LetStatement {
     pub name: Identifier,
     pub value: Identifier,
 }
-
 
 impl Node for LetStatement {
     fn token_literal(&self) -> String {
@@ -33,10 +32,10 @@ impl Display for LetStatement {
 
 impl From<Statement> for LetStatement {
     fn from(value: Statement) -> Self {
-       match value {
-           Statement::LetStatement(let_s) => let_s.clone(),
-           _ => unimplemented!()
-       }
+        match value {
+            Statement::LetStatement(let_s) => let_s.clone(),
+            _ => unimplemented!(),
+        }
     }
 }
 
@@ -44,7 +43,7 @@ impl From<&Statement> for LetStatement {
     fn from(value: &Statement) -> Self {
         match value {
             Statement::LetStatement(let_s) => let_s.clone(),
-            _ => unimplemented!()
+            _ => unimplemented!(),
         }
     }
 }

@@ -1,15 +1,14 @@
 pub mod expression_statement;
 pub mod let_statement;
 pub mod return_statement;
-use crate::ast::{Identifier, Node};
-use std::fmt::{Debug, Display, Formatter, write};
 use crate::ast::statement::expression_statement::ExpressionStatement;
 use crate::ast::statement::let_statement::LetStatement;
 use crate::ast::statement::return_statement::ReturnStatement;
-
+use crate::ast::{Identifier, Node};
+use std::fmt::{write, Debug, Display, Formatter};
 
 #[derive(Debug)]
-pub enum  Statement {
+pub enum Statement {
     ExpressionStatement(ExpressionStatement),
     LetStatement(LetStatement),
     ReturnStatement(ReturnStatement),
@@ -25,12 +24,11 @@ impl Node for Statement {
     }
 }
 
-
 impl Display for Statement {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Statement::ExpressionStatement(exp_s) => write!(f, "{}", exp_s),
-            Statement::LetStatement(let_s) => write!(f,"{}",let_s),
+            Statement::LetStatement(let_s) => write!(f, "{}", let_s),
             Statement::ReturnStatement(ret_s) => write!(f, "{}", ret_s),
         }
     }
@@ -48,13 +46,11 @@ impl From<LetStatement> for Statement {
     }
 }
 
-
 impl From<ReturnStatement> for Statement {
     fn from(ret_s: ReturnStatement) -> Self {
         Self::ReturnStatement(ret_s)
     }
 }
-
 
 impl AsRef<Statement> for &Statement {
     fn as_ref(&self) -> &Statement {
@@ -66,7 +62,7 @@ impl AsRef<Statement> for &Statement {
 //     fn statement_node(&self);
 //
 //     must be have this function
-    // fn identifier(&self) -> Identifier;
+// fn identifier(&self) -> Identifier;
 // }
 
 // pub trait Expression: Node {

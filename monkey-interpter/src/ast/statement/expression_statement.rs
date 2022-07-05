@@ -1,10 +1,10 @@
+use crate::ast::expression::integer_literal::IntegerLiteral;
+use crate::ast::expression::Expression;
+use crate::ast::statement::Statement;
 use crate::ast::{Identifier, Node};
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::fmt::{Display, Formatter};
-use crate::ast::expression::Expression;
-use crate::ast::expression::integer_literal::IntegerLiteral;
-use crate::ast::statement::Statement;
 
 /// expression statement
 /// ExpressionStatement 类型具有两个字段，分别是每个节点都具有的token字段
@@ -12,7 +12,7 @@ use crate::ast::statement::Statement;
 #[derive(Debug, Clone)]
 pub struct ExpressionStatement {
     pub token: Token, // 该表达式中的第一个词法单元
-    pub expression: Expression ,
+    pub expression: Expression,
 }
 
 impl Default for ExpressionStatement {
@@ -38,10 +38,10 @@ impl Node for ExpressionStatement {
 
 impl From<Statement> for ExpressionStatement {
     fn from(value: Statement) -> Self {
-      match value {
-          Statement::ExpressionStatement(exp_s) => exp_s.clone(),
-          _ => unimplemented!()
-      }
+        match value {
+            Statement::ExpressionStatement(exp_s) => exp_s.clone(),
+            _ => unimplemented!(),
+        }
     }
 }
 
@@ -49,7 +49,7 @@ impl From<&Statement> for ExpressionStatement {
     fn from(value: &Statement) -> Self {
         match value {
             Statement::ExpressionStatement(exp_s) => exp_s.clone(),
-            _ => unimplemented!()
+            _ => unimplemented!(),
         }
     }
 }

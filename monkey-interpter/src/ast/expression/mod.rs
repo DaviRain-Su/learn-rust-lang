@@ -1,8 +1,8 @@
-use std::fmt::{Display, Formatter, write};
-use std::process::id;
 use crate::ast::expression::integer_literal::IntegerLiteral;
 use crate::ast::expression::prefix_expression::PrefixExpression;
 use crate::ast::{Identifier, Node};
+use std::fmt::{write, Display, Formatter};
+use std::process::id;
 
 pub mod integer_literal;
 pub mod prefix_expression;
@@ -11,7 +11,7 @@ pub mod prefix_expression;
 pub enum Expression {
     PrefixExpression(PrefixExpression),
     IntegerLiteralExpression(IntegerLiteral),
-    IdentifierExpression(Identifier)
+    IdentifierExpression(Identifier),
 }
 
 impl Display for Expression {
@@ -19,11 +19,10 @@ impl Display for Expression {
         match self {
             Expression::PrefixExpression(pre_exp) => write!(f, "{}", pre_exp),
             Expression::IntegerLiteralExpression(integ_exp) => write!(f, "{}", integ_exp),
-            Expression::IdentifierExpression(ident) => write!(f,"{}", ident),
+            Expression::IdentifierExpression(ident) => write!(f, "{}", ident),
         }
     }
 }
-
 
 impl Node for Expression {
     fn token_literal(&self) -> String {
@@ -47,7 +46,7 @@ impl From<IntegerLiteral> for Expression {
     }
 }
 
-impl  From<Identifier> for Expression {
+impl From<Identifier> for Expression {
     fn from(identifier: Identifier) -> Self {
         Self::IdentifierExpression(identifier)
     }

@@ -1,8 +1,8 @@
+use crate::ast::statement::Statement;
 use crate::ast::{Identifier, Node};
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::fmt::{Display, Formatter};
-use crate::ast::statement::Statement;
 
 /// return statement
 #[derive(Debug, Default, Clone)]
@@ -23,12 +23,11 @@ impl Node for ReturnStatement {
     }
 }
 
-
 impl From<Statement> for ReturnStatement {
     fn from(value: Statement) -> Self {
         match value {
             Statement::ReturnStatement(return_value) => return_value.clone(),
-            _ => unimplemented!()
+            _ => unimplemented!(),
         }
     }
 }

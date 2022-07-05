@@ -1,10 +1,10 @@
+use crate::ast::expression::integer_literal::IntegerLiteral;
+use crate::ast::expression::Expression;
 use crate::ast::statement::expression_statement::ExpressionStatement;
+use crate::ast::Node;
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::fmt::{Display, Formatter};
-use crate::ast::expression::Expression;
-use crate::ast::expression::integer_literal::IntegerLiteral;
-use crate::ast::Node;
 
 #[derive(Debug, Clone)]
 pub struct PrefixExpression {

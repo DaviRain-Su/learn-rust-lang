@@ -1,16 +1,16 @@
+use crate::ast::expression::integer_literal::IntegerLiteral;
+use crate::ast::expression::prefix_expression::PrefixExpression;
 use crate::ast::expression::Expression;
 use crate::ast::statement::expression_statement::ExpressionStatement;
-use crate::ast::expression::integer_literal::IntegerLiteral;
 use crate::ast::statement::let_statement::LetStatement;
-use crate::ast::expression::prefix_expression::PrefixExpression;
 use crate::ast::statement::return_statement::ReturnStatement;
 use crate::ast::statement::Statement;
 use crate::ast::Identifier;
+use crate::ast::Node;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
-use crate::ast::Node;
 
-fn test_let_statements() -> anyhow::Result<()>{
+fn test_let_statements() -> anyhow::Result<()> {
     let input = "
 let x  5;
 let  = 19;
@@ -34,7 +34,10 @@ let  838383;
     let tests = vec!["x", "y", "foobar"];
 
     for (i, tt) in tests.into_iter().enumerate() {
-        let stmt = program.statements.get(i).ok_or(anyhow::anyhow!("read statements error"))?;
+        let stmt = program
+            .statements
+            .get(i)
+            .ok_or(anyhow::anyhow!("read statements error"))?;
 
         if !test_let_statement(stmt, tt.into()) {
             return Ok(());
@@ -75,7 +78,7 @@ fn test_let_statement(s: &Statement, name: String) -> bool {
 
     true
 }
-fn test_return_statements() -> anyhow::Result<()>{
+fn test_return_statements() -> anyhow::Result<()> {
     let input = "
 return 3;
 return 10;
@@ -111,7 +114,7 @@ return 233;
     Ok(())
 }
 
-fn test_identifier_expression() -> anyhow::Result<()>{
+fn test_identifier_expression() -> anyhow::Result<()> {
     let input = "foobar;";
 
     let lexer = Lexer::new(input)?;
@@ -154,7 +157,7 @@ fn test_identifier_expression() -> anyhow::Result<()>{
     Ok(())
 }
 
-fn test_integer_literal_expression() -> anyhow::Result<()>{
+fn test_integer_literal_expression() -> anyhow::Result<()> {
     let input = "5;";
 
     let lexer = Lexer::new(input)?;
@@ -243,7 +246,7 @@ fn test_parsing_prefix_expression() -> anyhow::Result<()> {
             );
         }
 
-        let exp = PrefixExpression::try_from(stmt.unwrap());
+        let exp = PrefixExpcression::try_from(stmt.unwrap());
         if exp.is_err() {
             eprintln!("stmt is not prefix_expression. got = {:?}", exp);
         }

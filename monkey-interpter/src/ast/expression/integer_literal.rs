@@ -1,9 +1,9 @@
+use crate::ast::expression::Expression;
 use crate::ast::statement::expression_statement::ExpressionStatement;
 use crate::ast::{Identifier, Node};
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::fmt::{Debug, Display, Formatter};
-use crate::ast::expression::Expression;
 
 #[derive(Debug, Default, Clone)]
 pub struct IntegerLiteral {
@@ -50,9 +50,9 @@ impl TryFrom<Expression> for IntegerLiteral {
     type Error = anyhow::Error;
 
     fn try_from(value: Expression) -> Result<Self, Self::Error> {
-       match value {
-           Expression::IntegerLiteralExpression(integ_exp) => Ok(integ_exp.clone()),
-           _ => unimplemented!()
-       }
+        match value {
+            Expression::IntegerLiteralExpression(integ_exp) => Ok(integ_exp.clone()),
+            _ => unimplemented!(),
+        }
     }
 }

@@ -2,12 +2,14 @@ mod operator_priority;
 #[cfg(test)]
 mod tests;
 
-use crate::ast::statement::expression_statement::ExpressionStatement;
 use crate::ast::expression::integer_literal::IntegerLiteral;
-use crate::ast::statement::let_statement::LetStatement;
 use crate::ast::expression::prefix_expression::PrefixExpression;
+use crate::ast::statement::expression_statement::ExpressionStatement;
+use crate::ast::statement::let_statement::LetStatement;
 use crate::ast::statement::return_statement::ReturnStatement;
 // use crate::ast::statement::{Expression, Statement};
+use crate::ast::expression::Expression;
+use crate::ast::statement::Statement;
 use crate::ast::{Identifier, Program};
 use crate::lexer::Lexer;
 use crate::parser::operator_priority::OperatorPriority;
@@ -16,8 +18,6 @@ use crate::token::token_type::TokenType;
 use crate::token::Token;
 use std::collections::HashMap;
 use std::default::default;
-use crate::ast::expression::Expression;
-use crate::ast::statement::Statement;
 
 /// 前缀解析函数
 /// 前缀运算符左侧为空。
@@ -182,10 +182,7 @@ impl Parser {
     }
 
     /// parse expression
-    fn parse_expression(
-        &mut self,
-        _precedence: OperatorPriority,
-    ) -> anyhow::Result<Expression> {
+    fn parse_expression(&mut self, _precedence: OperatorPriority) -> anyhow::Result<Expression> {
         // clone evn to temp value
         let mut parser = self.clone(); // todo
         let prefix = self.prefix_parse_fns.get(&self.current_token.r#type);
@@ -213,7 +210,8 @@ impl Parser {
         Ok(Identifier {
             token: self.current_token.clone(),
             value: self.current_token.literal.clone(),
-        }.into())
+        }
+        .into())
     }
 
     /// parse integer literal
