@@ -11,6 +11,7 @@ use crate::ast::Node;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
 use std::any::{Any, TypeId};
+use crate::ast::expression::boolean::Boolean;
 
 fn test_let_statements() -> anyhow::Result<()> {
     struct LetStatementTest {
@@ -164,6 +165,7 @@ fn test_identifier_expression() -> anyhow::Result<()> {
 
     Ok(())
 }
+
 
 fn test_integer_literal_expression() -> anyhow::Result<()> {
     let input = "5;";
@@ -459,6 +461,26 @@ fn test_identifier(exp: Expression, value: String) -> anyhow::Result<bool> {
     Ok(true)
 }
 
+
+fn test_boolean_literal(exp: Expression, value: bool) -> anyhow::Result<bool> {
+    let boolean = Boolean::try_from(exp)?;
+
+    if boolean.value != value {
+        eprintln!("boolean value not {}. got = {}", value, boolean.value);
+        return Ok(false);
+    }
+
+    if boolean.token_literal() != format!("{}", value) {
+        eprintln!(
+            "boolean token_literal not {}. got = {}",
+            value,
+            boolean.token_literal()
+        );
+        return Ok(false);
+    }
+    Ok(true)
+}
+
 trait Interface {
     fn as_any(&self) -> &dyn Any;
 }
@@ -478,6 +500,10 @@ impl Interface for &'static str {
     fn as_any(&self) -> &dyn Any {
         self
     }
+}
+
+impl Interface for bool {
+    fn as_any(&self) -> &dyn Any { self }
 }
 
 fn test_literal_expression(exp: Expression, expected: Box<dyn Interface>) -> anyhow::Result<bool> {
@@ -500,6 +526,12 @@ fn test_literal_expression(exp: Expression, expected: Box<dyn Interface>) -> any
             .downcast_ref::<&str>()
             .expect("downcast_ref error");
         test_identifier(exp, value.to_string())
+    } else if TypeId::of::<bool>() == t {
+        let value = expected
+            .as_any()
+            .downcast_ref::<bool>()
+            .expect("downcast_ref error");
+        test_boolean_literal(exp, value.clone())
     } else {
         eprintln!("type of exp not handle.got = {}", exp);
         Ok(false)
