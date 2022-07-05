@@ -1,3 +1,4 @@
+use std::any::Any;
 use crate::ast::statement::{Node, Statement};
 use crate::ast::Identifier;
 use crate::token::token_type::TokenType;
@@ -14,8 +15,12 @@ pub struct LetStatement {
 
 impl Node for LetStatement {
     fn token_literal(&self) -> String {
-        print!("[let statement] token_literal");
+        println!("[let statement] token_literal --> type_id = {:?}", self.type_id());
         self.token.literal.clone()
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 

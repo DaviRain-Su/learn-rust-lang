@@ -1,3 +1,4 @@
+use std::any::Any;
 use crate::ast::statement::{Expression, Node, Statement};
 use crate::ast::Identifier;
 use crate::token::token_type::TokenType;
@@ -30,8 +31,13 @@ impl Display for ExpressionStatement {
 
 impl Node for ExpressionStatement {
     fn token_literal(&self) -> String {
-        print!("[expression_statement] token_literal");
+        println!("[expression_statement] token_literal --> type_id = {:?}", self.type_id());
+
         self.expression.token_literal()
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 
@@ -47,6 +53,7 @@ impl Statement for ExpressionStatement {
 
 impl Expression for ExpressionStatement {
     fn expression_node(&self) {}
+
 }
 
 impl From<&Box<dyn Statement>> for ExpressionStatement {

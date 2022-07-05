@@ -302,7 +302,7 @@ fn test_test_return_statements() {
 }
 
 #[test]
-// #[ignore]
+#[ignore]
 fn test_test_identifier_expression() {
     let ret = test_identifier_expression();
     println!("test_test_identifier_expression: Ret = {:?}", ret);
@@ -316,7 +316,7 @@ fn test_test_integer_literal_expression() {
 }
 
 #[test]
-#[ignore]
+// #[ignore]
 fn test_test_parsing_prefix_expression() {
     let ret = test_parsing_prefix_expression();
     println!("test_test_parsing_prefix_expression : Ret = {:?}", ret);

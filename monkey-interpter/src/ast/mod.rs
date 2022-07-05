@@ -3,6 +3,7 @@ pub mod statement;
 #[cfg(test)]
 mod tests;
 
+use std::any::Any;
 use crate::ast::statement::{Expression, Node, Statement};
 use crate::token::token_type::TokenType;
 use crate::token::Token;
@@ -78,6 +79,10 @@ impl From<Token> for Identifier {
 impl Node for Identifier {
     fn token_literal(&self) -> String {
         self.token.literal.clone()
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 

@@ -1,3 +1,4 @@
+use std::any::Any;
 use crate::ast::statement::expression_statement::ExpressionStatement;
 use crate::ast::statement::{Expression, Node};
 use crate::token::token_type::TokenType;
@@ -33,8 +34,12 @@ impl Display for PrefixExpression {
 
 impl Node for PrefixExpression {
     fn token_literal(&self) -> String {
-        print!("[prefix expression] token_literal");
+        println!("[prefix expression] token_literal --> type_id = {:?}", self.type_id());
         self.right.token_literal()
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 
