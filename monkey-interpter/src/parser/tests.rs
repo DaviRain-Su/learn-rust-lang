@@ -10,6 +10,7 @@ use crate::ast::Identifier;
 use crate::ast::Node;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
+use std::fmt::format;
 
 fn test_let_statements() -> anyhow::Result<()> {
     struct LetStatementTest {
@@ -334,6 +335,8 @@ fn test_parsing_infix_expression() -> anyhow::Result<()> {
 
         let program = parser.parse_program()?;
 
+        println!(" program: {}", program);
+
         if program.statements.len() != 1 {
             eprintln!(
                 "program statements does not contain {} statemtns. got = {}",
@@ -368,6 +371,72 @@ fn test_parsing_infix_expression() -> anyhow::Result<()> {
             eprintln!("test_integer_literal error!");
         }
     }
+    Ok(())
+}
+
+fn test_operator_precedence_parsing() -> anyhow::Result<()> {
+    struct TempTest {
+        input: String,
+        expected: String,
+    }
+
+    let tests = vec![
+        TempTest {
+            input: "-a * b".into(),
+            expected: "((-a) * b)".into(),
+        },
+        TempTest {
+            input: "!-a".into(),
+            expected: "(!(-a))".into(),
+        },
+        TempTest {
+            input: "a + b + c".into(),
+            expected: "((a + b) + c)".into(),
+        },
+        TempTest {
+            input: "a * b * c".into(),
+            expected: "((a * b) * c)".into(),
+        },
+        TempTest {
+            input: "a * b / c".into(),
+            expected: "((a * b) / c)".into(),
+        },
+        TempTest {
+            input: "a + b / c".into(),
+            expected: "(a + (b /c))".into(),
+        },
+        TempTest {
+            input: "a + b * c + d / e - f".into(),
+            expected: "(((a + (b * c)) + (d / e) - f)".into(),
+        },
+        TempTest {
+            input: "3 + 4; -5 * 5".into(),
+            expected: "(3 + 4)((-5) * 5)".into(),
+        },
+        TempTest {
+            input: "5 > 4 == 3 < 4".into(),
+            expected: "((5 > 4) == (3 < 4))".into(),
+        },
+        TempTest {
+            input: "3 + 4 * 5 == 3 * 1 + 4 * 5".into(),
+            expected: "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))".into(),
+        },
+    ];
+
+    for tt in tests.into_iter() {
+        let lexer = Lexer::new(tt.input.as_str())?;
+        let mut parser = Parser::new(lexer)?;
+        let program = parser.parse_program()?;
+
+        if format!("{}", program) != tt.expected {
+            eprintln!(
+                "expected = {}, got = {}",
+                tt.expected,
+                format!("{}", program)
+            );
+        }
+    }
+
     Ok(())
 }
 
@@ -407,8 +476,14 @@ fn test_test_parsing_prefix_expression() {
 }
 
 #[test]
-// #[ignore]
+#[ignore]
 fn test_test_parsing_infix_expression() {
     let ret = test_parsing_infix_expression();
     println!("test_parsing_infix_expression: Ret = {:?}", ret);
+}
+
+#[test]
+fn test_test_operator_precedence_parsing() {
+    let ret = test_operator_precedence_parsing();
+    println!("test_operator_precedence_parsing: Ret = {:?}", ret);
 }

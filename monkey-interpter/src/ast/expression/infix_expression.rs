@@ -26,7 +26,7 @@ impl Default for InfixExpression {
 
 impl Display for InfixExpression {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "( {} {} {} )", self.left, self.operator, self.right)
+        write!(f, "({} {} {})", self.left, self.operator, self.right)
     }
 }
 
