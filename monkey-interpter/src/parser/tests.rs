@@ -12,6 +12,13 @@ use crate::lexer::Lexer;
 use crate::parser::Parser;
 
 fn test_let_statements() -> anyhow::Result<()> {
+
+    struct LetStatementTest {
+        input: String,
+        expected_identifier: String,
+        expected_value: String,
+    }
+
     let input = "
 let x  5;
 let  = 19;
@@ -221,6 +228,10 @@ fn test_parsing_prefix_expression() -> anyhow::Result<()> {
     let prefix_tests = vec![
         PrefixTest::new("!5;".into(), "!".into(), 5),
         PrefixTest::new("-15;".into(), "-".into(), 15),
+        // PrefixTest::new("!foobar;".into(), "!".into(), 15),
+        // PrefixTest::new("-foobar;".into(), "-".into(), 15),
+        // PrefixTest::new("!true;".into(), "!".into(), ""),
+        // PrefixTest::new("!false;".into(), "!".into(), "false"),
     ];
 
     for tt in prefix_tests.iter() {

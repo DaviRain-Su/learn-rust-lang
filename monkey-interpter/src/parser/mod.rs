@@ -92,11 +92,12 @@ impl Parser {
     }
 
     fn parse_program(&mut self) -> anyhow::Result<Program> {
+        println!("[parse_program] current_token = {:?}", self.current_token);
         let mut program = Program::new();
 
         // TODO this should be EOF, but this is ILLEGAL
         while !self.cur_token_is(TokenType::ILLEGAL) {
-            println!("[parse_program] current_token = {:?}", self.current_token);
+
             let stmt = self.parse_statement()?;
             program.statements.push(stmt);
             self.next_token()?;
@@ -106,6 +107,7 @@ impl Parser {
     }
 
     fn parse_statement(&mut self) -> anyhow::Result<Statement> {
+        println!("[parse_statement] current_token = {:?}", self.current_token);
         match self.current_token.r#type {
             TokenType::LET => Ok(self.parse_let_statement()?.into()),
             TokenType::RETURN => Ok(self.parse_return_statement()?.into()),
@@ -125,6 +127,7 @@ impl Parser {
     ///
     /// # 解析let 语句
     fn parse_let_statement(&mut self) -> anyhow::Result<LetStatement> {
+        println!("[parse_let_statement] current_token = {:?}", self.current_token);
         let mut stmt = LetStatement {
             token: self.current_token.clone(),
             ..default()
@@ -155,6 +158,7 @@ impl Parser {
 
     /// 解析return 语句
     fn parse_return_statement(&mut self) -> anyhow::Result<ReturnStatement> {
+        println!("[parse_return_statement] current_token = {:?}", self.current_token);
         let stmt = ReturnStatement {
             token: self.current_token.clone(),
             ..default()
@@ -173,11 +177,13 @@ impl Parser {
     /// 解析表达式语句
     /// 这是因为表达式语句不是真正的语句，而是仅由表达式构成的语句，相当于一层封装
     fn parse_expression_statement(&mut self) -> anyhow::Result<ExpressionStatement> {
+        println!("[parse_expression_statement] current_token = {:?}", self.current_token);
         let mut stmt = ExpressionStatement {
             token: self.current_token.clone(),
             ..default()
         };
-        println!("[parse_expression_statement] >> init stmt = {:?}", stmt);
+
+        println!("[parse_expression_statement] >> init ExpressionStatement = {:?}", stmt);
 
         stmt.expression = self.parse_expression(OperatorPriority::LOWEST)?.into();
 
@@ -192,7 +198,11 @@ impl Parser {
 
     /// parse expression
     fn parse_expression(&mut self, precedence: OperatorPriority) -> anyhow::Result<Expression> {
-        // clone evn to temp value
+        println!(
+            "[parse_expression] current_token = {:?}",
+            self.current_token
+        );
+        // TODO clone evn to temp value
         let mut parser = self.clone();
         println!(
             "[parse_expression] current_token type = {:?}",
@@ -214,19 +224,28 @@ impl Parser {
         let prefix = prefix.unwrap();
 
         let mut left_exp = prefix(&mut parser)?;
+        println!("[parse_expression] left expression = {:?}", left_exp);
 
         while !self.peek_token_is(TokenType::SEMICOLON) && precedence < self.peek_precedence() {
+            println!("[parse_expression] infix_parse_fns *********");
+            println!("[parse_expression] peek_token = {:?}", self.peek_token);
             let infix = temp_infix_parse_fns.get(&self.peek_token.r#type);
             if infix.is_none() {
                 return Ok(left_exp);
             }
 
             self.next_token()?;
+            // TODO
+            // 第二次分析道这里的bug
+            // then update parser, because there update self useed by next_token
+            parser = self.clone();
 
             let infix = infix.unwrap();
             left_exp = infix(&mut parser, left_exp)?;
         }
 
+
+        // TODO
         // update env with temp value
         self.update_parser(parser);
 
@@ -272,6 +291,7 @@ impl Parser {
             operator: self.current_token.literal.clone(),
             ..default()
         };
+        println!("[parse_infix_expression] before InfixExpression = {:#?}", expression);
 
         let precedence = self.cur_precedence();
 
@@ -279,11 +299,13 @@ impl Parser {
 
         expression.right = Box::new(self.parse_expression(precedence)?);
 
+        println!("[parse_infix_expression] after InfixExpression = {:#?}", expression);
+
         Ok(expression.into())
     }
 
     fn cur_token_is(&self, t: TokenType) -> bool {
-        self.peek_token.r#type == t
+        self.current_token.r#type == t
     }
 
     fn peek_token_is(&self, t: TokenType) -> bool {
