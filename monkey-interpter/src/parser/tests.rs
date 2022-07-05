@@ -12,7 +12,6 @@ use crate::lexer::Lexer;
 use crate::parser::Parser;
 
 fn test_let_statements() -> anyhow::Result<()> {
-
     struct LetStatementTest {
         input: String,
         expected_identifier: String,
@@ -325,7 +324,7 @@ fn test_parsing_infix_expression() -> anyhow::Result<()> {
         InfixTest::new("5 > 5;".into(), 5, ">".into(), 5),
         InfixTest::new("5 < 5;".into(), 5, "<".into(), 5),
         InfixTest::new("5 == 5;".into(), 5, "==".into(), 5),
-        InfixTest::new("5 != 5;z".into(), 5, "!=".into(), 5),
+        InfixTest::new("5 != 5;".into(), 5, "!=".into(), 5),
     ];
 
     for tt in infix_tests.iter() {
