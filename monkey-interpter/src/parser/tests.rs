@@ -339,7 +339,51 @@ fn test_parsing_infix_expression() -> anyhow::Result<()> {
             "+".into(),
             "barfoo".into(),
         ),
+        InfixTest::new(
+            "foobar - barfoo;".into(),
+            "foobar".into(),
+            "-".into(),
+            "barfoo".into(),
+        ),
+        InfixTest::new(
+            "foobar * barfoo;".into(),
+            "foobar".into(),
+            "*".into(),
+            "barfoo".into(),
+        ),
+        InfixTest::new(
+            "foobar / barfoo;".into(),
+            "foobar".into(),
+            "/".into(),
+            "barfoo".into(),
+        ),
+        InfixTest::new(
+            "foobar < barfoo;".into(),
+            "foobar".into(),
+            "<".into(),
+            "barfoo".into(),
+        ),
+        InfixTest::new(
+            "foobar > barfoo;".into(),
+            "foobar".into(),
+            ">".into(),
+            "barfoo".into(),
+        ),
+        InfixTest::new(
+            "foobar == barfoo;".into(),
+            "foobar".into(),
+            "==".into(),
+            "barfoo".into(),
+        ),
+        InfixTest::new(
+            "foobar != barfoo;".into(),
+            "foobar".into(),
+            "!=".into(),
+            "barfoo".into(),
+        ),
         InfixTest::new("true == true".into(), true.into(), "==".into(), true.into()),
+        InfixTest::new("true != false".into(), true.into(), "!=".into(), false.into()),
+        InfixTest::new("false == false".into(), false.into(), "==".into(), false.into()),
     ];
 
     for tt in infix_tests.iter() {
