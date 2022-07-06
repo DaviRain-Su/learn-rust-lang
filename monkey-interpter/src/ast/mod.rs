@@ -8,6 +8,7 @@ use crate::ast::expression::Expression;
 use crate::ast::statement::Statement;
 use crate::token::Token;
 use std::fmt::{Debug, Display, Formatter};
+use crate::ast::expression::boolean::Boolean;
 
 pub trait Node: Debug + Display {
     /// 必须提供 TokenLiteral()方法，该方法返回与其
@@ -81,6 +82,15 @@ impl From<Token> for Identifier {
     }
 }
 
+impl From<Boolean> for Identifier {
+    fn from(boolean: Boolean) -> Self {
+        Self {
+            token: boolean.token.clone(),
+            value: boolean.value.to_string(),
+        }
+    }
+}
+
 impl Node for Identifier {
     fn token_literal(&self) -> String {
         self.token.literal.clone()
@@ -91,7 +101,10 @@ impl From<Expression> for Identifier {
     fn from(expression: Expression) -> Self {
         match expression {
             Expression::IdentifierExpression(ident) => ident.clone(),
-            _ => unimplemented!(),
+            _ => {
+                println!("Expression: {:#?}", expression);
+                unimplemented!()
+            },
         }
     }
 }

@@ -1,5 +1,5 @@
 use crate::ast::expression::Expression;
-use crate::ast::Node;
+use crate::ast::{Identifier, Node};
 use crate::token::Token;
 use std::fmt::{Display, Formatter};
 
@@ -27,7 +27,17 @@ impl TryFrom<Expression> for Boolean {
     fn try_from(value: Expression) -> Result<Self, Self::Error> {
         match value {
             Expression::BooleanExpression(boolean) => Ok(boolean),
+            Expression::PrefixExpression(prefix_expression) => {
+                match *prefix_expression.right {
+                    Expression::PrefixExpression(_) => unimplemented!(),
+                    Expression::InfixExpression(_) => unimplemented!(),
+                    Expression::IntegerLiteralExpression(_) => unimplemented!(),
+                    Expression::IdentifierExpression(_) => unimplemented!(),
+                    Expression::BooleanExpression(value) => Ok(value.clone())
+                }
+            }
             _ => unimplemented!(),
         }
     }
 }
+

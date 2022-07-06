@@ -213,11 +213,11 @@ fn test_parsing_prefix_expression() -> anyhow::Result<()> {
     struct PrefixTest {
         input: String,
         operator: String,
-        integer_value: i64,
+        integer_value: Box<dyn Interface>,
     }
 
     impl PrefixTest {
-        fn new(input: String, operator: String, integer_value: i64) -> Self {
+        fn new(input: String, operator: String, integer_value: Box<dyn Interface>) -> Self {
             Self {
                 input,
                 operator,
@@ -227,12 +227,12 @@ fn test_parsing_prefix_expression() -> anyhow::Result<()> {
     }
 
     let prefix_tests = vec![
-        PrefixTest::new("!5;".into(), "!".into(), 5),
-        PrefixTest::new("-15;".into(), "-".into(), 15),
+        PrefixTest::new("!5;".into(), "!".into(), 5.into()),
+        PrefixTest::new("-15;".into(), "-".into(), 15.into()),
         // PrefixTest::new("!foobar;".into(), "!".into(), 15),
         // PrefixTest::new("-foobar;".into(), "-".into(), 15),
-        // PrefixTest::new("!true;".into(), "!".into(), ""),
-        // PrefixTest::new("!false;".into(), "!".into(), "false"),
+        PrefixTest::new("!true;".into(), "!".into(), true.into()),
+        PrefixTest::new("!false;".into(), "!".into(), false.into()),
     ];
 
     for tt in prefix_tests.iter() {
@@ -270,7 +270,7 @@ fn test_parsing_prefix_expression() -> anyhow::Result<()> {
             );
         }
 
-        let ret = test_integer_literal(*exp.right.clone(), tt.integer_value)?;
+        let ret = test_literal_expression(exp.into(), &*tt.integer_value)?;
 
         if ret == false {
             eprintln!("test_integer_literal error!");
@@ -303,26 +303,6 @@ fn test_parsing_infix_expression() -> anyhow::Result<()> {
             }
         }
     }
-
-    // {"5 + 5;", 5, "+", 5},
-    // {"5 - 5;", 5, "-", 5},
-    // {"5 * 5;", 5, "*", 5},
-    // {"5 / 5;", 5, "/", 5},
-    // {"5 > 5;", 5, ">", 5},
-    // {"5 < 5;", 5, "<", 5},
-    // {"5 == 5;", 5, "==", 5},
-    // {"5 != 5;", 5, "!=", 5},
-    // {"foobar + barfoo;", "foobar", "+", "barfoo"},
-    // {"foobar - barfoo;", "foobar", "-", "barfoo"},
-    // {"foobar * barfoo;", "foobar", "*", "barfoo"},
-    // {"foobar / barfoo;", "foobar", "/", "barfoo"},
-    // {"foobar > barfoo;", "foobar", ">", "barfoo"},
-    // {"foobar < barfoo;", "foobar", "<", "barfoo"},
-    // {"foobar == barfoo;", "foobar", "==", "barfoo"},
-    // {"foobar != barfoo;", "foobar", "!=", "barfoo"},
-    // {"true == true", true, "==", true},
-    // {"true != false", true, "!=", false},
-    // {"false == false", false, "==", false},
 
     let infix_tests = vec![
         InfixTest::new("5 + 5;".into(), 5.into(), "+".into(), 5.into()),
@@ -417,26 +397,6 @@ fn test_parsing_infix_expression() -> anyhow::Result<()> {
         )? {
             return Err(anyhow::anyhow!("test_infix_expression error"));
         }
-
-        // let exp = InfixExpression::try_from(stmt.unwrap())?;
-        //
-        // let ret = test_integer_literal(*exp.left.clone(), tt.left_value)?;
-        //
-        // if ret == false {
-        //     eprintln!("test_integer_literal error!");
-        // }
-        //
-        // if exp.operator != tt.operator {
-        //     eprintln!(
-        //         "exp.operator is not `{}`. got = {}",
-        //         tt.operator, exp.operator
-        //     );
-        // }
-        //
-        // let ret = test_integer_literal(*exp.right.clone(), tt.right_value)?;
-        // if ret == false {
-        //     eprintln!("test_integer_literal error!");
-        // }
     }
     Ok(())
 }
@@ -448,46 +408,63 @@ fn test_operator_precedence_parsing() -> anyhow::Result<()> {
     }
 
     let tests = vec![
-        // TempTest {
-        //     input: "-a * b".into(),
-        //     expected: "((-a) * b)".into(),
-        // },
-        // TempTest {
-        //     input: "!-a".into(),
-        //     expected: "(!(-a))".into(),
-        // },
+        TempTest {
+            input: "-a * b".into(),
+            expected: "((-a) * b)".into(),
+        },
+        TempTest {
+            input: "!-a".into(),
+            expected: "(!(-a))".into(),
+        },
         TempTest {
             input: "a + b + c".into(),
             expected: "((a + b) + c)".into(),
         },
-        // TempTest {
-        //     input: "a * b * c".into(),
-        //     expected: "((a * b) * c)".into(),
-        // },
-        // TempTest {
-        //     input: "a * b / c".into(),
-        //     expected: "((a * b) / c)".into(),
-        // },
-        // TempTest {
-        //     input: "a + b / c".into(),
-        //     expected: "(a + (b /c))".into(),
-        // },
-        // TempTest {
-        //     input: "a + b * c + d / e - f".into(),
-        //     expected: "(((a + (b * c)) + (d / e) - f)".into(),
-        // },
-        // TempTest {
-        //     input: "3 + 4; -5 * 5".into(),
-        //     expected: "(3 + 4)((-5) * 5)".into(),
-        // },
-        // TempTest {
-        //     input: "5 > 4 == 3 < 4".into(),
-        //     expected: "((5 > 4) == (3 < 4))".into(),
-        // },
-        // TempTest {
-        //     input: "3 + 4 * 5 == 3 * 1 + 4 * 5".into(),
-        //     expected: "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))".into(),
-        // },
+        TempTest {
+            input: "a * b * c".into(),
+            expected: "((a * b) * c)".into(),
+        },
+        TempTest {
+            input: "a * b / c".into(),
+            expected: "((a * b) / c)".into(),
+        },
+        TempTest {
+            input: "a + b / c".into(),
+            expected: "(a + (b /c))".into(),
+        },
+        TempTest {
+            input: "a + b * c + d / e - f".into(),
+            expected: "(((a + (b * c)) + (d / e) - f)".into(),
+        },
+        TempTest {
+            input: "3 + 4; -5 * 5".into(),
+            expected: "(3 + 4)((-5) * 5)".into(),
+        },
+        TempTest {
+            input: "5 > 4 == 3 < 4".into(),
+            expected: "((5 > 4) == (3 < 4))".into(),
+        },
+        TempTest {
+            input: "3 + 4 * 5 == 3 * 1 + 4 * 5".into(),
+            expected: "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))".into(),
+        },
+        TempTest {
+            input: "true".into(),
+            expected: "true".into(),
+        },
+        TempTest {
+            input: "3 < 5 == false".into(),
+            expected: "((3 < 5) == false)".into(),
+        },
+        TempTest {
+            input: "false".into(),
+            expected: "false".into(),
+        },
+        TempTest {
+            input: "3 > 5 == false".into(),
+            expected: "((3 > 5) == false".into(),
+        },
+
     ];
 
     for tt in tests.into_iter() {
@@ -704,14 +681,14 @@ fn test_test_integer_literal_expression() {
 }
 
 #[test]
-#[ignore]
+// #[ignore]
 fn test_test_parsing_prefix_expression() {
     let ret = test_parsing_prefix_expression();
     println!("test_test_parsing_prefix_expression : Ret = {:?}", ret);
 }
 
 #[test]
-// #[ignore]
+#[ignore]
 fn test_test_parsing_infix_expression() {
     let ret = test_parsing_infix_expression();
     println!("test_parsing_infix_expression: Ret = {:?}", ret);
