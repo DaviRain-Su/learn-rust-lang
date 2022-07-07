@@ -4,6 +4,7 @@ pub mod parser_tracing;
 mod tests;
 
 use crate::ast::expression::boolean::Boolean;
+use crate::ast::expression::function_literal::FunctionLiteral;
 use crate::ast::expression::if_expression::IfExpression;
 use crate::ast::expression::infix_expression::InfixExpression;
 use crate::ast::expression::integer_literal::IntegerLiteral;
@@ -23,7 +24,6 @@ use crate::token::Token;
 use log::trace;
 use std::collections::HashMap;
 use std::default::default;
-use crate::ast::expression::function_literal::FunctionLiteral;
 // use crate::parser::parser_tracing::{trace, un_trace};
 
 /// 前缀解析函数
@@ -428,7 +428,6 @@ impl Parser {
         Ok(block)
     }
 
-
     /// parse function literals
     fn parse_function_literal(&mut self) -> anyhow::Result<Expression> {
         let mut lit = FunctionLiteral {
@@ -472,9 +471,9 @@ impl Parser {
         while self.peek_token_is(TokenType::COMMA) {
             // println!("[parser function parameters ] current_token {:?}", self.current_token);
             self.next_token()?; // skip one ident
-            // println!("[parser function parameters ] current_token {:?}", self.current_token);
+                                // println!("[parser function parameters ] current_token {:?}", self.current_token);
             self.next_token()?; // skip one `,`
-            // println!("[parser function parameters ] current_token {:?}", self.current_token);
+                                // println!("[parser function parameters ] current_token {:?}", self.current_token);
             let ident = Identifier {
                 token: self.current_token.clone(),
                 value: self.current_token.literal.clone(),
@@ -490,7 +489,6 @@ impl Parser {
         }
 
         Ok(identifiers)
-
     }
 
     fn cur_token_is(&self, t: TokenType) -> bool {

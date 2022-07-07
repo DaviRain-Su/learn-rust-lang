@@ -1,4 +1,5 @@
 use crate::ast::expression::boolean::Boolean;
+use crate::ast::expression::function_literal::FunctionLiteral;
 use crate::ast::expression::if_expression::IfExpression;
 use crate::ast::expression::infix_expression::InfixExpression;
 use crate::ast::expression::integer_literal::IntegerLiteral;
@@ -13,7 +14,6 @@ use crate::ast::Node;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
 use std::any::{Any, TypeId};
-use crate::ast::expression::function_literal::FunctionLiteral;
 
 fn test_let_statements() -> anyhow::Result<()> {
     struct LetStatementTest {
@@ -828,8 +828,7 @@ fn test_if_else_expression() -> anyhow::Result<()> {
     Ok(())
 }
 
-
-fn test_function_literal_parsing() -> anyhow::Result<()>{
+fn test_function_literal_parsing() -> anyhow::Result<()> {
     let input = "fn(x, y) { x + y; }";
 
     let lexer = Lexer::new(input)?;
@@ -839,10 +838,17 @@ fn test_function_literal_parsing() -> anyhow::Result<()>{
     let program = parser.parse_program()?;
 
     if program.statements.len() != 1 {
-        eprintln!("program statements does not contain {} statments. got = {}", 1, program.statements.len());
+        eprintln!(
+            "program statements does not contain {} statments. got = {}",
+            1,
+            program.statements.len()
+        );
     }
 
-    let stmt = program.statements.get(0).map(|value| ExpressionStatement::from(value));
+    let stmt = program
+        .statements
+        .get(0)
+        .map(|value| ExpressionStatement::from(value));
     if stmt.is_none() {
         eprintln!("program statements[0] is not  expression statement. got = None");
     }
@@ -850,26 +856,43 @@ fn test_function_literal_parsing() -> anyhow::Result<()>{
     let function = FunctionLiteral::try_from(stmt.unwrap().expression)?;
 
     if function.parameters.len() != 2 {
-        eprintln!("function literals parameters wrong. want 2, got = {}", function.parameters.len());
+        eprintln!(
+            "function literals parameters wrong. want 2, got = {}",
+            function.parameters.len()
+        );
     }
 
-    test_literal_expression(function.parameters[0].clone().into(), &"x".to_string()).expect("test literals expression error");
-    test_literal_expression(function.parameters[1].clone().into(), &"y".to_string()).expect("test literals expression error");
+    test_literal_expression(function.parameters[0].clone().into(), &"x".to_string())
+        .expect("test literals expression error");
+    test_literal_expression(function.parameters[1].clone().into(), &"y".to_string())
+        .expect("test literals expression error");
 
     if function.body.statements.len() != 1 {
-        eprintln!("function body statements wrong. want 1, got = {}", function.body.statements.len());
+        eprintln!(
+            "function body statements wrong. want 1, got = {}",
+            function.body.statements.len()
+        );
     }
 
-    let body_stmt = function.body.statements.get(0).map(|value| ExpressionStatement::from(value));
+    let body_stmt = function
+        .body
+        .statements
+        .get(0)
+        .map(|value| ExpressionStatement::from(value));
     if body_stmt.is_none() {
         eprintln!("function body stmt is not ExpressionStatement. got = None");
     }
 
-    test_infix_expression(body_stmt.unwrap().expression, &"x".to_string(), "+".into(),&"y".to_string()).expect("test infix expression error");
+    test_infix_expression(
+        body_stmt.unwrap().expression,
+        &"x".to_string(),
+        "+".into(),
+        &"y".to_string(),
+    )
+    .expect("test infix expression error");
 
     Ok(())
 }
-
 
 fn test_function_parameter_parsing() -> anyhow::Result<()> {
     struct Test {
@@ -877,7 +900,7 @@ fn test_function_parameter_parsing() -> anyhow::Result<()> {
         expected_params: Vec<String>,
     }
 
-    let tests = vec! {
+    let tests = vec![
         Test {
             input: "fn() {};".into(),
             expected_params: vec![],
@@ -890,7 +913,7 @@ fn test_function_parameter_parsing() -> anyhow::Result<()> {
             input: "fn(x, y, z) {};".into(),
             expected_params: vec!["x".into(), "y".into(), "z".into()],
         },
-    };
+    ];
 
     for tt in tests.into_iter() {
         let lexer = Lexer::new(tt.input.as_str())?;
@@ -898,11 +921,18 @@ fn test_function_parameter_parsing() -> anyhow::Result<()> {
 
         let program = parser.parse_program()?;
 
-        let stmt = program.statements.get(0).map(|value| ExpressionStatement::from(value));
+        let stmt = program
+            .statements
+            .get(0)
+            .map(|value| ExpressionStatement::from(value));
         let function = FunctionLiteral::try_from(stmt.unwrap().expression)?;
 
         if function.parameters.len() != tt.expected_params.len() {
-            eprintln!("length parameters wrong. want {}. got = {}", tt.expected_params.len(), function.parameters.len());
+            eprintln!(
+                "length parameters wrong. want {}. got = {}",
+                tt.expected_params.len(),
+                function.parameters.len()
+            );
         }
 
         for (i, ident) in tt.expected_params.into_iter().enumerate() {
@@ -973,7 +1003,6 @@ fn test_test_if_else_expression() {
     let ret = test_if_else_expression();
     println!("test_if_else_expression: Ret = {:?}", ret);
 }
-
 
 #[test]
 #[ignore]

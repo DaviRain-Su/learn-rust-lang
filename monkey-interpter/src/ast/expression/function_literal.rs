@@ -1,9 +1,9 @@
-use std::fmt::{Display, Formatter};
-use crate::ast::{Identifier, Node};
-use crate::ast::statement::block_statement::BlockStatement;
-use crate::token::Token;
-use string_join::Join;
 use crate::ast::expression::Expression;
+use crate::ast::statement::block_statement::BlockStatement;
+use crate::ast::{Identifier, Node};
+use crate::token::Token;
+use std::fmt::{Display, Formatter};
+use string_join::Join;
 
 #[derive(Debug, Clone)]
 pub struct FunctionLiteral {
@@ -34,7 +34,6 @@ impl Node for FunctionLiteral {
         self.token.literal.clone()
     }
 }
-
 
 impl TryFrom<Expression> for FunctionLiteral {
     type Error = anyhow::Error;
