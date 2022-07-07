@@ -51,20 +51,18 @@ impl TryFrom<Expression> for IntegerLiteral {
     fn try_from(value: Expression) -> Result<Self, Self::Error> {
         match value {
             Expression::IntegerLiteralExpression(integ_exp) => Ok(integ_exp.clone()),
-            Expression::PrefixExpression(pref_exp) => {
-                match *pref_exp.right {
-                    Expression::PrefixExpression(_) => unimplemented!(),
-                    Expression::InfixExpression(_) => unimplemented!(),
-                    Expression::IntegerLiteralExpression(value) => Ok(value.clone()),
-                    Expression::IdentifierExpression(_) => unimplemented!(),
-                    Expression::BooleanExpression(_) => unimplemented!(),
-                    Expression::IfExpression(_) => unimplemented!(),
-                }
-            }
+            Expression::PrefixExpression(pref_exp) => match *pref_exp.right {
+                Expression::PrefixExpression(_) => unimplemented!(),
+                Expression::InfixExpression(_) => unimplemented!(),
+                Expression::IntegerLiteralExpression(value) => Ok(value.clone()),
+                Expression::IdentifierExpression(_) => unimplemented!(),
+                Expression::BooleanExpression(_) => unimplemented!(),
+                Expression::IfExpression(_) => unimplemented!(),
+            },
             _ => {
                 println!("Expression: {:#?}", value);
                 unimplemented!()
-            },
+            }
         }
     }
 }

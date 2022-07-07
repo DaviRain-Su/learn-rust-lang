@@ -27,18 +27,15 @@ impl TryFrom<Expression> for Boolean {
     fn try_from(value: Expression) -> Result<Self, Self::Error> {
         match value {
             Expression::BooleanExpression(boolean) => Ok(boolean),
-            Expression::PrefixExpression(prefix_expression) => {
-                match *prefix_expression.right {
-                    Expression::PrefixExpression(_) => unimplemented!(),
-                    Expression::InfixExpression(_) => unimplemented!(),
-                    Expression::IntegerLiteralExpression(_) => unimplemented!(),
-                    Expression::IdentifierExpression(_) => unimplemented!(),
-                    Expression::BooleanExpression(value) => Ok(value.clone()),
-                    Expression::IfExpression(_) => unimplemented!(),
-                }
-            }
+            Expression::PrefixExpression(prefix_expression) => match *prefix_expression.right {
+                Expression::PrefixExpression(_) => unimplemented!(),
+                Expression::InfixExpression(_) => unimplemented!(),
+                Expression::IntegerLiteralExpression(_) => unimplemented!(),
+                Expression::IdentifierExpression(_) => unimplemented!(),
+                Expression::BooleanExpression(value) => Ok(value.clone()),
+                Expression::IfExpression(_) => unimplemented!(),
+            },
             _ => unimplemented!(),
         }
     }
 }
-

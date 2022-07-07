@@ -1,7 +1,7 @@
+pub mod block_statement;
 pub mod expression_statement;
 pub mod let_statement;
 pub mod return_statement;
-pub mod block_statement;
 
 use crate::ast::statement::expression_statement::ExpressionStatement;
 use crate::ast::statement::let_statement::LetStatement;

@@ -1,16 +1,16 @@
 use crate::ast::expression::boolean::Boolean;
+use crate::ast::expression::if_expression::IfExpression;
 use crate::ast::expression::infix_expression::InfixExpression;
 use crate::ast::expression::integer_literal::IntegerLiteral;
 use crate::ast::expression::prefix_expression::PrefixExpression;
 use crate::ast::{Identifier, Node};
 use std::fmt::{Display, Formatter};
-use crate::ast::expression::if_expression::IfExpression;
 
 pub mod boolean;
+pub mod if_expression;
 pub mod infix_expression;
 pub mod integer_literal;
 pub mod prefix_expression;
-pub mod if_expression;
 
 #[derive(Debug, Clone)]
 pub enum Expression {

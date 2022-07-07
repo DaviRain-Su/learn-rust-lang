@@ -1,4 +1,5 @@
 use crate::ast::expression::boolean::Boolean;
+use crate::ast::expression::if_expression::IfExpression;
 use crate::ast::expression::infix_expression::InfixExpression;
 use crate::ast::expression::integer_literal::IntegerLiteral;
 use crate::ast::expression::prefix_expression::PrefixExpression;
@@ -12,7 +13,6 @@ use crate::ast::Node;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
 use std::any::{Any, TypeId};
-use crate::ast::expression::if_expression::IfExpression;
 
 fn test_let_statements() -> anyhow::Result<()> {
     struct LetStatementTest {
@@ -363,8 +363,18 @@ fn test_parsing_infix_expression() -> anyhow::Result<()> {
             "barfoo".into(),
         ),
         InfixTest::new("true == true".into(), true.into(), "==".into(), true.into()),
-        InfixTest::new("true != false".into(), true.into(), "!=".into(), false.into()),
-        InfixTest::new("false == false".into(), false.into(), "==".into(), false.into()),
+        InfixTest::new(
+            "true != false".into(),
+            true.into(),
+            "!=".into(),
+            false.into(),
+        ),
+        InfixTest::new(
+            "false == false".into(),
+            false.into(),
+            "==".into(),
+            false.into(),
+        ),
     ];
 
     for tt in infix_tests.iter() {
@@ -465,7 +475,6 @@ fn test_operator_precedence_parsing() -> anyhow::Result<()> {
             input: "3 > 5 == false".into(),
             expected: "((3 > 5) == false".into(),
         },
-
         TempTest {
             input: "1 + (2 + 3) + 4".into(),
             expected: "((1 + (2 + 3)) + 4)".into(),
@@ -485,7 +494,7 @@ fn test_operator_precedence_parsing() -> anyhow::Result<()> {
         TempTest {
             input: "!(true == true)".into(),
             expected: "(!(true == true))".into(),
-        }
+        },
     ];
 
     for tt in tests.into_iter() {
@@ -673,7 +682,6 @@ fn test_infix_expression(
     Ok(true)
 }
 
-
 fn test_if_expression() -> anyhow::Result<()> {
     let input = "if (x < y) { x }";
 
@@ -683,10 +691,17 @@ fn test_if_expression() -> anyhow::Result<()> {
     let program = parser.parse_program()?;
 
     if program.statements.len() != 1 {
-        eprintln!("program statements does not contain {} statements. got = {}", 1, program.statements.len());
+        eprintln!(
+            "program statements does not contain {} statements. got = {}",
+            1,
+            program.statements.len()
+        );
     }
 
-    let stmt = program.statements.get(0).map(|value| ExpressionStatement::from(value));
+    let stmt = program
+        .statements
+        .get(0)
+        .map(|value| ExpressionStatement::from(value));
 
     if stmt.is_none() {
         eprintln!("program statements[0] is not ExpressionStatement. got = None");
@@ -696,19 +711,35 @@ fn test_if_expression() -> anyhow::Result<()> {
     println!("IfExpression Debug is = {:#?}", exp);
     println!("IfExpression Display is = {}", exp);
 
-    if !test_infix_expression(*exp.condition, &"x".to_string(), "<".into(), &"y".to_string())? {
+    if !test_infix_expression(
+        *exp.condition,
+        &"x".to_string(),
+        "<".into(),
+        &"y".to_string(),
+    )? {
         eprintln!("test_infix_expression error");
     }
 
     if exp.consequence.is_none() {
-        eprintln!("exp consequence statements was not nil. got = {:?}", exp.consequence);
+        eprintln!(
+            "exp consequence statements was not nil. got = {:?}",
+            exp.consequence
+        );
     }
 
-    if exp.consequence.as_ref().unwrap().statements.len() != 1  {
-        eprintln!("consequence is not 1 statements. got = {}", exp.consequence.as_ref().unwrap().statements.len());
+    if exp.consequence.as_ref().unwrap().statements.len() != 1 {
+        eprintln!(
+            "consequence is not 1 statements. got = {}",
+            exp.consequence.as_ref().unwrap().statements.len()
+        );
     }
 
-    let consequence = exp.consequence.unwrap().statements.get(0).map(|value | ExpressionStatement::from(value));
+    let consequence = exp
+        .consequence
+        .unwrap()
+        .statements
+        .get(0)
+        .map(|value| ExpressionStatement::from(value));
 
     if consequence.is_none() {
         eprintln!("statements[0] is not ExpressionStatement. got = None");
@@ -719,7 +750,10 @@ fn test_if_expression() -> anyhow::Result<()> {
     }
 
     if exp.alternative.is_some() {
-        eprintln!("exp alternative statements was not nil. got = {:?}", exp.alternative);
+        eprintln!(
+            "exp alternative statements was not nil. got = {:?}",
+            exp.alternative
+        );
     }
 
     Ok(())
@@ -734,10 +768,17 @@ fn test_if_else_expression() -> anyhow::Result<()> {
     let program = parser.parse_program()?;
 
     if program.statements.len() != 1 {
-        eprintln!("program statements does not contain {} statements. got = {}", 1, program.statements.len());
+        eprintln!(
+            "program statements does not contain {} statements. got = {}",
+            1,
+            program.statements.len()
+        );
     }
 
-    let stmt = program.statements.get(0).map(|value| ExpressionStatement::from(value));
+    let stmt = program
+        .statements
+        .get(0)
+        .map(|value| ExpressionStatement::from(value));
 
     if stmt.is_none() {
         eprintln!("program statements[0] is not ExpressionStatement. got = None");
@@ -745,19 +786,35 @@ fn test_if_else_expression() -> anyhow::Result<()> {
 
     let exp = IfExpression::try_from(stmt.unwrap().expression)?;
 
-    if  !test_infix_expression(*exp.condition, &"x".to_string(), "<".into(), &"y".to_string())? {
+    if !test_infix_expression(
+        *exp.condition,
+        &"x".to_string(),
+        "<".into(),
+        &"y".to_string(),
+    )? {
         eprintln!("test infix expression error");
     }
 
     if exp.consequence.is_none() {
-        eprintln!("exp consequence statements was not nil. got = {:?}", exp.consequence);
+        eprintln!(
+            "exp consequence statements was not nil. got = {:?}",
+            exp.consequence
+        );
     }
 
-    if exp.consequence.as_ref().unwrap().statements.len() != 1  {
-        eprintln!("consequence is not 1 statements. got = {}", exp.consequence.as_ref().unwrap().statements.len());
+    if exp.consequence.as_ref().unwrap().statements.len() != 1 {
+        eprintln!(
+            "consequence is not 1 statements. got = {}",
+            exp.consequence.as_ref().unwrap().statements.len()
+        );
     }
 
-    let alternative = exp.alternative.unwrap().statements.get(0).map(|value | ExpressionStatement::from(value));
+    let alternative = exp
+        .alternative
+        .unwrap()
+        .statements
+        .get(0)
+        .map(|value| ExpressionStatement::from(value));
 
     if alternative.is_none() {
         eprintln!("statements[0] is not ExpressionStatement. got = None");
@@ -766,7 +823,6 @@ fn test_if_else_expression() -> anyhow::Result<()> {
     if !test_identifier(alternative.as_ref().unwrap().expression.clone(), "y".into())? {
         eprintln!("test identifier error");
     }
-
 
     Ok(())
 }
@@ -819,14 +875,12 @@ fn test_test_operator_precedence_parsing() {
     println!("test_operator_precedence_parsing: Ret = {:?}", ret);
 }
 
-
 #[test]
 #[ignore]
 fn test_test_if_expression() {
     let ret = test_if_expression();
     println!("test_if_expression: Ret = {:?}", ret);
 }
-
 
 #[test]
 // #[ignore]

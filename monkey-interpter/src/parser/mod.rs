@@ -3,10 +3,13 @@ pub mod parser_tracing;
 #[cfg(test)]
 mod tests;
 
+use crate::ast::expression::boolean::Boolean;
+use crate::ast::expression::if_expression::IfExpression;
 use crate::ast::expression::infix_expression::InfixExpression;
 use crate::ast::expression::integer_literal::IntegerLiteral;
 use crate::ast::expression::prefix_expression::PrefixExpression;
 use crate::ast::expression::Expression;
+use crate::ast::statement::block_statement::BlockStatement;
 use crate::ast::statement::expression_statement::ExpressionStatement;
 use crate::ast::statement::let_statement::LetStatement;
 use crate::ast::statement::return_statement::ReturnStatement;
@@ -20,9 +23,6 @@ use crate::token::Token;
 use log::trace;
 use std::collections::HashMap;
 use std::default::default;
-use crate::ast::expression::boolean::Boolean;
-use crate::ast::expression::if_expression::IfExpression;
-use crate::ast::statement::block_statement::BlockStatement;
 // use crate::parser::parser_tracing::{trace, un_trace};
 
 /// 前缀解析函数
@@ -70,7 +70,6 @@ impl Parser {
         parser.register_prefix(TokenType::FALSE, Box::new(Self::parse_boolean));
         parser.register_prefix(TokenType::LPAREN, Box::new(Self::parse_grouped_expression));
         parser.register_prefix(TokenType::IF, Box::new(Self::parse_if_expression));
-
 
         parser.register_infix(TokenType::PLUS, Box::new(Self::parse_infix_expression));
         parser.register_infix(TokenType::MINUS, Box::new(Self::parse_infix_expression));
@@ -296,7 +295,8 @@ impl Parser {
         Ok(Boolean {
             token: self.current_token.clone(),
             value: self.cur_token_is(TokenType::TRUE),
-        }.into())
+        }
+        .into())
     }
 
     /// parse integer literal
@@ -365,7 +365,7 @@ impl Parser {
             return Err(anyhow::anyhow!("cannot find RPAREN token type"));
         }
 
-        return Ok(exp)
+        return Ok(exp);
     }
 
     /// parse if expression
@@ -406,12 +406,11 @@ impl Parser {
         Ok(Expression::IfExpression(expression))
     }
 
-
     /// parse block statement
     fn parse_block_statement(&mut self) -> anyhow::Result<BlockStatement> {
         let mut block = BlockStatement {
             token: self.current_token.clone(),
-            statements: vec![]
+            statements: vec![],
         };
 
         self.next_token()?;

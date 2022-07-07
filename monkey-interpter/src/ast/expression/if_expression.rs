@@ -1,9 +1,9 @@
-use std::fmt::{Display, Formatter};
-use crate::ast::expression::Expression;
 use crate::ast::expression::integer_literal::IntegerLiteral;
-use crate::ast::Node;
+use crate::ast::expression::Expression;
 use crate::ast::statement::block_statement::BlockStatement;
+use crate::ast::Node;
 use crate::token::Token;
+use std::fmt::{Display, Formatter};
 
 #[derive(Debug, Clone)]
 pub struct IfExpression {
@@ -17,7 +17,9 @@ impl Default for IfExpression {
     fn default() -> Self {
         Self {
             token: Token::default(),
-            condition: Box::new(Expression::IntegerLiteralExpression(IntegerLiteral::default())),
+            condition: Box::new(Expression::IntegerLiteralExpression(
+                IntegerLiteral::default(),
+            )),
             consequence: None,
             alternative: None,
         }
@@ -56,4 +58,3 @@ impl TryFrom<Expression> for IfExpression {
         }
     }
 }
-

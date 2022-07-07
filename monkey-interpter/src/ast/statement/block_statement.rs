@@ -1,14 +1,13 @@
-use std::fmt::{Debug, Display, Formatter};
-use crate::ast::Node;
 use crate::ast::statement::Statement;
+use crate::ast::Node;
 use crate::token::Token;
+use std::fmt::{Debug, Display, Formatter};
 
 #[derive(Debug, Clone)]
 pub struct BlockStatement {
     pub token: Token, // '{' 词法单元
     pub statements: Vec<Statement>,
 }
-
 
 impl Display for BlockStatement {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {

@@ -4,11 +4,11 @@ pub mod statement;
 #[cfg(test)]
 mod tests;
 
+use crate::ast::expression::boolean::Boolean;
 use crate::ast::expression::Expression;
 use crate::ast::statement::Statement;
 use crate::token::Token;
 use std::fmt::{Debug, Display, Formatter};
-use crate::ast::expression::boolean::Boolean;
 
 pub trait Node: Debug + Display {
     /// 必须提供 TokenLiteral()方法，该方法返回与其
@@ -104,7 +104,7 @@ impl From<Expression> for Identifier {
             _ => {
                 println!("Expression: {:#?}", expression);
                 unimplemented!()
-            },
+            }
         }
     }
 }
