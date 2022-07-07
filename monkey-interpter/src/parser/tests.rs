@@ -465,6 +465,26 @@ fn test_operator_precedence_parsing() -> anyhow::Result<()> {
             expected: "((3 > 5) == false".into(),
         },
 
+        TempTest {
+            input: "1 + (2 + 3) + 4".into(),
+            expected: "((1 + (2 + 3)) + 4)".into(),
+        },
+        TempTest {
+            input: "(5 + 5) * 2".into(),
+            expected: "((5 + 5) * 2)".into(),
+        },
+        TempTest {
+            input: "2 / ( 5 + 5)".into(),
+            expected: "(2 / (5 + 5))".into(),
+        },
+        TempTest {
+            input: "-( 5 + 5)".into(),
+            expected: "(-( 5 + 5))".into(),
+        },
+        TempTest {
+            input: "!(true == true)".into(),
+            expected: "(!(true == true))".into(),
+        }
     ];
 
     for tt in tests.into_iter() {
@@ -681,7 +701,7 @@ fn test_test_integer_literal_expression() {
 }
 
 #[test]
-// #[ignore]
+#[ignore]
 fn test_test_parsing_prefix_expression() {
     let ret = test_parsing_prefix_expression();
     println!("test_test_parsing_prefix_expression : Ret = {:?}", ret);
@@ -695,9 +715,8 @@ fn test_test_parsing_infix_expression() {
 }
 
 #[test]
-#[ignore]
+// #[ignore]
 fn test_test_operator_precedence_parsing() {
-    env_logger::init();
     let ret = test_operator_precedence_parsing();
     println!("test_operator_precedence_parsing: Ret = {:?}", ret);
 }

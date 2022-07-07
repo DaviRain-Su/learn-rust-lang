@@ -14,7 +14,7 @@ use crate::ast::statement::Statement;
 use crate::ast::{Identifier, Program};
 use crate::lexer::Lexer;
 use crate::parser::operator_priority::OperatorPriority;
-use crate::parser::operator_priority::OperatorPriority::PREFIX;
+use crate::parser::operator_priority::OperatorPriority::{LOWEST, PREFIX};
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 use log::trace;
@@ -66,7 +66,7 @@ impl Parser {
 
         parser.register_prefix(TokenType::TRUE, Box::new(Self::parse_boolean));
         parser.register_prefix(TokenType::FALSE, Box::new(Self::parse_boolean));
-
+        parser.register_prefix(TokenType::LPAREN, Box::new(Self::parse_grouped_expression));
 
 
         parser.register_infix(TokenType::PLUS, Box::new(Self::parse_infix_expression));
@@ -348,6 +348,18 @@ impl Parser {
         );
 
         Ok(expression.into())
+    }
+
+    fn parse_grouped_expression(&mut self) -> anyhow::Result<Expression> {
+        self.next_token()?;
+
+        let exp = self.parse_expression(LOWEST)?;
+
+        if self.expect_peek(TokenType::RPAREN).is_err() {
+            return Err(anyhow::anyhow!("cannot find RPAREN token type"));
+        }
+
+        return Ok(exp)
     }
 
     fn cur_token_is(&self, t: TokenType) -> bool {
