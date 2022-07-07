@@ -14,6 +14,7 @@ use crate::ast::Node;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
 use std::any::{Any, TypeId};
+use crate::ast::expression::call_expression::CallExpression;
 
 fn test_let_statements() -> anyhow::Result<()> {
     struct LetStatementTest {
@@ -496,6 +497,18 @@ fn test_operator_precedence_parsing() -> anyhow::Result<()> {
             input: "!(true == true)".into(),
             expected: "(!(true == true))".into(),
         },
+        TempTest {
+            input: "a + add(b * c) + d".into(),
+            expected: "((a + add((b * c))) + d)".into(),
+        },
+        TempTest {
+            input: "add(a, b, 1, 2 * 3, 4 + 5, add(6, 7 * 8))".into(),
+            expected: "add(a,b,1,(2 * 3),(4 + 5),add(6, (7 * 8)))".into(),
+        },
+        TempTest {
+            input: "add(a + b + c * d / f + g)".into(),
+            expected: "add((((a + b) + ((c * d) / d)) + g))".into(),
+        },
     ];
 
     for tt in tests.into_iter() {
@@ -941,6 +954,40 @@ fn test_function_parameter_parsing() -> anyhow::Result<()> {
     }
     Ok(())
 }
+
+fn test_call_expression_parsing() -> anyhow::Result<()> {
+    let input = "add(1, 2*3, 4 + 5);";
+    let lexer = Lexer::new(input.into())?;
+    let mut parser = Parser::new(lexer)?;
+    let program = parser.parse_program()?;
+
+    if program.statements.len() != 1 {
+        eprintln!("program statements does not contain 1 statement. got = {}", program.statements.len());
+    }
+
+    let stmt = program.statements.get(0).map(|value| ExpressionStatement::from(value));
+
+    if stmt.is_none() {
+        eprintln!("stmt is not ExpressionStatement. got = None");
+    }
+
+    let exp = CallExpression::try_from(stmt.unwrap().expression)?;
+
+    if !test_identifier(*exp.function,"add".to_string())? {
+        eprintln!("test identifier error");
+    }
+
+    if exp.arguments.len() != 3 {
+        eprint!("wrong length of arguments. got = {}", exp.arguments.len());
+    }
+
+    test_literal_expression(*exp.arguments[0].clone(), &1)?;
+    test_infix_expression(*exp.arguments[1].clone(), &2, "*".into(), &3)?;
+    test_infix_expression(*exp.arguments[2].clone(), &4, "+".into(), &5)?;
+
+    Ok(())
+}
+
 #[test]
 #[ignore]
 fn test_test_let_statements() {
@@ -984,7 +1031,7 @@ fn test_test_parsing_infix_expression() {
 }
 
 #[test]
-#[ignore]
+// #[ignore]
 fn test_test_operator_precedence_parsing() {
     let ret = test_operator_precedence_parsing();
     println!("test_operator_precedence_parsing: Ret = {:?}", ret);
@@ -1012,7 +1059,15 @@ fn test_test_function_literal_parsing() {
 }
 
 #[test]
+#[ignore]
 fn test_test_function_parameter_parsing() {
     let ret = test_function_parameter_parsing();
     println!("test_function_parameter_parsing: ret = {:?}", ret);
+}
+
+#[test]
+#[ignore]
+fn test_test_call_expression_parsing() {
+    let ret = test_call_expression_parsing();
+    println!("test_call_expression_parsing ret = {:?}",ret);
 }

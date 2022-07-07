@@ -24,6 +24,7 @@ use crate::token::Token;
 use log::trace;
 use std::collections::HashMap;
 use std::default::default;
+use crate::ast::expression::call_expression::CallExpression;
 // use crate::parser::parser_tracing::{trace, un_trace};
 
 /// 前缀解析函数
@@ -81,6 +82,7 @@ impl Parser {
         parser.register_infix(TokenType::NOTEQ, Box::new(Self::parse_infix_expression));
         parser.register_infix(TokenType::LT, Box::new(Self::parse_infix_expression));
         parser.register_infix(TokenType::GT, Box::new(Self::parse_infix_expression));
+        parser.register_infix(TokenType::LPAREN, Box::new(Self::parser_call_expression));
 
         // 读取两个词法单元，以设置 curToken 和 peekToken
         parser.next_token()?;
@@ -489,6 +491,42 @@ impl Parser {
         }
 
         Ok(identifiers)
+    }
+
+    fn parser_call_expression(&mut self, function: Expression) -> anyhow::Result<Expression> {
+        let mut exp = CallExpression {
+            token: self.current_token.clone(),
+            function: Box::new(function),
+            arguments: vec![]
+        };
+
+        exp.arguments = self.parser_call_arguments()?;
+
+        Ok(Expression::CallExpression(exp))
+    }
+
+    fn parser_call_arguments(&mut self) -> anyhow::Result<Vec<Box<Expression>>> {
+        let mut args: Vec<Box<Expression>> = vec![];
+
+        if self.peek_token_is(TokenType::RPAREN) {
+            self.next_token()?;
+            return Ok(args);
+        }
+
+        self.next_token()?;
+        args.push(Box::new(self.parse_expression(LOWEST)?));
+
+        while self.peek_token_is(TokenType::COMMA) {
+            self.next_token()?;
+            self.next_token()?;
+            args.push(Box::new(self.parse_expression(LOWEST)?));
+        }
+
+        if self.expect_peek(TokenType::RPAREN).is_err() {
+            return Err(anyhow::anyhow!("Cannot find RPAREN token type"));
+        }
+
+        Ok(args)
     }
 
     fn cur_token_is(&self, t: TokenType) -> bool {

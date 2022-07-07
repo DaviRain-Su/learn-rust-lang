@@ -18,6 +18,7 @@ pub enum OperatorPriority {
 lazy_static! {
     static ref PRECEDENCES: HashMap<TokenType, OperatorPriority> = {
         let mut m = HashMap::new();
+        m.insert(TokenType::LPAREN, OperatorPriority::CALL);
         m.insert(TokenType::EQ, OperatorPriority::EQUALS);
         m.insert(TokenType::NOTEQ, OperatorPriority::EQUALS);
         m.insert(TokenType::LT, OperatorPriority::LESSGREATER);

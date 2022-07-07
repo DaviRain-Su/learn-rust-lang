@@ -6,6 +6,7 @@ use crate::ast::expression::integer_literal::IntegerLiteral;
 use crate::ast::expression::prefix_expression::PrefixExpression;
 use crate::ast::{Identifier, Node};
 use std::fmt::{Display, Formatter};
+use crate::ast::expression::call_expression::CallExpression;
 
 pub mod boolean;
 pub mod function_literal;
@@ -13,6 +14,7 @@ pub mod if_expression;
 pub mod infix_expression;
 pub mod integer_literal;
 pub mod prefix_expression;
+pub mod call_expression;
 
 #[derive(Debug, Clone)]
 pub enum Expression {
@@ -23,6 +25,7 @@ pub enum Expression {
     BooleanExpression(Boolean),
     IfExpression(IfExpression),
     FunctionLiteral(FunctionLiteral),
+    CallExpression(CallExpression),
 }
 
 impl Display for Expression {
@@ -35,6 +38,7 @@ impl Display for Expression {
             Expression::BooleanExpression(boolean) => write!(f, "{}", boolean),
             Expression::IfExpression(if_exp) => write!(f, "{}", if_exp),
             Expression::FunctionLiteral(fun_exp) => write!(f, "{}", fun_exp),
+            Expression::CallExpression(call_exp) => write!(f, "{}", call_exp),
         }
     }
 }
@@ -49,6 +53,7 @@ impl Node for Expression {
             Self::BooleanExpression(boolean) => boolean.token_literal(),
             Self::IfExpression(if_exp) => if_exp.token_literal(),
             Self::FunctionLiteral(fun_exp) => fun_exp.token_literal(),
+            Self::CallExpression(call_exp) => call_exp.token_literal(),
         }
     }
 }
@@ -93,5 +98,11 @@ impl From<IfExpression> for Expression {
 impl From<FunctionLiteral> for Expression {
     fn from(fn_exp: FunctionLiteral) -> Self {
         Self::FunctionLiteral(fn_exp)
+    }
+}
+
+impl  From<CallExpression> for Expression {
+    fn from(call_exp: CallExpression) -> Self {
+        Self::CallExpression(call_exp)
     }
 }
