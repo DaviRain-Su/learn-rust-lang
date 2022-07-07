@@ -55,6 +55,12 @@ impl TryFrom<Expression> for IntegerLiteral {
                 Expression::IntegerLiteralExpression(value) => Ok(value.clone()),
                 _ => unimplemented!(),
             },
+            Expression::IdentifierExpression(ident) => {
+                Ok(IntegerLiteral {
+                    token: ident.token.clone(),
+                    value: ident.value.parse()?,
+                })
+            },
             _ => {
                 println!("Expression: {:#?}", value);
                 unimplemented!()

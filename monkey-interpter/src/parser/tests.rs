@@ -20,39 +20,52 @@ fn test_let_statements() -> anyhow::Result<()> {
     struct LetStatementTest {
         input: String,
         expected_identifier: String,
-        expected_value: String,
+        expected_value: Box<dyn Interface>,
     }
 
-    let input = "
-let x  5;
-let  = 19;
-let  838383;
-    ";
 
-    let lexer = Lexer::new(input)?;
-    let mut parser = Parser::new(lexer)?;
+    let tests = vec! {
+        LetStatementTest {
+            input: "let x = 5;".to_string(),
+            expected_identifier: "x".to_string(),
+            expected_value: Box::new(5),
+        },
+        LetStatementTest {
+            input: "let y = true;".to_string(),
+            expected_identifier: "y".to_string(),
+            expected_value: Box::new(true),
+        },
+        LetStatementTest {
+            input: "let foobar = y;".to_string(),
+            expected_identifier: "foobar".to_string(),
+            expected_value: Box::new("y".to_string()),
+        }
+    };
 
-    let program = parser.parse_program()?;
+    for tt  in tests.iter() {
+        let lexer = Lexer::new(tt.input.as_str())?;
+        let mut parser = Parser::new(lexer)?;
 
-    let program_len = program.len();
+        let program = parser.parse_program()?;
 
-    if program_len != 3 {
-        panic!(
-            "program statements does not contain 3 statements. got = {}",
-            program_len
-        );
-    }
 
-    let tests = vec!["x", "y", "foobar"];
+        if program.statements.len() != 1 {
+            eprintln!(
+                "program statements does not contain 1 statements. got = {}",
+                program.statements.len()
+            );
+        }
 
-    for (i, tt) in tests.into_iter().enumerate() {
-        let stmt = program
-            .statements
-            .get(i)
-            .ok_or(anyhow::anyhow!("read statements error"))?;
+        let stmt = program.statements.get(0).unwrap();
 
-        if !test_let_statement(stmt, tt.into()) {
-            return Ok(());
+        if !test_let_statement(stmt, tt.expected_identifier.clone()) {
+            eprintln!("test let statement error");
+        }
+
+        let val = LetStatement::from(stmt).value;
+
+        if !test_literal_expression(val.into(), &*tt.expected_value)? {
+            eprintln!("test literal expression error");
         }
     }
 
@@ -91,37 +104,45 @@ fn test_let_statement(s: &Statement, name: String) -> bool {
     true
 }
 fn test_return_statements() -> anyhow::Result<()> {
-    let input = "
-return 3;
-return 10;
-return 233;
-    ";
-
-    let lexer = Lexer::new(input)?;
-    let mut parser = Parser::new(lexer)?;
-
-    let program = parser.parse_program()?;
-
-    let program_len = program.len();
-
-    if program_len != 3 {
-        panic!(
-            "program statements does not contain 3 statements. got = {}",
-            program_len
-        );
+    struct  Test {
+        input: String,
+        expected_value: Box<dyn Interface>,
     }
+    let tests = vec! {
+        Test {
+            input: "return 5;".into(),
+            expected_value: Box::new(5),
+        },
+        Test {
+            input: "return true;".into(),
+            expected_value: Box::new(true),
+        },
+        Test {
+            input: "return foobar;".into(),
+            expected_value: Box::new("foobar".to_string()),
+        }
+    };
 
-    for (_, stmt) in program.statements.into_iter().enumerate() {
-        let return_stmt: ReturnStatement = stmt.into();
-        println!("return statement: {:?}", return_stmt);
+
+    for tt in tests {
+        let lexer = Lexer::new(tt.input.as_str())?;
+        let mut parser = Parser::new(lexer)?;
+
+        let program = parser.parse_program()?;
+
+        let stmt = program.statements.get(0).unwrap();
+        let return_stmt = ReturnStatement::from(stmt.clone());
 
         if return_stmt.token_literal() != "return" {
-            eprintln!(
-                "return statement token literal not `return`, got {}",
-                return_stmt.token_literal()
-            );
+            eprintln!("return statement not 'return', got = {}", return_stmt.token_literal());
         }
+
+        if !test_literal_expression(return_stmt.return_value.into(), &*tt.expected_value)? {
+            eprintln!("test_literal_expression error");
+        }
+
     }
+
 
     Ok(())
 }
@@ -988,6 +1009,58 @@ fn test_call_expression_parsing() -> anyhow::Result<()> {
     Ok(())
 }
 
+fn test_call_expression_parameter_parsing() -> anyhow::Result<()>{
+    struct Test {
+        input: String,
+        expected_ident: String,
+        expected_args: Vec<String>,
+    }
+
+    let tests = vec! {
+        Test {
+            input: "add();".into(),
+            expected_ident: "add".into(),
+            expected_args: vec![],
+        },
+        Test {
+            input: "add(1);".into(),
+            expected_ident: "add".into(),
+            expected_args: vec!["1".to_string()],
+        },
+
+        Test {
+            input: "add(1, 2 * 3, 4 + 5);".into(),
+            expected_ident: "add".into(),
+            expected_args: vec!["1".to_string(), "(2 * 3)".to_string(), "(4 + 5)".to_string()],
+        },
+    };
+
+    for tt in tests {
+        let lexer = Lexer::new(tt.input.as_str())?;
+        let mut parser = Parser::new(lexer)?;
+        let program = parser.parse_program()?;
+
+        let stmt = program.statements.get(0).map(|vaue| ExpressionStatement::from(vaue));
+        let exp = CallExpression::try_from(stmt.unwrap().expression)?;
+
+        if !test_identifier(*exp.function, tt.expected_ident)? {
+            eprintln!("test identifier error");
+        }
+
+        if exp.arguments.len() != tt.expected_args.len() {
+            eprintln!("wrong number of arguments. want = {}, got = {}", tt.expected_args.len(), exp.arguments.len());
+        }
+
+        for (i, arg) in tt.expected_args.into_iter().enumerate() {
+            if exp.arguments[i].to_string() != arg {
+                eprintln!("arguments {} wrong. want = {}, got = {}", i, arg, exp.arguments[i].to_string());
+            }
+        }
+    }
+
+    Ok(())
+}
+
 #[test]
 #[ignore]
 fn test_test_let_statements() {
@@ -996,7 +1069,7 @@ fn test_test_let_statements() {
 }
 
 #[test]
-#[ignore]
+// #[ignore]
 fn test_test_return_statements() {
     let ret = test_return_statements();
     println!("test_test_return_statements : Ret = {:?}", ret);
@@ -1031,7 +1104,7 @@ fn test_test_parsing_infix_expression() {
 }
 
 #[test]
-// #[ignore]
+#[ignore]
 fn test_test_operator_precedence_parsing() {
     let ret = test_operator_precedence_parsing();
     println!("test_operator_precedence_parsing: Ret = {:?}", ret);
@@ -1070,4 +1143,12 @@ fn test_test_function_parameter_parsing() {
 fn test_test_call_expression_parsing() {
     let ret = test_call_expression_parsing();
     println!("test_call_expression_parsing ret = {:?}",ret);
+}
+
+
+#[test]
+#[ignore]
+fn test_test_call_expression_parameter_parsing() {
+    let ret = test_call_expression_parameter_parsing();
+    println!("test_call_expression_parameter_parsing. Ret = {:?}", ret);
 }

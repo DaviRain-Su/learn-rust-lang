@@ -31,7 +31,16 @@ impl TryFrom<Expression> for Boolean {
                 Expression::BooleanExpression(value) => Ok(value.clone()),
                 _ => unimplemented!(),
             },
-            _ => unimplemented!(),
+            Expression::IdentifierExpression(ident) => {
+                Ok(Boolean {
+                    token: ident.token.clone(),
+                    value: ident.value.parse()?,
+                })
+            }
+            _ => {
+                println!("Expression: {:#?}", value);
+                unimplemented!()
+            },
         }
     }
 }

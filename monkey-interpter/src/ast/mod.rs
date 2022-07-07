@@ -101,6 +101,18 @@ impl From<Expression> for Identifier {
     fn from(expression: Expression) -> Self {
         match expression {
             Expression::IdentifierExpression(ident) => ident.clone(),
+            Expression::IntegerLiteralExpression(integ) => {
+                Identifier {
+                    token: integ.token.clone(),
+                    value: integ.value.to_string(),
+                }
+            },
+            Expression::BooleanExpression(boolean) => {
+                Identifier {
+                    token: boolean.token.clone(),
+                    value: boolean.value.to_string(),
+                }
+            }
             _ => {
                 println!("Expression: {:#?}", expression);
                 unimplemented!()

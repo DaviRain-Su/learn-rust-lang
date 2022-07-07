@@ -160,11 +160,15 @@ impl Parser {
             self.current_token.literal.clone(),
         );
 
+
         if self.expect_peek(TokenType::ASSIGN).is_err() {
-            return Ok(stmt);
+            return Err(anyhow::anyhow!("Cannot find ASSIGN token type"));
         }
 
-        // TODO: 跳过对表达式的处理，直到遇见分号
+        self.next_token()?;
+
+        stmt.value = self.parse_expression(LOWEST)?.into();
+
         while !self.cur_token_is(TokenType::SEMICOLON) {
             self.next_token()?;
         }
@@ -180,14 +184,16 @@ impl Parser {
             "[parse_return_statement] current_token = {:?}",
             self.current_token
         );
-        let stmt = ReturnStatement {
+        let mut stmt = ReturnStatement {
             token: self.current_token.clone(),
             ..default()
         };
 
         self.next_token()?;
 
-        // TODO: 跳过对表达式的处理，直到遇见分号
+        // add equal expression
+        stmt.return_value = self.parse_expression(LOWEST)?.into();
+
         while !self.cur_token_is(TokenType::SEMICOLON) {
             self.next_token()?;
         }
