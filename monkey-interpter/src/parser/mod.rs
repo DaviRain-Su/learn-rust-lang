@@ -23,6 +23,7 @@ use crate::token::Token;
 use log::trace;
 use std::collections::HashMap;
 use std::default::default;
+use crate::ast::expression::function_literal::FunctionLiteral;
 // use crate::parser::parser_tracing::{trace, un_trace};
 
 /// 前缀解析函数
@@ -70,6 +71,7 @@ impl Parser {
         parser.register_prefix(TokenType::FALSE, Box::new(Self::parse_boolean));
         parser.register_prefix(TokenType::LPAREN, Box::new(Self::parse_grouped_expression));
         parser.register_prefix(TokenType::IF, Box::new(Self::parse_if_expression));
+        parser.register_prefix(TokenType::FUNCTION, Box::new(Self::parse_function_literal));
 
         parser.register_infix(TokenType::PLUS, Box::new(Self::parse_infix_expression));
         parser.register_infix(TokenType::MINUS, Box::new(Self::parse_infix_expression));
@@ -424,6 +426,71 @@ impl Parser {
         }
 
         Ok(block)
+    }
+
+
+    /// parse function literals
+    fn parse_function_literal(&mut self) -> anyhow::Result<Expression> {
+        let mut lit = FunctionLiteral {
+            token: self.current_token.clone(),
+            parameters: vec![],
+            body: BlockStatement::default(),
+        };
+
+        self.next_token()?; // skip `fn`
+
+        lit.parameters = self.parse_function_parameters()?;
+
+        if self.expect_peek(TokenType::LBRACE).is_err() {
+            return Err(anyhow::anyhow!("Cannot find LBRACE token type"));
+        }
+
+        lit.body = self.parse_block_statement()?;
+
+        Ok(Expression::FunctionLiteral(lit))
+    }
+
+    fn parse_function_parameters(&mut self) -> anyhow::Result<Vec<Identifier>> {
+        let mut identifiers = Vec::<Identifier>::new();
+
+        if self.peek_token_is(TokenType::RPAREN) {
+            self.next_token()?;
+            return Ok(identifiers);
+        }
+        // println!("[parser function parameters ] current_token {:?}", self.current_token);
+
+        self.next_token()?; // skip `(`
+
+        let ident = Identifier {
+            token: self.current_token.clone(),
+            value: self.current_token.literal.clone(),
+        };
+
+        identifiers.push(ident);
+
+        // println!("[parser function parameters ] current_token {:?}", self.current_token);
+        while self.peek_token_is(TokenType::COMMA) {
+            // println!("[parser function parameters ] current_token {:?}", self.current_token);
+            self.next_token()?; // skip one ident
+            // println!("[parser function parameters ] current_token {:?}", self.current_token);
+            self.next_token()?; // skip one `,`
+            // println!("[parser function parameters ] current_token {:?}", self.current_token);
+            let ident = Identifier {
+                token: self.current_token.clone(),
+                value: self.current_token.literal.clone(),
+            };
+
+            identifiers.push(ident);
+        }
+        // println!("[parser function parameters ] current_token {:?}", self.current_token);
+
+        if self.expect_peek(TokenType::RPAREN).is_err() {
+            // println!("[parser function parameters ] expect_peek {}", self.peek_token.r#type);
+            return Err(anyhow::anyhow!("Cannot find RPAREN token type"));
+        }
+
+        Ok(identifiers)
+
     }
 
     fn cur_token_is(&self, t: TokenType) -> bool {

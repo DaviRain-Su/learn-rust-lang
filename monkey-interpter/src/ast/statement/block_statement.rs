@@ -3,7 +3,7 @@ use crate::ast::Node;
 use crate::token::Token;
 use std::fmt::{Debug, Display, Formatter};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct BlockStatement {
     pub token: Token, // '{' 词法单元
     pub statements: Vec<Statement>,

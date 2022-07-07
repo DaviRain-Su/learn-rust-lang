@@ -52,12 +52,8 @@ impl TryFrom<Expression> for IntegerLiteral {
         match value {
             Expression::IntegerLiteralExpression(integ_exp) => Ok(integ_exp.clone()),
             Expression::PrefixExpression(pref_exp) => match *pref_exp.right {
-                Expression::PrefixExpression(_) => unimplemented!(),
-                Expression::InfixExpression(_) => unimplemented!(),
                 Expression::IntegerLiteralExpression(value) => Ok(value.clone()),
-                Expression::IdentifierExpression(_) => unimplemented!(),
-                Expression::BooleanExpression(_) => unimplemented!(),
-                Expression::IfExpression(_) => unimplemented!(),
+                _ => unimplemented!(),
             },
             _ => {
                 println!("Expression: {:#?}", value);

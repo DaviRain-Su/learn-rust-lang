@@ -171,6 +171,7 @@ dependencies = [
  "global",
  "lazy_static",
  "log",
+ "string-join",
  "whoami",
 ]
 
@@ -354,6 +355,12 @@ name = "stable_deref_trait"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
+
+[[package]]
+name = "string-join"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "80c4f3c10e055640562d00f0f03dd36d4db7510730282aacde5563ac41d49286"
 
 [[package]]
 name = "syn"
