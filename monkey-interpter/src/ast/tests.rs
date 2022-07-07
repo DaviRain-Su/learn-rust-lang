@@ -1,5 +1,6 @@
 use crate::ast::statement::let_statement::LetStatement;
 use crate::ast::{Identifier, Program};
+use crate::ast::expression::Expression;
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 
@@ -12,10 +13,10 @@ fn test_display() {
             token: Token::from_string(TokenType::IDENT, "myVar".into()),
             value: "myVar".into(),
         },
-        value: Identifier {
+        value: Box::new(Expression::IdentifierExpression(Identifier {
             token: Token::from_string(TokenType::IDENT, "anotherVar".into()),
             value: "anotherVar".into(),
-        },
+        })),
     };
 
     println!("let statement debug = {:#?}", let_statement);

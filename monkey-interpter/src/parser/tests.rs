@@ -64,7 +64,7 @@ fn test_let_statements() -> anyhow::Result<()> {
 
         let val = LetStatement::from(stmt).value;
 
-        if !test_literal_expression(val.into(), &*tt.expected_value)? {
+        if !test_literal_expression(*val, &*tt.expected_value)? {
             eprintln!("test literal expression error");
         }
     }
@@ -1062,14 +1062,14 @@ fn test_call_expression_parameter_parsing() -> anyhow::Result<()>{
 }
 
 #[test]
-#[ignore]
+// #[ignore]
 fn test_test_let_statements() {
     let ret = test_let_statements();
     println!("test_test_let_statements : Ret = {:?}", ret);
 }
 
 #[test]
-// #[ignore]
+#[ignore]
 fn test_test_return_statements() {
     let ret = test_return_statements();
     println!("test_test_return_statements : Ret = {:?}", ret);
