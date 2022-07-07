@@ -107,7 +107,7 @@ impl Parser {
         Ok(())
     }
 
-    fn parse_program(&mut self) -> anyhow::Result<Program> {
+    pub fn parse_program(&mut self) -> anyhow::Result<Program> {
         trace!("[parse_program] current_token = {:?}", self.current_token);
         let mut program = Program::new();
 
@@ -173,7 +173,7 @@ impl Parser {
             self.next_token()?;
         }
 
-        trace!("stmt = {:?}", stmt);
+        println!("stmt = {:#?}", stmt);
 
         Ok(stmt)
     }
@@ -219,7 +219,7 @@ impl Parser {
             stmt
         );
 
-        stmt.expression = self.parse_expression(OperatorPriority::LOWEST)?.into();
+        stmt.expression = self.parse_expression(LOWEST)?.into();
 
         if self.peek_token_is(TokenType::SEMICOLON) {
             self.next_token()?;
