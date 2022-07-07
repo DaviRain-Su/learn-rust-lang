@@ -1,4 +1,5 @@
 use crate::ast::expression::boolean::Boolean;
+use crate::ast::expression::call_expression::CallExpression;
 use crate::ast::expression::function_literal::FunctionLiteral;
 use crate::ast::expression::if_expression::IfExpression;
 use crate::ast::expression::infix_expression::InfixExpression;
@@ -14,7 +15,6 @@ use crate::ast::Node;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
 use std::any::{Any, TypeId};
-use crate::ast::expression::call_expression::CallExpression;
 
 fn test_let_statements() -> anyhow::Result<()> {
     struct LetStatementTest {
@@ -23,8 +23,7 @@ fn test_let_statements() -> anyhow::Result<()> {
         expected_value: Box<dyn Interface>,
     }
 
-
-    let tests = vec! {
+    let tests = vec![
         LetStatementTest {
             input: "let x = 5;".to_string(),
             expected_identifier: "x".to_string(),
@@ -39,15 +38,14 @@ fn test_let_statements() -> anyhow::Result<()> {
             input: "let foobar = y;".to_string(),
             expected_identifier: "foobar".to_string(),
             expected_value: Box::new("y".to_string()),
-        }
-    };
+        },
+    ];
 
-    for tt  in tests.iter() {
+    for tt in tests.iter() {
         let lexer = Lexer::new(tt.input.as_str())?;
         let mut parser = Parser::new(lexer)?;
 
         let program = parser.parse_program()?;
-
 
         if program.statements.len() != 1 {
             eprintln!(
@@ -104,11 +102,11 @@ fn test_let_statement(s: &Statement, name: String) -> bool {
     true
 }
 fn test_return_statements() -> anyhow::Result<()> {
-    struct  Test {
+    struct Test {
         input: String,
         expected_value: Box<dyn Interface>,
     }
-    let tests = vec! {
+    let tests = vec![
         Test {
             input: "return 5;".into(),
             expected_value: Box::new(5),
@@ -120,9 +118,8 @@ fn test_return_statements() -> anyhow::Result<()> {
         Test {
             input: "return foobar;".into(),
             expected_value: Box::new("foobar".to_string()),
-        }
-    };
-
+        },
+    ];
 
     for tt in tests {
         let lexer = Lexer::new(tt.input.as_str())?;
@@ -134,15 +131,16 @@ fn test_return_statements() -> anyhow::Result<()> {
         let return_stmt = ReturnStatement::from(stmt.clone());
 
         if return_stmt.token_literal() != "return" {
-            eprintln!("return statement not 'return', got = {}", return_stmt.token_literal());
+            eprintln!(
+                "return statement not 'return', got = {}",
+                return_stmt.token_literal()
+            );
         }
 
         if !test_literal_expression(return_stmt.return_value.into(), &*tt.expected_value)? {
             eprintln!("test_literal_expression error");
         }
-
     }
-
 
     Ok(())
 }
@@ -983,10 +981,16 @@ fn test_call_expression_parsing() -> anyhow::Result<()> {
     let program = parser.parse_program()?;
 
     if program.statements.len() != 1 {
-        eprintln!("program statements does not contain 1 statement. got = {}", program.statements.len());
+        eprintln!(
+            "program statements does not contain 1 statement. got = {}",
+            program.statements.len()
+        );
     }
 
-    let stmt = program.statements.get(0).map(|value| ExpressionStatement::from(value));
+    let stmt = program
+        .statements
+        .get(0)
+        .map(|value| ExpressionStatement::from(value));
 
     if stmt.is_none() {
         eprintln!("stmt is not ExpressionStatement. got = None");
@@ -994,7 +998,7 @@ fn test_call_expression_parsing() -> anyhow::Result<()> {
 
     let exp = CallExpression::try_from(stmt.unwrap().expression)?;
 
-    if !test_identifier(*exp.function,"add".to_string())? {
+    if !test_identifier(*exp.function, "add".to_string())? {
         eprintln!("test identifier error");
     }
 
@@ -1009,14 +1013,14 @@ fn test_call_expression_parsing() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn test_call_expression_parameter_parsing() -> anyhow::Result<()>{
+fn test_call_expression_parameter_parsing() -> anyhow::Result<()> {
     struct Test {
         input: String,
         expected_ident: String,
         expected_args: Vec<String>,
     }
 
-    let tests = vec! {
+    let tests = vec![
         Test {
             input: "add();".into(),
             expected_ident: "add".into(),
@@ -1027,20 +1031,26 @@ fn test_call_expression_parameter_parsing() -> anyhow::Result<()>{
             expected_ident: "add".into(),
             expected_args: vec!["1".to_string()],
         },
-
         Test {
             input: "add(1, 2 * 3, 4 + 5);".into(),
             expected_ident: "add".into(),
-            expected_args: vec!["1".to_string(), "(2 * 3)".to_string(), "(4 + 5)".to_string()],
+            expected_args: vec![
+                "1".to_string(),
+                "(2 * 3)".to_string(),
+                "(4 + 5)".to_string(),
+            ],
         },
-    };
+    ];
 
     for tt in tests {
         let lexer = Lexer::new(tt.input.as_str())?;
         let mut parser = Parser::new(lexer)?;
         let program = parser.parse_program()?;
 
-        let stmt = program.statements.get(0).map(|vaue| ExpressionStatement::from(vaue));
+        let stmt = program
+            .statements
+            .get(0)
+            .map(|vaue| ExpressionStatement::from(vaue));
         let exp = CallExpression::try_from(stmt.unwrap().expression)?;
 
         if !test_identifier(*exp.function, tt.expected_ident)? {
@@ -1048,12 +1058,21 @@ fn test_call_expression_parameter_parsing() -> anyhow::Result<()>{
         }
 
         if exp.arguments.len() != tt.expected_args.len() {
-            eprintln!("wrong number of arguments. want = {}, got = {}", tt.expected_args.len(), exp.arguments.len());
+            eprintln!(
+                "wrong number of arguments. want = {}, got = {}",
+                tt.expected_args.len(),
+                exp.arguments.len()
+            );
         }
 
         for (i, arg) in tt.expected_args.into_iter().enumerate() {
             if exp.arguments[i].to_string() != arg {
-                eprintln!("arguments {} wrong. want = {}, got = {}", i, arg, exp.arguments[i].to_string());
+                eprintln!(
+                    "arguments {} wrong. want = {}, got = {}",
+                    i,
+                    arg,
+                    exp.arguments[i].to_string()
+                );
             }
         }
     }
@@ -1142,9 +1161,8 @@ fn test_test_function_parameter_parsing() {
 #[ignore]
 fn test_test_call_expression_parsing() {
     let ret = test_call_expression_parsing();
-    println!("test_call_expression_parsing ret = {:?}",ret);
+    println!("test_call_expression_parsing ret = {:?}", ret);
 }
-
 
 #[test]
 #[ignore]

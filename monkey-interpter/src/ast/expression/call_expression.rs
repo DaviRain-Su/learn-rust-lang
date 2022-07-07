@@ -1,20 +1,18 @@
-use std::fmt::{Display, Formatter};
-use string_join::display::Join;
 use crate::ast::expression::Expression;
 use crate::ast::Node;
 use crate::token::Token;
+use std::fmt::{Display, Formatter};
+use string_join::display::Join;
 
 #[derive(Debug, Clone)]
 pub struct CallExpression {
-    pub token: Token,  // '('词法单元
+    pub token: Token,              // '('词法单元
     pub function: Box<Expression>, // 标识符或函数字面量
     pub arguments: Vec<Box<Expression>>,
 }
 
-
 impl Display for CallExpression {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-
         let mut args = vec![];
         for a in self.arguments.iter() {
             args.push(format!("{}", a));

@@ -1,11 +1,10 @@
 use crate::lexer::Lexer;
+use crate::parser::Parser;
 use std::io;
 use std::io::BufRead;
 use std::io::Write;
-use crate::parser::Parser;
 
 const PROMPT: &'static str = ">> ";
-
 
 const MONKEY_FACE: &'static str = r#"            __,__
 .--.  .-"     "-.  .--.
@@ -33,27 +32,27 @@ pub fn start(std_in: io::Stdin, mut std_out: io::Stdout) -> anyhow::Result<()> {
         let lexer = Lexer::new(buffer_reader.as_str());
         let lexer = match lexer {
             Ok(value) => value,
-            Err(error) =>  {
+            Err(error) => {
                 print_parser_error(io::stdout(), error.to_string());
-                continue
+                continue;
             }
         };
 
         let parser = Parser::new(lexer);
         let mut parser = match parser {
             Ok(value) => value,
-            Err(error) =>  {
+            Err(error) => {
                 print_parser_error(io::stdout(), error.to_string());
-                continue
+                continue;
             }
         };
 
         let program = parser.parse_program();
         let program = match program {
             Ok(value) => value,
-            Err(error) =>  {
+            Err(error) => {
                 print_parser_error(io::stdout(), error.to_string());
-                continue
+                continue;
             }
         };
 
@@ -61,7 +60,6 @@ pub fn start(std_in: io::Stdin, mut std_out: io::Stdout) -> anyhow::Result<()> {
         let _ = std_out.flush();
     }
 }
-
 
 fn print_parser_error(mut std_out: io::Stdout, error: String) {
     let _ret = std_out.write_all(MONKEY_FACE.as_bytes());

@@ -1,4 +1,5 @@
 use crate::ast::expression::boolean::Boolean;
+use crate::ast::expression::call_expression::CallExpression;
 use crate::ast::expression::function_literal::FunctionLiteral;
 use crate::ast::expression::if_expression::IfExpression;
 use crate::ast::expression::infix_expression::InfixExpression;
@@ -6,15 +7,14 @@ use crate::ast::expression::integer_literal::IntegerLiteral;
 use crate::ast::expression::prefix_expression::PrefixExpression;
 use crate::ast::{Identifier, Node};
 use std::fmt::{Display, Formatter};
-use crate::ast::expression::call_expression::CallExpression;
 
 pub mod boolean;
+pub mod call_expression;
 pub mod function_literal;
 pub mod if_expression;
 pub mod infix_expression;
 pub mod integer_literal;
 pub mod prefix_expression;
-pub mod call_expression;
 
 #[derive(Debug, Clone)]
 pub enum Expression {
@@ -101,7 +101,7 @@ impl From<FunctionLiteral> for Expression {
     }
 }
 
-impl  From<CallExpression> for Expression {
+impl From<CallExpression> for Expression {
     fn from(call_exp: CallExpression) -> Self {
         Self::CallExpression(call_exp)
     }

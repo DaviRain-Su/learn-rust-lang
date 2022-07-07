@@ -1,6 +1,6 @@
+use crate::ast::expression::Expression;
 use crate::ast::statement::let_statement::LetStatement;
 use crate::ast::{Identifier, Program};
-use crate::ast::expression::Expression;
 use crate::token::token_type::TokenType;
 use crate::token::Token;
 

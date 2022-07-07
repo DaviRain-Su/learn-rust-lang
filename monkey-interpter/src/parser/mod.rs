@@ -4,6 +4,7 @@ pub mod parser_tracing;
 mod tests;
 
 use crate::ast::expression::boolean::Boolean;
+use crate::ast::expression::call_expression::CallExpression;
 use crate::ast::expression::function_literal::FunctionLiteral;
 use crate::ast::expression::if_expression::IfExpression;
 use crate::ast::expression::infix_expression::InfixExpression;
@@ -24,7 +25,6 @@ use crate::token::Token;
 use log::trace;
 use std::collections::HashMap;
 use std::default::default;
-use crate::ast::expression::call_expression::CallExpression;
 // use crate::parser::parser_tracing::{trace, un_trace};
 
 /// 前缀解析函数
@@ -159,7 +159,6 @@ impl Parser {
             self.current_token.clone(),
             self.current_token.literal.clone(),
         );
-
 
         if self.expect_peek(TokenType::ASSIGN).is_err() {
             return Err(anyhow::anyhow!("Cannot find ASSIGN token type"));
@@ -507,7 +506,7 @@ impl Parser {
         let mut exp = CallExpression {
             token: self.current_token.clone(),
             function: Box::new(function),
-            arguments: vec![]
+            arguments: vec![],
         };
 
         exp.arguments = self.parser_call_arguments()?;

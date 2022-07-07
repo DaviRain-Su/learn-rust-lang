@@ -1,9 +1,9 @@
+use crate::ast::expression::integer_literal::IntegerLiteral;
+use crate::ast::expression::Expression;
 use crate::ast::statement::Statement;
 use crate::ast::{Identifier, Node};
 use crate::token::Token;
 use std::fmt::{Display, Formatter};
-use crate::ast::expression::Expression;
-use crate::ast::expression::integer_literal::IntegerLiteral;
 
 /// let statement
 #[derive(Debug, Clone)]
@@ -13,15 +13,16 @@ pub struct LetStatement {
     pub value: Box<Expression>,
 }
 
-impl  Default for LetStatement {
+impl Default for LetStatement {
     fn default() -> Self {
         Self {
             token: Token::default(),
             name: Identifier::default(),
-            value: Box::new(Expression::IntegerLiteralExpression(IntegerLiteral::default()))
+            value: Box::new(Expression::IntegerLiteralExpression(
+                IntegerLiteral::default(),
+            )),
         }
     }
-
 }
 
 impl Node for LetStatement {
