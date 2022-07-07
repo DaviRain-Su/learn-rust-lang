@@ -12,6 +12,7 @@ use crate::ast::Node;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
 use std::any::{Any, TypeId};
+use crate::ast::expression::if_expression::IfExpression;
 
 fn test_let_statements() -> anyhow::Result<()> {
     struct LetStatementTest {
@@ -672,6 +673,103 @@ fn test_infix_expression(
     Ok(true)
 }
 
+
+fn test_if_expression() -> anyhow::Result<()> {
+    let input = "if (x < y) { x }";
+
+    let lexer = Lexer::new(input)?;
+    let mut parser = Parser::new(lexer)?;
+
+    let program = parser.parse_program()?;
+
+    if program.statements.len() != 1 {
+        eprintln!("program statements does not contain {} statements. got = {}", 1, program.statements.len());
+    }
+
+    let stmt = program.statements.get(0).map(|value| ExpressionStatement::from(value));
+
+    if stmt.is_none() {
+        eprintln!("program statements[0] is not ExpressionStatement. got = None");
+    }
+
+    let exp = IfExpression::try_from(stmt.unwrap().expression)?;
+    println!("IfExpression Debug is = {:#?}", exp);
+    println!("IfExpression Display is = {}", exp);
+
+    if !test_infix_expression(*exp.condition, &"x".to_string(), "<".into(), &"y".to_string())? {
+        eprintln!("test_infix_expression error");
+    }
+
+    if exp.consequence.is_none() {
+        eprintln!("exp consequence statements was not nil. got = {:?}", exp.consequence);
+    }
+
+    if exp.consequence.as_ref().unwrap().statements.len() != 1  {
+        eprintln!("consequence is not 1 statements. got = {}", exp.consequence.as_ref().unwrap().statements.len());
+    }
+
+    let consequence = exp.consequence.unwrap().statements.get(0).map(|value | ExpressionStatement::from(value));
+
+    if consequence.is_none() {
+        eprintln!("statements[0] is not ExpressionStatement. got = None");
+    }
+
+    if !test_identifier(consequence.as_ref().unwrap().expression.clone(), "x".into())? {
+        eprintln!("test identifier error");
+    }
+
+    if exp.alternative.is_some() {
+        eprintln!("exp alternative statements was not nil. got = {:?}", exp.alternative);
+    }
+
+    Ok(())
+}
+
+fn test_if_else_expression() -> anyhow::Result<()> {
+    let input = "if (x < y) { x } else { y }";
+
+    let lexer = Lexer::new(input)?;
+    let mut parser = Parser::new(lexer)?;
+
+    let program = parser.parse_program()?;
+
+    if program.statements.len() != 1 {
+        eprintln!("program statements does not contain {} statements. got = {}", 1, program.statements.len());
+    }
+
+    let stmt = program.statements.get(0).map(|value| ExpressionStatement::from(value));
+
+    if stmt.is_none() {
+        eprintln!("program statements[0] is not ExpressionStatement. got = None");
+    }
+
+    let exp = IfExpression::try_from(stmt.unwrap().expression)?;
+
+    if  !test_infix_expression(*exp.condition, &"x".to_string(), "<".into(), &"y".to_string())? {
+        eprintln!("test infix expression error");
+    }
+
+    if exp.consequence.is_none() {
+        eprintln!("exp consequence statements was not nil. got = {:?}", exp.consequence);
+    }
+
+    if exp.consequence.as_ref().unwrap().statements.len() != 1  {
+        eprintln!("consequence is not 1 statements. got = {}", exp.consequence.as_ref().unwrap().statements.len());
+    }
+
+    let alternative = exp.alternative.unwrap().statements.get(0).map(|value | ExpressionStatement::from(value));
+
+    if alternative.is_none() {
+        eprintln!("statements[0] is not ExpressionStatement. got = None");
+    }
+
+    if !test_identifier(alternative.as_ref().unwrap().expression.clone(), "y".into())? {
+        eprintln!("test identifier error");
+    }
+
+
+    Ok(())
+}
 #[test]
 #[ignore]
 fn test_test_let_statements() {
@@ -715,8 +813,24 @@ fn test_test_parsing_infix_expression() {
 }
 
 #[test]
-// #[ignore]
+#[ignore]
 fn test_test_operator_precedence_parsing() {
     let ret = test_operator_precedence_parsing();
     println!("test_operator_precedence_parsing: Ret = {:?}", ret);
+}
+
+
+#[test]
+#[ignore]
+fn test_test_if_expression() {
+    let ret = test_if_expression();
+    println!("test_if_expression: Ret = {:?}", ret);
+}
+
+
+#[test]
+// #[ignore]
+fn test_test_if_else_expression() {
+    let ret = test_if_else_expression();
+    println!("test_if_else_expression: Ret = {:?}", ret);
 }

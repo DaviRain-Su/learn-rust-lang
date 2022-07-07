@@ -21,6 +21,8 @@ use log::trace;
 use std::collections::HashMap;
 use std::default::default;
 use crate::ast::expression::boolean::Boolean;
+use crate::ast::expression::if_expression::IfExpression;
+use crate::ast::statement::block_statement::BlockStatement;
 // use crate::parser::parser_tracing::{trace, un_trace};
 
 /// 前缀解析函数
@@ -67,6 +69,7 @@ impl Parser {
         parser.register_prefix(TokenType::TRUE, Box::new(Self::parse_boolean));
         parser.register_prefix(TokenType::FALSE, Box::new(Self::parse_boolean));
         parser.register_prefix(TokenType::LPAREN, Box::new(Self::parse_grouped_expression));
+        parser.register_prefix(TokenType::IF, Box::new(Self::parse_if_expression));
 
 
         parser.register_infix(TokenType::PLUS, Box::new(Self::parse_infix_expression));
@@ -307,6 +310,7 @@ impl Parser {
         Ok(literal.into())
     }
 
+    /// parse prefix expression
     fn parse_prefix_expression(&mut self) -> anyhow::Result<Expression> {
         // un_trace(trace("parsePrefixExpression".into()));
         let mut expression = PrefixExpression {
@@ -322,6 +326,7 @@ impl Parser {
         Ok(expression.into())
     }
 
+    /// parse infix expression
     fn parse_infix_expression(&mut self, left_exp: Expression) -> anyhow::Result<Expression> {
         // un_trace(trace("parseInfixExpression".into()));
 
@@ -350,6 +355,7 @@ impl Parser {
         Ok(expression.into())
     }
 
+    /// parse ground expression
     fn parse_grouped_expression(&mut self) -> anyhow::Result<Expression> {
         self.next_token()?;
 
@@ -360,6 +366,65 @@ impl Parser {
         }
 
         return Ok(exp)
+    }
+
+    /// parse if expression
+    fn parse_if_expression(&mut self) -> anyhow::Result<Expression> {
+        let mut expression = IfExpression {
+            token: self.current_token.clone(),
+            ..default()
+        };
+
+        if self.expect_peek(TokenType::LPAREN).is_err() {
+            return Err(anyhow::anyhow!("cannot find LPAREN token type"));
+        }
+
+        self.next_token()?;
+
+        expression.condition = Box::new(self.parse_expression(LOWEST)?);
+
+        if self.expect_peek(TokenType::RPAREN).is_err() {
+            return Err(anyhow::anyhow!("Cannot find RPAREN token type"));
+        }
+
+        if self.expect_peek(TokenType::LBRACE).is_err() {
+            return Err(anyhow::anyhow!("Cannot find LBRACE token type"));
+        }
+
+        expression.consequence = Some(self.parse_block_statement()?);
+
+        if self.peek_token_is(TokenType::ELSE) {
+            self.next_token()?;
+
+            if self.expect_peek(TokenType::LBRACE).is_err() {
+                return Err(anyhow::anyhow!("Cannot find LBRACE token type"));
+            }
+
+            expression.alternative = Some(self.parse_block_statement()?);
+        }
+
+        Ok(Expression::IfExpression(expression))
+    }
+
+
+    /// parse block statement
+    fn parse_block_statement(&mut self) -> anyhow::Result<BlockStatement> {
+        let mut block = BlockStatement {
+            token: self.current_token.clone(),
+            statements: vec![]
+        };
+
+        self.next_token()?;
+
+        // TODO this should be EOF, but this is ILLEGAL
+        while !self.cur_token_is(TokenType::RBRACE) && !self.cur_token_is(TokenType::ILLEGAL) {
+            let stmt = self.parse_statement()?;
+            block.statements.push(stmt);
+
+            self.next_token()?;
+        }
+
+        Ok(block)
     }
 
     fn cur_token_is(&self, t: TokenType) -> bool {

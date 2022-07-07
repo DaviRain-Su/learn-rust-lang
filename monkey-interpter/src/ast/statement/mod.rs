@@ -1,13 +1,15 @@
 pub mod expression_statement;
 pub mod let_statement;
 pub mod return_statement;
+pub mod block_statement;
+
 use crate::ast::statement::expression_statement::ExpressionStatement;
 use crate::ast::statement::let_statement::LetStatement;
 use crate::ast::statement::return_statement::ReturnStatement;
 use crate::ast::Node;
 use std::fmt::{Debug, Display, Formatter};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Statement {
     ExpressionStatement(ExpressionStatement),
     LetStatement(LetStatement),

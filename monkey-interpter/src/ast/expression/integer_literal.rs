@@ -58,6 +58,7 @@ impl TryFrom<Expression> for IntegerLiteral {
                     Expression::IntegerLiteralExpression(value) => Ok(value.clone()),
                     Expression::IdentifierExpression(_) => unimplemented!(),
                     Expression::BooleanExpression(_) => unimplemented!(),
+                    Expression::IfExpression(_) => unimplemented!(),
                 }
             }
             _ => {
