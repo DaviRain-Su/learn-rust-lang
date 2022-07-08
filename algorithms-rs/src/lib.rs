@@ -1,7 +1,10 @@
 use std::fmt::{Debug, Display};
 
 /// binary search algorithm
-pub fn binary_search<T: Debug + Display + PartialOrd>(array: &[T], item: T) -> Option<usize> {
+pub fn binary_search<T>(array: &[T], item: T) -> Option<usize>
+where
+    T: Debug + Display + PartialOrd,
+{
     let mut low = 0usize;
     let mut hight = array.len() - 1;
 
