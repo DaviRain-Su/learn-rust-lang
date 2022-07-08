@@ -1,33 +1,62 @@
-pub mod search {
-    pub fn binary_search<T: core::cmp::PartialOrd>(arrays: &[T], key: &T) -> Option<usize> {
-        // assert arrays is sort
-        let mut lo = 0usize;
-        let mut hi = arrays.len() - 1;
+use std::fmt::{Debug, Display};
 
-        while lo <= hi {
-            let mid = lo + (hi - lo) / 2;
-            if key < &arrays[mid] {
-                hi = mid - 1;
-            } else if key > &arrays[mid] {
-                lo = mid + 1;
-            } else {
-                return Some(mid);
-            }
+/// binary search algorithm
+pub fn binary_search<T: Debug + Display + PartialOrd>(array: &[T], item: T) -> Option<usize> {
+    let mut low = 0usize;
+    let mut hight = array.len() - 1;
+
+    while low <= hight {
+        let mid = low + (hight - low) / 2;
+        if item == array[mid] {
+            return Some(mid);
+        } else if item < array[mid] {
+            hight = mid - 1;
+        } else if item > array[mid] {
+            low = mid + 1;
         }
-        None
     }
+
+    None
 }
 
-#[cfg(test)]
-mod tests {
-    use super::search::binary_search;
+#[test]
+fn test_binary_search() {
+    use std::fmt::Formatter;
 
-    #[test]
-    fn test_binary_search() {
-        let arrays = vec![1, 2, 3, 6, 8, 9, 12, 45, 45, 67];
-        assert_eq!(Some(4usize), binary_search(&arrays, &8));
+    // binary_search vector i32
+    let temp_list = vec![1, 3, 5, 7, 9];
 
-        let r = [0, 1, 1, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55];
-        assert_eq!(Some(1), binary_search(&r, &1))
+    assert_eq!(binary_search(&temp_list, 3), Some(1));
+
+    // binary_search vector char
+    let temp_list = vec!['a', 'b', 'c', 'd', 'e', 'f'];
+
+    assert_eq!(binary_search(&temp_list, 'c'), Some(2));
+
+    // binary_search vector &str
+    let temp_list = vec!["a", "b", "c", "d", "e", "f"];
+
+    assert_eq!(binary_search(&temp_list, "c"), Some(2));
+
+    #[derive(PartialOrd, PartialEq, Debug)]
+    struct Test {
+        value: i64,
     }
+
+    impl Display for Test {
+        fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+            write!(f, "Test({})", self.value)
+        }
+    }
+
+    // binary_search custom struct Test`
+    let temp_list = vec![
+        Test { value: 1 },
+        Test { value: 3 },
+        Test { value: 5 },
+        Test { value: 7 },
+        Test { value: 9 },
+    ];
+
+    assert_eq!(binary_search(&temp_list, Test { value: 3 }), Some(1));
 }
