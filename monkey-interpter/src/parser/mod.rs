@@ -122,7 +122,7 @@ impl Parser {
     }
 
     fn parse_statement(&mut self) -> anyhow::Result<Statement> {
-        // println!("[parse_statement] current_token = {:?}", self.current_token);
+        trace!("[parse_statement] current_token = {:?}", self.current_token);
         match self.current_token.r#type {
             TokenType::LET => Ok(self.parse_let_statement()?.into()),
             TokenType::RETURN => Ok(self.parse_return_statement()?.into()),
@@ -142,23 +142,26 @@ impl Parser {
     ///
     /// # 解析let 语句
     fn parse_let_statement(&mut self) -> anyhow::Result<LetStatement> {
-        // println!(
-        //     "[parse_let_statement] current_token = {:?}",
-        //     self.current_token
-        // );
+        trace!(
+            "[parse_let_statement] current_token = {:?}",
+            self.current_token
+        );
         let mut stmt = LetStatement {
             token: self.current_token.clone(),
             ..default()
         };
 
+        trace!("[parse_let_statement] stmt = {:#?}", stmt,);
+
         if self.expect_peek(TokenType::IDENT).is_err() {
-            return Ok(stmt);
+            return Err(anyhow::anyhow!("Cannot find IDENT token type"));
         }
 
         stmt.name = Identifier::new(
             self.current_token.clone(),
             self.current_token.literal.clone(),
         );
+        trace!("[parse_let_statement] stmt = {:#?}", stmt,);
 
         if self.expect_peek(TokenType::ASSIGN).is_err() {
             return Err(anyhow::anyhow!("Cannot find ASSIGN token type"));
@@ -172,17 +175,17 @@ impl Parser {
             self.next_token()?;
         }
 
-        // println!("stmt = {:#?}", stmt);
+        trace!("stmt = {:#?}", stmt);
 
         Ok(stmt)
     }
 
     /// 解析return 语句
     fn parse_return_statement(&mut self) -> anyhow::Result<ReturnStatement> {
-        // println!(
-        //     "[parse_return_statement] current_token = {:?}",
-        //     self.current_token
-        // );
+        trace!(
+            "[parse_return_statement] current_token = {:?}",
+            self.current_token
+        );
         let mut stmt = ReturnStatement {
             token: self.current_token.clone(),
             ..default()
@@ -204,16 +207,16 @@ impl Parser {
     /// 这是因为表达式语句不是真正的语句，而是仅由表达式构成的语句，相当于一层封装
     fn parse_expression_statement(&mut self) -> anyhow::Result<ExpressionStatement> {
         // un_trace(trace("parseExpressionStatement".into()));
-        // println!(
-        //     "[parse_expression_statement] current_token = {:?}",
-        //     self.current_token
-        // );
+        trace!(
+            "[parse_expression_statement] current_token = {:?}",
+            self.current_token
+        );
         let mut stmt = ExpressionStatement {
             token: self.current_token.clone(),
             ..default()
         };
 
-        println!(
+        trace!(
             "[parse_expression_statement] >> before ExpressionStatement = {:#?}",
             stmt
         );
@@ -224,10 +227,10 @@ impl Parser {
             self.next_token()?;
         }
 
-        // println!(
-        //     "[parse_expression_statement] >> after ExpressionStatement = {:#?}",
-        //     stmt
-        // );
+        trace!(
+            "[parse_expression_statement] >> after ExpressionStatement = {:#?}",
+            stmt
+        );
 
         Ok(stmt)
     }
@@ -235,10 +238,10 @@ impl Parser {
     /// parse expression
     fn parse_expression(&mut self, precedence: OperatorPriority) -> anyhow::Result<Expression> {
         // un_trace(trace("parseExpression".into()));
-        // println!(
-        //     "[parse_expression] current_token = {:?}",
-        //     self.current_token
-        // );
+        trace!(
+            "[parse_expression] current_token = {:?}",
+            self.current_token
+        );
         // TODO clone evn to temp value
         // TODO 因为使用 PrefixParseFn 和InferParseFn 的原因，其中的第一个参数是parser
         let mut parser = self.clone();
@@ -287,10 +290,10 @@ impl Parser {
             self.update_parser(parser);
         }
 
-        // println!(
-        //     "[parse_expression] end current_token = {:?}",
-        //     self.current_token
-        // );
+        trace!(
+            "[parse_expression] end current_token = {:?}",
+            self.current_token
+        );
         // 总结只要有变更Self的地方，都需要更新self
         Ok(left_exp)
     }
@@ -349,10 +352,10 @@ impl Parser {
             operator: self.current_token.literal.clone(),
             ..default()
         };
-        // println!(
-        //     "[parse_infix_expression] before InfixExpression = {:#?}",
-        //     expression
-        // );
+        trace!(
+            "[parse_infix_expression] before InfixExpression = {:#?}",
+            expression
+        );
 
         let precedence = self.cur_precedence();
 
@@ -360,10 +363,10 @@ impl Parser {
 
         expression.right = Box::new(self.parse_expression(precedence)?);
 
-        // println!(
-        //     "[parse_infix_expression] after InfixExpression = {:#?}",
-        //     expression
-        // );
+        trace!(
+            "[parse_infix_expression] after InfixExpression = {:#?}",
+            expression
+        );
 
         Ok(expression.into())
     }
@@ -467,7 +470,10 @@ impl Parser {
             self.next_token()?;
             return Ok(identifiers);
         }
-        // println!("[parser function parameters ] current_token {:?}", self.current_token);
+        trace!(
+            "[parser function parameters ] current_token {:?}",
+            self.current_token
+        );
 
         self.next_token()?; // skip `(`
 
@@ -478,13 +484,25 @@ impl Parser {
 
         identifiers.push(ident);
 
-        // println!("[parser function parameters ] current_token {:?}", self.current_token);
+        trace!(
+            "[parser function parameters ] current_token {:?}",
+            self.current_token
+        );
         while self.peek_token_is(TokenType::COMMA) {
-            // println!("[parser function parameters ] current_token {:?}", self.current_token);
+            trace!(
+                "[parser function parameters ] current_token {:?}",
+                self.current_token
+            );
             self.next_token()?; // skip one ident
-                                // println!("[parser function parameters ] current_token {:?}", self.current_token);
+            trace!(
+                "[parser function parameters ] current_token {:?}",
+                self.current_token
+            );
             self.next_token()?; // skip one `,`
-                                // println!("[parser function parameters ] current_token {:?}", self.current_token);
+            trace!(
+                "[parser function parameters ] current_token {:?}",
+                self.current_token
+            );
             let ident = Identifier {
                 token: self.current_token.clone(),
                 value: self.current_token.literal.clone(),
@@ -492,10 +510,16 @@ impl Parser {
 
             identifiers.push(ident);
         }
-        // println!("[parser function parameters ] current_token {:?}", self.current_token);
+        trace!(
+            "[parser function parameters ] current_token {:?}",
+            self.current_token
+        );
 
         if self.expect_peek(TokenType::RPAREN).is_err() {
-            // println!("[parser function parameters ] expect_peek {}", self.peek_token.r#type);
+            trace!(
+                "[parser function parameters ] expect_peek {}",
+                self.peek_token.r#type
+            );
             return Err(anyhow::anyhow!("Cannot find RPAREN token type"));
         }
 
