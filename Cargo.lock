@@ -56,6 +56,9 @@ dependencies = [
 [[package]]
 name = "reflect-in-rust"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+]
 
 [[package]]
 name = "rust-101-workspace"
