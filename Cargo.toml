@@ -7,4 +7,5 @@ members = [
     "workspace",
     "tour-of-rust",
     "reflect-in-rust",
+    "command-process",
 ]
