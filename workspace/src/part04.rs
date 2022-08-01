@@ -70,5 +70,5 @@ fn mutable_ref_demo() {
 //   shared reference
 //
 // As it turns out, combined with the abstraction facilities of Rust, this is a very powerful
-// mechanism to tackle many problems beyond basic memory safety. You will see some examples for
+// mechanism to tackle many problems beyond basic memory safety. You will see some bin for
 // this soon.

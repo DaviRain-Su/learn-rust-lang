@@ -8,4 +8,6 @@ members = [
     "tour-of-rust",
     "reflect-in-rust",
     "command-process",
+    "rust-cookbook",
+    'merkle-patricia-trie-rs'
 ]
