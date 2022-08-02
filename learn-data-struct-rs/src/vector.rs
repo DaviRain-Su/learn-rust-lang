@@ -13,13 +13,13 @@ pub struct Vector<T> {
     elem: Vec<T>,
 }
 
-impl<T: Clone> Vector<T> {
+impl<T: Clone + Copy> Vector<T> {
     /// constructor function
-    pub fn new(capacity: usize, size: usize, v: T) -> Self {
+    pub fn new() -> Self {
         Self { 
-            size, 
-            capacity,
-            elem: vec![v; size],
+            size: 0, 
+            capacity: DEFAULT_CAPACITY,
+            elem: vec![],
         }
     }
 
@@ -115,7 +115,19 @@ impl<T: Clone> Vector<T> {
     }
     
     fn copy_from(&mut self, array: &[T], lo: Rank, hi: Rank) {
-        todo!()
+        self.capacity = 2 * (hi - lo);
+        let mut new_elem = Vec::<T>::with_capacity(self.capacity);
+        let mut size = 0usize;
+        let mut inner_lo = lo;
+
+        while inner_lo < hi {
+            new_elem.push(array[inner_lo]);
+            size += 1;
+            inner_lo += 1;
+        }
+
+        self.size = size;
+        self.elem = new_elem;
     }
 
     fn expand(&mut self) {
@@ -169,5 +181,20 @@ impl<T: Clone> Vector<T> {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
 
+    #[test]
+    fn test_copy_from() {
+        let array = vec![1, 2, 3, 4, 5];
+        
+        let mut temp_vec = Vector::new();
+
+        temp_vec.copy_from(&array, 0, 5);
+
+
+        println!("temp_vec = {:?}", temp_vec);
+
+    }
 }
+
+  
