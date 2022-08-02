@@ -9,5 +9,6 @@ members = [
     "reflect-in-rust",
     "command-process",
     "rust-cookbook",
-    'merkle-patricia-trie-rs'
+    'merkle-patricia-trie-rs',
+    "learn-data-struct-rs",
 ]
