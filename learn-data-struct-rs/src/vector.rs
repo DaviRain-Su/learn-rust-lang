@@ -23,19 +23,19 @@ impl<T: Clone> Vector<T> {
         }
     }
 
-    pub fn from_array_all_range(A: &[T], n: Rank) -> Self {
+    pub fn from_array_all_range(array: &[T], n: Rank) -> Self {
         todo!()
     }
 
-    pub fn from_array_range(A: &[T], lo: Rank, hi: Rank) -> Self {
+    pub fn from_array_range(array: &[T], lo: Rank, hi: Rank) -> Self {
         todo!()
     }
 
-    pub fn from_vector_all_range(A: &Vector<T>, n: Rank) -> Self {
+    pub fn from_vector_all_range(array: &Vector<T>, n: Rank) -> Self {
         todo!()
     }
 
-    pub fn from_vector_range(A: &Vector<T>, lo: Rank, hi: Rank) -> Self {
+    pub fn from_vector_range(array: &Vector<T>, lo: Rank, hi: Rank) -> Self {
         todo!()
     }
 
@@ -113,7 +113,8 @@ impl<T: Clone> Vector<T> {
     pub fn search_of_range(&self, e: &T, lo: Rank, hi: Rank) -> Rank {
         todo!()
     }
-    fn copy_from(&mut self, A: &[T], lo: Rank, hi: Rank) {
+    
+    fn copy_from(&mut self, array: &[T], lo: Rank, hi: Rank) {
         todo!()
     }
 

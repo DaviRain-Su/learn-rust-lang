@@ -1,3 +1,5 @@
+#![allow(unused_variables)]
+#![allow(dead_code)]
 
 pub trait TrieInterface {
     fn get(&self, key: Vec<u8>) -> (Vec<u8>, bool);

@@ -1,5 +1,5 @@
 use core::any::Any;
-use std::{fmt::Formatter, sync::Arc, collections::BTreeMap, borrow::Borrow, any::TypeId};
+use std::{fmt::Formatter, sync::Arc, collections::BTreeMap, borrow::Borrow};
 use anyhow::Result;
 use core::fmt::Debug;
 
@@ -51,7 +51,7 @@ fn main() {
         Ok(())
     };
 
-    call_back(cb.as_any_mut());
+    let _ret = call_back(cb.as_any_mut());
 
 }
 

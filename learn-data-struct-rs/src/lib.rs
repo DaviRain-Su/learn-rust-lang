@@ -1,3 +1,6 @@
+#![allow(unused_variables)]
+#![allow(dead_code)]
+
 pub fn add(left: usize, right: usize) -> usize {
     left + right
 }
