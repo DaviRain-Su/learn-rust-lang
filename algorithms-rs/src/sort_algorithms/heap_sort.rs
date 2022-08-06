@@ -53,7 +53,7 @@ impl<T: Clone + PartialOrd + Default + Display + Debug> Heap<T> {
     }
 
     pub fn build_max_heap(&mut self) {
-        for index in (0..(self.data.len()/2)).rev() {
+        for index in (0..(self.len()/2)).rev() {
             self.max_heapify(index);
         }
     }
@@ -83,7 +83,7 @@ fn test_replace() {
 fn test_build_max_heap() {
     let mut temp_heap = Heap::from_vector(&vec![5, 3, 7, 9, 10, 23, 45, 23, 12, 23, 0, 12, 32]);
     println!("temp Heap = {:?}", temp_heap);
-    
+
     temp_heap.heap_sort();
 
     println!("temp Heap = {:?}", temp_heap);
