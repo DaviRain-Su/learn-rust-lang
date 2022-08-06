@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::fmt::{Display, Debug};
 
 
 fn parent(i: usize) -> usize {
@@ -16,16 +16,19 @@ fn right(i: usize) -> usize {
 /// Heap 堆
 #[derive(Debug)]
 pub struct Heap<T> {
-    pub data: Vec<T>,
+    /// heap data 
+    data: Vec<T>,
+    /// heap size
+    size: usize,
 }
 
-impl<T: Clone + PartialOrd + Default + Display> Heap<T> {
+impl<T: Clone + PartialOrd + Default + Display + Debug> Heap<T> {
     pub fn from_vector(array: &[T]) -> Self {
-        Self { data: array.into() }
+        Self { data: array.into(), size: array.len() - 1 }
     }
 
     pub fn len(&self) -> usize { 
-        self.data.len()
+        self.size
     }
 
     pub fn max_heapify(&mut self, index: usize) {
@@ -54,6 +57,16 @@ impl<T: Clone + PartialOrd + Default + Display> Heap<T> {
             self.max_heapify(index);
         }
     }
+
+    pub fn heap_sort(&mut self) {
+        self.build_max_heap();
+        for index in (1..self.data.len()).rev() {
+            self.data.swap(0, index);
+            self.size = self.size - 1;
+            self.max_heapify(0);
+        }
+    }
+
 }
 
 
@@ -68,10 +81,10 @@ fn test_replace() {
 
 #[test]
 fn test_build_max_heap() {
-    let mut temp_heap = Heap::from_vector(&vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 1]);
+    let mut temp_heap = Heap::from_vector(&vec![5, 3, 7, 9, 10, 23, 45, 23, 12, 23, 0, 12, 32]);
     println!("temp Heap = {:?}", temp_heap);
-
-    temp_heap.build_max_heap();
+    
+    temp_heap.heap_sort();
 
     println!("temp Heap = {:?}", temp_heap);
 }
