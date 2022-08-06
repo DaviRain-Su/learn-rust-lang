@@ -38,7 +38,7 @@ impl<T: Clone + PartialOrd + Default + Display + Debug> Heap<T> {
         let left = left(index);
         let right = right(index);
 
-        if left <= self.len() && self.data.get(index) < self.data.get(left) {
+        if left <= self.len() && self.data.get(largest) < self.data.get(left) {
             largest = left;
         }
 
@@ -57,7 +57,7 @@ impl<T: Clone + PartialOrd + Default + Display + Debug> Heap<T> {
         let left = left(index);
         let right = right(index);
 
-        if left <= self.len() && self.data.get(index) > self.data.get(left) {
+        if left <= self.len() && self.data.get(min) > self.data.get(left) {
             min = left;
         }
 
