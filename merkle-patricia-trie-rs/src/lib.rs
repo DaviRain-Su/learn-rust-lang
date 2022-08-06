@@ -45,7 +45,7 @@ mod tests {
 
     #[test]
     fn test_get_not_exist_key() {
-        let trie = Trie::new(); 
+        let trie = Trie::new();
         let (_, found) = trie.get(b"notexist".to_vec());
         assert_eq!(false, found, "should get nothing if key does not exist");
     }
@@ -83,28 +83,38 @@ mod tests {
         trie.put(vec![1, 2, 3, 4], b"trie".to_vec());
         let hash_3 = trie.hash();
 
-        assert_eq!(hash_0, hash_1, "should get a different hash if a new key-value pair was added or updated");
+        assert_eq!(
+            hash_0, hash_1,
+            "should get a different hash if a new key-value pair was added or updated"
+        );
 
-        assert_eq!(hash_1, hash_2, "should get a different hash if a new key-value pair was added or updated");
+        assert_eq!(
+            hash_1, hash_2,
+            "should get a different hash if a new key-value pair was added or updated"
+        );
 
-        assert_eq!(hash_2, hash_3, "should get a different hash if a new key-value pair was added or updated");
-
-        
+        assert_eq!(
+            hash_2, hash_3,
+            "should get a different hash if a new key-value pair was added or updated"
+        );
     }
 
     #[test]
     fn test_data_integrity_same() {
         let mut trie_1 = Trie::new();
-    
+
         trie_1.put(vec![1, 2, 3, 4], b"hello".to_vec());
         trie_1.put(vec![1, 2, 3, 4], b"world".to_vec());
 
-
         let mut trie_2 = Trie::new();
-    
+
         trie_2.put(vec![1, 2, 3, 4], b"hello".to_vec());
         trie_2.put(vec![1, 2, 3, 4], b"world".to_vec());
 
-        assert_eq!(trie_1.hash(), trie_2.hash(), "should get the same if two have the identicial key-value pairs");
+        assert_eq!(
+            trie_1.hash(),
+            trie_2.hash(),
+            "should get the same if two have the identicial key-value pairs"
+        );
     }
 }

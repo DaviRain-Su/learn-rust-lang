@@ -1,39 +1,33 @@
-use core::any::Any;
-use std::{fmt::Formatter, sync::Arc, collections::BTreeMap, borrow::Borrow};
 use anyhow::Result;
+use core::any::Any;
 use core::fmt::Debug;
+use std::{borrow::Borrow, collections::BTreeMap, fmt::Formatter, sync::Arc};
 
 fn main() {
     let mut context = Contenxt::new();
 
-    let result = context
-        .router()
-        .has_route(&"transfer".to_string());
+    let result = context.router().has_route(&"transfer".to_string());
 
     println!("result = {}", result);
 
     let cb = context
         .router_mut()
-        .get_route_mut(&"transfer".to_string()).unwrap();
-
+        .get_route_mut(&"transfer".to_string())
+        .unwrap();
 
     let result = TransferModule.on_recv_packet();
 
     match result {
         OnRecvPacketAck::Nil(write_fn) => {
-           
-            
             let ret = write_fn(cb.as_any_mut());
             println!("ret = {:?}", ret);
         }
         OnRecvPacketAck::Successful(_ack, write_fn) => {
-           
             let ret = write_fn(cb.as_any_mut());
             println!("ret = {:?}", ret);
 
             let ack = _ack.as_any().downcast_ref::<Acknowledgement>().unwrap();
             println!("ack = {:?}", ack);
-            
         }
         OnRecvPacketAck::Failed(_ack) => {
             println!("ack");
@@ -42,7 +36,7 @@ fn main() {
         }
     }
 
-    let call_back = |ctx: &mut dyn Any| -> anyhow::Result<()>{
+    let call_back = |ctx: &mut dyn Any| -> anyhow::Result<()> {
         let ctx = ctx.downcast_mut::<Contenxt>();
         println!("ctx = {:?}", ctx);
         println!("[proce_recv_packet] ctx3 = {:?}", ctx);
@@ -52,17 +46,13 @@ fn main() {
     };
 
     let _ret = call_back(cb.as_any_mut());
-
 }
-
-
 
 pub trait AsAnyMut: Any {
     fn as_any_mut(&mut self) -> &mut dyn Any;
 
     fn as_any(&self) -> &dyn Any;
 }
-
 
 impl<M: Any + Module> AsAnyMut for M {
     fn as_any_mut(&mut self) -> &mut dyn Any {
@@ -73,7 +63,6 @@ impl<M: Any + Module> AsAnyMut for M {
         self
     }
 }
-
 
 /// Types implementing this trait are expected to implement `From<GenericAcknowledgement>`
 pub trait AcknowledgementInterface: AsRef<[u8]> {
@@ -88,10 +77,8 @@ pub enum OnRecvPacketAck {
     Failed(Box<dyn AcknowledgementInterface>),
 }
 
-pub trait Module: Send + Sync + AsAnyMut { 
-    fn on_recv_packet(
-        &self,
-    ) -> OnRecvPacketAck {
+pub trait Module: Send + Sync + AsAnyMut {
+    fn on_recv_packet(&self) -> OnRecvPacketAck {
         OnRecvPacketAck::Nil(Box::new(|_| Ok(())))
     }
 }
@@ -101,23 +88,22 @@ struct Contenxt {
     router: MockRouter,
 }
 
-impl Contenxt  {
+impl Contenxt {
     fn new() -> Self {
-        
-		let r = MockRouterBuilder::default()
-        .add_route("transfer".to_string(), TransferModule)
-        .unwrap()
-        .build();
+        let r = MockRouterBuilder::default()
+            .add_route("transfer".to_string(), TransferModule)
+            .unwrap()
+            .build();
 
         Self { router: r }
-    }    
+    }
 }
 
 #[derive(Debug)]
 struct TransferModule;
 
 impl Module for TransferModule {
-    fn on_recv_packet(&self) -> OnRecvPacketAck  {
+    fn on_recv_packet(&self) -> OnRecvPacketAck {
         recv_packet(self)
     }
 }
@@ -125,22 +111,18 @@ impl Module for TransferModule {
 impl Ics26Context for Contenxt {
     type Router = MockRouter;
 
-	fn router(&self) -> &Self::Router {
+    fn router(&self) -> &Self::Router {
+        &self.router
+    }
 
-		&self.router
-	}
-
-	fn router_mut(&mut self) -> &mut Self::Router {
-
-		&mut self.router
-	}
+    fn router_mut(&mut self) -> &mut Self::Router {
+        &mut self.router
+    }
 }
 
 impl Ics20Context for TransferModule {}
 
 pub trait Ics20Context {}
-
-
 
 pub trait Ics26Context {
     type Router: Router;
@@ -150,21 +132,16 @@ pub trait Ics26Context {
     fn router_mut(&mut self) -> &mut Self::Router;
 }
 
-pub fn recv_packet<Ctx: 'static + Ics20Context + Debug>(
-    ctx: &Ctx,
-) -> OnRecvPacketAck {
-
+pub fn recv_packet<Ctx: 'static + Ics20Context + Debug>(ctx: &Ctx) -> OnRecvPacketAck {
     let ack = match process_recv_packet(ctx) {
         Ok(write_fn) => OnRecvPacketAck::Successful(Box::new(Acknowledgement::success()), write_fn),
         Err(e) => OnRecvPacketAck::Failed(Box::new(Acknowledgement::from_error(e.to_string()))),
     };
-    
+
     ack
 }
 
-pub fn process_recv_packet<Ctx: 'static + Ics20Context + Debug>(
-    ctx: &Ctx,
-) -> Result<Box<WriteFn>> {
+pub fn process_recv_packet<Ctx: 'static + Ics20Context + Debug>(ctx: &Ctx) -> Result<Box<WriteFn>> {
     println!("[proce_recv_packet] ctx1 = {:?}", ctx);
     Ok(Box::new(move |ctx| {
         let ctx = ctx.downcast_mut::<Ctx>();
@@ -185,7 +162,6 @@ pub const ACK_SUCCESS_B64: &str = "AQ==";
 pub enum ConstAckSuccess {
     Success,
 }
-
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Acknowledgement {
@@ -222,7 +198,6 @@ impl AcknowledgementInterface for Acknowledgement {
     }
 }
 
-
 pub trait Router {
     /// Returns a mutable reference to a `Module` registered against the specified `ModuleId`
     fn get_route_mut(&mut self, module_id: &impl Borrow<String>) -> Option<&mut dyn Module>;
@@ -230,7 +205,6 @@ pub trait Router {
     /// Returns true if the `Router` has a `Module` registered against the specified `ModuleId`
     fn has_route(&self, module_id: &impl Borrow<String>) -> bool;
 }
-
 
 pub trait RouterBuilder: Sized {
     /// The `Router` type that the builder must build
@@ -249,43 +223,42 @@ pub trait RouterBuilder: Sized {
 pub struct MockRouterBuilder(MockRouter);
 
 impl RouterBuilder for MockRouterBuilder {
-	type Router = MockRouter;
+    type Router = MockRouter;
 
-	fn add_route(mut self, module_id: String, module: impl Module) -> Result<Self, String> {
-		match self.0 .0.insert(module_id, Arc::new(module)) {
-			None => Ok(self),
-			Some(_) => Err("Duplicate module_id".to_owned()),
-		}
-	}
+    fn add_route(mut self, module_id: String, module: impl Module) -> Result<Self, String> {
+        match self.0 .0.insert(module_id, Arc::new(module)) {
+            None => Ok(self),
+            Some(_) => Err("Duplicate module_id".to_owned()),
+        }
+    }
 
-	fn build(self) -> Self::Router {
-		self.0
-	}
+    fn build(self) -> Self::Router {
+        self.0
+    }
 }
 
 #[derive(Default, Clone)]
 pub struct MockRouter(BTreeMap<String, Arc<dyn Module>>);
 
 impl Debug for MockRouter {
-	fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
-		let mut keys = vec![];
-		for (key, _) in self.0.iter() {
-			keys.push(format!("{}", key));
-		}
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        let mut keys = vec![];
+        for (key, _) in self.0.iter() {
+            keys.push(format!("{}", key));
+        }
 
-		write!(f, "MockRouter(BTreeMap(key({:?})", keys.join(","))
-	}
+        write!(f, "MockRouter(BTreeMap(key({:?})", keys.join(","))
+    }
 }
 
 impl Router for MockRouter {
-	fn get_route_mut(&mut self, module_id: &impl Borrow<String>) -> Option<&mut dyn Module> {
-	
-		self.0.get_mut(module_id.borrow()).and_then(Arc::get_mut)
-	}
+    fn get_route_mut(&mut self, module_id: &impl Borrow<String>) -> Option<&mut dyn Module> {
+        self.0.get_mut(module_id.borrow()).and_then(Arc::get_mut)
+    }
 
-	fn has_route(&self, module_id: &impl Borrow<String>) -> bool {
-		self.0.get(module_id.borrow()).is_some()
-	}
+    fn has_route(&self, module_id: &impl Borrow<String>) -> bool {
+        self.0.get(module_id.borrow()).is_some()
+    }
 }
 
 #[test]
@@ -298,7 +271,7 @@ fn test_type_id() {
 
     // let type_id = cb.as_any_mut().type_id();
     // println!("type_id = {:?}", type_id);
-    
+
     // let type_id_left = TypeId::of::<Contenxt>();
     // println!("type_id_left = {:?}", type_id_left);
 }

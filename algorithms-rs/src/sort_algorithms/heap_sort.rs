@@ -1,22 +1,21 @@
-use std::fmt::{Display, Debug};
-
+use std::fmt::{Debug, Display};
 
 fn parent(i: usize) -> usize {
-    i  / 2
+    i / 2
 }
 
 fn left(i: usize) -> usize {
     ((i + 1) << 1) - 1
 }
 
-fn right(i: usize) -> usize { 
+fn right(i: usize) -> usize {
     (i + 1) << 1
 }
 
 /// Heap 堆
 #[derive(Debug)]
 pub struct Heap<T> {
-    /// heap data 
+    /// heap data
     data: Vec<T>,
     /// heap size
     size: usize,
@@ -24,18 +23,21 @@ pub struct Heap<T> {
 
 impl<T: Clone + PartialOrd + Default + Display + Debug> Heap<T> {
     pub fn from_vector(array: &[T]) -> Self {
-        Self { data: array.into(), size: array.len() - 1 }
+        Self {
+            data: array.into(),
+            size: array.len() - 1,
+        }
     }
 
-    pub fn len(&self) -> usize { 
+    pub fn len(&self) -> usize {
         self.size
     }
 
-    pub fn  max_heapify(&mut self, index: usize) {
+    pub fn max_heapify(&mut self, index: usize) {
         let mut largest = index;
         let left = left(index);
         let right = right(index);
-        
+
         if left <= self.len() && self.data.get(index) < self.data.get(left) {
             largest = left;
         }
@@ -43,7 +45,7 @@ impl<T: Clone + PartialOrd + Default + Display + Debug> Heap<T> {
         if right <= self.len() && self.data.get(largest) < self.data.get(right) {
             largest = right;
         }
-        
+
         if largest != index {
             self.data.swap(index, largest);
             self.max_heapify(largest);
@@ -54,7 +56,7 @@ impl<T: Clone + PartialOrd + Default + Display + Debug> Heap<T> {
         let mut min = index;
         let left = left(index);
         let right = right(index);
-        
+
         if left <= self.len() && self.data.get(index) > self.data.get(left) {
             min = left;
         }
@@ -62,7 +64,7 @@ impl<T: Clone + PartialOrd + Default + Display + Debug> Heap<T> {
         if right <= self.len() && self.data.get(min) > self.data.get(right) {
             min = right;
         }
-        
+
         if min != index {
             self.data.swap(index, min);
             self.min_heapify(min);
@@ -70,13 +72,13 @@ impl<T: Clone + PartialOrd + Default + Display + Debug> Heap<T> {
     }
 
     pub fn build_max_heap(&mut self) {
-        for index in (0..(self.len()/2)).rev() {
+        for index in (0..(self.len() / 2)).rev() {
             self.max_heapify(index);
         }
     }
 
     pub fn build_min_heap(&mut self) {
-        for index in (0..(self.len()/2)).rev() {
+        for index in (0..(self.len() / 2)).rev() {
             self.min_heapify(index);
         }
     }
@@ -98,9 +100,7 @@ impl<T: Clone + PartialOrd + Default + Display + Debug> Heap<T> {
             self.min_heapify(0);
         }
     }
-
 }
-
 
 #[test]
 fn test_replace() {
@@ -109,7 +109,6 @@ fn test_replace() {
     vec_temp.swap(0, 1);
     println!("vector = {:?}", vec_temp);
 }
-
 
 #[test]
 fn test_build_max_heap() {
