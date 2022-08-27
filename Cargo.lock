@@ -12,10 +12,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "algorithms-rs"
-version = "0.1.0"
-
-[[package]]
 name = "anyhow"
 version = "1.0.58"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -364,10 +360,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
-name = "learn-data-struct-rs"
-version = "0.1.0"
-
-[[package]]
 name = "libc"
 version = "0.2.126"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -393,10 +385,6 @@ name = "memchr"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2dffe52ecf27772e601905b7522cb4ef790d2cc203488bbd0e2fe85fcb74566d"
-
-[[package]]
-name = "merkle-patricia-trie-rs"
-version = "0.1.0"
 
 [[package]]
 name = "mime"
@@ -544,13 +532,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "534cfe58d6a18cc17120fbf4635d53d14691c1fe4d951064df9bd326178d7d5a"
 dependencies = [
  "bitflags",
-]
-
-[[package]]
-name = "reflect-in-rust"
-version = "0.1.0"
-dependencies = [
- "anyhow",
 ]
 
 [[package]]
