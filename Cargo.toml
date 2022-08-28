@@ -5,4 +5,5 @@ members = [
     "workspace",
     "tour-of-rust",
     "rust-cookbook",
+    "my-lock",
 ]
