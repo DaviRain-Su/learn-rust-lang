@@ -1,4 +1,4 @@
-# Re Learn Rust Prgrammering Language
+# Learn Rust Prgrammering Language
 
 > Rust 资源汇总
 
