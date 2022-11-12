@@ -1,6 +1,0 @@
-[package]
-name = "rust-101-workspace"
-version = "0.0.0"
-
-#[dependencies]
-#docopt = "*"

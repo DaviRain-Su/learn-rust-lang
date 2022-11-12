@@ -1,9 +1,5 @@
 [workspace]
 members = [
-    "course-1",
     "rust-pratice/basic",
-    "workspace",
     "tour-of-rust",
-    "rust-cookbook",
-    "my-lock",
 ]
