@@ -2,4 +2,6 @@
 members = [
     "rust-pratice/basic",
     "tour-of-rust",
+    "programming-rust",
+    "rust-in-action"
 ]
