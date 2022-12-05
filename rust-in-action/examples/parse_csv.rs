@@ -1,3 +1,5 @@
+use colored::*;
+
 fn main() {
     println!("hello, world!");
 
@@ -18,14 +20,16 @@ Invalid, data
 
         let fields = record.split(',').map(|field| field.trim()).collect::<Vec<_>>();
 
+        // cfg! 用在编译时检查配置
         if cfg!(debug_assertions) {
-            eprintln!("debug: {:?} -> {:?}", record, fields);
+            // 输出到标准错误stderr
+            eprintln!("debug: {} -> {:?}", record.red(), fields);
         }
 
         let name = fields[0];
 
-        if let Ok(length) = fields[1].parse::<i32>() {
-            println!("{}, {}cm", name, length);
+        if let Ok(length) = fields[1].parse::<f32>() {
+            println!("{}, {}{}", name.green(), length.to_string().red(), "cm".blue());
         }
     }
 }
