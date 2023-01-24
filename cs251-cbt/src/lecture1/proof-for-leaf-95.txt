@@ -1,0 +1,13 @@
+leaf position: 95
+leaf value: "data item 95"
+Hash values in proof:
+  7yCz04kEoWwZMJhACc6jS8rZPZMMJlSjNyogJZCSlC8=
+  BjC9sdy8b1Ue2mHPqk39+o5+rNuyhxZ550THdncLb3o=
+  viRRlweFBlPMpw45/+meROWW1hGaX01Az5tkjEJJPec=
+  SIXfNWuJf9ZrLcGtYqpv4oC3H/xlYXrT5iD0J9B4K/0=
+  jqvYj0eFtepX95+REUniEFh9sTBUWYu/bIts2If+V+A=
+  WTkOfNBrQ9r+wv3ghNC+tcuQuTdPiCPC7ybLKYyzklw=
+  2uT5i7AnIFpKWNLGuJ5iUuOfRJYQE0EC2FMDo8Oqkoc=
+  FP24vS8Xd/nfd+lEEPM8KnAMcnuS7lcLrlX/sOvmjR8=
+  k2gokRSfhSJsyBjnj8/GvxDvilSmCUdm0wlhO9wSlZE=
+  suvPN/Iy9ix69Jq60Tyn7eWVF5kDF/5pZMaGdjHHogQ=

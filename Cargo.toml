@@ -3,5 +3,7 @@ members = [
     "rust-pratice/basic",
     "tour-of-rust",
     "programming-rust",
-    "rust-in-action"
+    "rust-in-action",
+    "example-crypto-hash-function-useage",
+    "cs251-cbt",
 ]
