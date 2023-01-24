@@ -8,7 +8,7 @@ use serde_derive::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
 const PROOFFILE: &str = "data/lecture1/proof.txt"; // File where Merkle proof will be written.
-const SERDE_PROOF_FILE: &str = "data/lecture1/merkle-proof-serde.txt";
+const SERDE_PROOF_FILE: &str = "data/lecture1/merkle-proof-serde.json";
 
 // Max height of Merkle tree
 const MAX_HEIGHT: usize = 20;
