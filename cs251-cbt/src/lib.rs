@@ -58,8 +58,8 @@
 #![allow(deprecated)]
 #![allow(dead_code)]
 
-mod lecture1;
-mod lecture2;
+pub mod lecture1;
+pub mod lecture2;
 // mod lecture3;
 // mod lecture4;
 // mod lecture5;

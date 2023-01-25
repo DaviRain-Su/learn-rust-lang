@@ -16,15 +16,15 @@ const MAX_HEIGHT: usize = 20;
 #[derive(Clone, Debug)]
 pub struct MerkleProof {
     /// data of leaf being checked
-    leaf: Vec<u8>,
+    pub leaf: Vec<u8>,
     /// the position in the tree of the leaf being checked
-    pos: usize,
+    pub pos: usize,
     /// the path of hashes, from bottom to the top of tree
-    path: Vec<Vec<u8>>,
+    pub path: Vec<Vec<u8>>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct MerkleProofSerde {
+struct MerkleProofSerde {
     /// data of leaf being checked
     leaf: String,
     /// the position in the tree of the leaf being checked
@@ -64,10 +64,47 @@ impl MerkleProof {
     pub fn new(leaf: Vec<u8>, pos: usize, path: Vec<Vec<u8>>) -> MerkleProof {
         Self { leaf, pos, path }
     }
+
+    pub fn write_proof(&self, file_name: String) -> anyhow::Result<()> {
+        let mut fp = if let Ok(fp) = fs::File::open(file_name.clone()) {
+            fp
+        } else {
+            fs::File::create(file_name)?
+        };
+
+        fp.write_all(format!("leaf position: {}\n", self.pos).as_bytes())?;
+        fp.write_all(
+            format!(
+                "leaf value: \"{}\"\n",
+                String::from_utf8(self.leaf.clone())?
+            )
+            .as_bytes(),
+        )?;
+        fp.write_all("Hash values in proof:\n".to_string().as_bytes())?;
+        for path in self.path.clone() {
+            fp.write_all(format!("  {}\n", base64::encode(path)).as_bytes())?;
+        }
+
+        Ok(())
+    }
+
+    // ### Helper function
+    /// Read the leaf data, position of leaf, and Merkle proof from file.
+    pub fn read_proof(file_name: String) -> anyhow::Result<MerkleProof> {
+        let mut fp = fs::File::open(file_name)?;
+        let mut contents = String::new();
+        fp.read_to_string(&mut contents)?;
+
+        let serde_proof: MerkleProofSerde = serde_json::from_str(&contents)?;
+
+        let merkle_proof = MerkleProof::try_from(serde_proof)?;
+
+        Ok(merkle_proof)
+    }
 }
 
 /// hash a leaf value.
-fn hash_leaf(leaf: Vec<u8>) -> Vec<u8> {
+pub fn hash_leaf(leaf: Vec<u8>) -> Vec<u8> {
     // create a Sha256 object
     let mut hasher = Sha256::new();
 
@@ -148,7 +185,7 @@ pub fn gen_merkle_proof(leaves: Vec<Vec<u8>>, pos: usize) -> Vec<Vec<u8>> {
 }
 
 /// computes a root from the given leaf and Merkle proof.
-fn compute_merkle_root_from_proof(proof: MerkleProof) -> Vec<u8> {
+pub fn compute_merkle_root_from_proof(proof: MerkleProof) -> Vec<u8> {
     let mut pos = proof.pos;
     let mut path = VecDeque::from(proof.path);
     let mut root = hash_leaf(proof.leaf);
@@ -174,37 +211,6 @@ fn compute_merkle_root_from_proof(proof: MerkleProof) -> Vec<u8> {
     root
 }
 
-// ### Helper function
-/// Read the leaf data, position of leaf, and Merkle proof from file.
-fn read_proof(file_name: String) -> anyhow::Result<MerkleProof> {
-    let mut fp = fs::File::open(file_name)?;
-    let mut contents = String::new();
-    fp.read_to_string(&mut contents)?;
-
-    let serde_proof: MerkleProofSerde = serde_json::from_str(&contents)?;
-
-    let merkle_proof = MerkleProof::try_from(serde_proof)?;
-
-    Ok(merkle_proof)
-}
-
-pub fn write_proof(file_name: String, proof: MerkleProof) -> anyhow::Result<()> {
-    let mut fp = if let Ok(fp) = fs::File::open(file_name.clone()) {
-        fp
-    } else {
-        fs::File::create(file_name)?
-    };
-
-    fp.write_all(format!("leaf position: {}\n", proof.pos).as_bytes())?;
-    fp.write_all(format!("leaf value: \"{}\"\n", String::from_utf8(proof.leaf)?).as_bytes())?;
-    fp.write_all("Hash values in proof:\n".to_string().as_bytes())?;
-    for path in proof.path {
-        fp.write_all(format!("  {}\n", base64::encode(path)).as_bytes())?;
-    }
-
-    Ok(())
-}
-
 #[test]
 fn test_generate_merkle_tree() {
     let leaves = (0..1000)
@@ -218,7 +224,7 @@ fn test_generate_merkle_tree() {
     let proof = MerkleProof::new(leaves[pos].clone(), pos, path);
 
     // # write proof to file
-    let _ = write_proof(PROOFFILE.to_string(), proof.clone());
+    let _ = proof.write_proof(PROOFFILE.to_string());
 
     println!(
         "I generated a Merkle proof for leaf #{} in file {}\n",
@@ -241,7 +247,7 @@ fn test_verify_merkle_proof() {
     println!("\nHave hardcoded root of committed Merkle tree.");
 
     // # Read (leaf data, position of leaf, and proof) from file
-    let proof = read_proof(SERDE_PROOF_FILE.to_string()).unwrap();
+    let proof = MerkleProof::read_proof(SERDE_PROOF_FILE.to_string()).unwrap();
 
     // # Verify that proof length is correct
     let height = proof.path.len();
