@@ -244,6 +244,8 @@ fn test_generate_merkle_tree() {
 #[test]
 fn test_verify_merkle_proof() {
     let root = "1qIbsvuF6FrhNjMD4p06srUye6G4FfFINDDkNfKUpTs=";
+    let root_decode = base64::decode(&root).unwrap();
+    println!("root_decode = {:?}", root_decode);
     println!("\nHave hardcoded root of committed Merkle tree.");
 
     // # Read (leaf data, position of leaf, and proof) from file
@@ -255,8 +257,8 @@ fn test_verify_merkle_proof() {
 
     // # Verify proof
     let computed_root = compute_merkle_root_from_proof(proof.clone());
-    let base64_computed_root = base64::encode(computed_root);
-    assert_eq!(root, base64_computed_root, "Verify failed");
+    // let base64_computed_root = base64::encode(computed_root);
+    assert_eq!(root_decode, computed_root, "Verify failed");
 
     println!(
         "I verified the Merkle proof: leaf #{} in the committed tree is \"{}\".\n",
