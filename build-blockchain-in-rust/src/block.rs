@@ -16,8 +16,8 @@ pub struct Block<TimeStamp, Data, Hash> {
 
 impl<TimeStamp, Data, Hash> Display for Block<TimeStamp, Data, Hash> 
 where 
-    Data: BlockData,
-    Hash: BlockHash,
+    Data: Digest,
+    Hash: Hasher,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let pre_block_hash = hex::encode(self.prev_block_hash.to_vec());
@@ -27,7 +27,7 @@ where
     }
 }
 
-pub trait BlockTimestamp {
+pub trait Time {
     type TimeStamp;
 
     fn to_vec(&self) -> Vec<u8>;
@@ -36,7 +36,7 @@ pub trait BlockTimestamp {
 }
 
 
-pub trait BlockHash {
+pub trait Hasher {
     type Output;
 
     fn to_vec(&self) -> Vec<u8>;
@@ -44,16 +44,16 @@ pub trait BlockHash {
     fn sha256_hash(data: Vec<u8>) -> Self::Output;
 }
 
-pub trait BlockData {
+pub trait Digest {
     fn to_vec(&self) -> Vec<u8>;
 }
 
 impl<TimeStamp, Data, Hash> Block<TimeStamp, Data, Hash>
 where 
 
-    TimeStamp: BlockTimestamp<TimeStamp = TimeStamp> + std::default::Default,
-    Hash: BlockHash<Output = Hash> + std::default::Default,
-    Data: BlockData + std::default::Default + std::convert::From<Vec<u8>>,
+    TimeStamp: Time<TimeStamp = TimeStamp> + std::default::Default,
+    Hash: Hasher<Output = Hash> + std::default::Default,
+    Data: Digest + std::default::Default + std::convert::From<Vec<u8>>,
  {  
     pub fn genesis_block() -> Self {
         Block::new(b"Genesis Block".to_vec().into(), Hash::default())

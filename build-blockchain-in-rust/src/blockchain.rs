@@ -1,4 +1,5 @@
-use crate::block::{Block, BlockHash, BlockData, BlockTimestamp};
+use crate::block::{Block, Hasher, Digest as DataDigest, Time};
+
 
 type TimeStamp = i64;
 type Data = Vec<u8>;
@@ -8,7 +9,7 @@ use chrono::offset::Local;
 use sha2::{Sha256, Digest};
 
 
-impl BlockTimestamp for TimeStamp {
+impl Time for TimeStamp {
     type TimeStamp = TimeStamp;
 
     fn to_vec(&self) -> Vec<u8> {
@@ -20,7 +21,7 @@ impl BlockTimestamp for TimeStamp {
     }
 }
 
-impl BlockHash for Hash {
+impl Hasher for Hash {
     type Output = Hash;
 
     fn to_vec(&self) -> Vec<u8> {
@@ -30,15 +31,15 @@ impl BlockHash for Hash {
     fn sha256_hash(data: Vec<u8>) -> Self::Output {
         let mut hasher = Sha256::new();
         hasher.update(data);
-
         let result = hasher.finalize();
+
         let mut output = [0u8; 32];
         output.copy_from_slice(&result);
         output
     }
 }
 
-impl BlockData for Data {
+impl DataDigest for Data {
     fn to_vec(&self) -> Vec<u8> {
         self.into_iter().map(|v| *v).collect()
     }
