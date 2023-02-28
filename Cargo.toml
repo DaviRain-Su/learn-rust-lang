@@ -4,6 +4,7 @@ members = [
     "tour-of-rust",
     "programming-rust",
     "rust-in-action",
-    "example-crypto-hash-function-useage",
+ #   "example-crypto-hash-function-useage",
     "cs251-cbt",
+    "build-blockchain-in-rust",
 ]
