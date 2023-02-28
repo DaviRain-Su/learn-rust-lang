@@ -10,3 +10,4 @@ chrono = "0.4.23"
 hex = "0.4.3"
 sha2 = "0.10.6"
 time = "0.3.20"
+primitive-types = "0.12.1" # for u256

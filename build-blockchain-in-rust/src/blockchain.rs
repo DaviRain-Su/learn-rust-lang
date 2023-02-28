@@ -1,9 +1,9 @@
 use crate::block::{Block, Hasher, Digest as DataDigest, Time};
 
 
-type TimeStamp = i64;
-type Data = Vec<u8>;
-type Hash = [u8;32];
+pub type TimeStamp = i64;
+pub type Data = Vec<u8>;
+pub type Hash = [u8;32];
 
 use chrono::offset::Local;
 use sha2::{Sha256, Digest};

@@ -1,8 +1,10 @@
 use std::fmt::Display;
 
+use crate::proofwork::ProofOfWork;
+
 
 /// Block in Simple blockchain
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Block<TimeStamp, Data, Hash> {
     /// current timestamp, also just say block created time.
     pub timestamp: TimeStamp,
@@ -12,6 +14,8 @@ pub struct Block<TimeStamp, Data, Hash> {
     pub prev_block_hash: Hash,
     /// current block hash
     pub hash: Hash,
+    /// nonce
+    pub nonce: u64,
 }
 
 impl<TimeStamp, Data, Hash> Display for Block<TimeStamp, Data, Hash> 
@@ -51,9 +55,9 @@ pub trait Digest {
 impl<TimeStamp, Data, Hash> Block<TimeStamp, Data, Hash>
 where 
 
-    TimeStamp: Time<TimeStamp = TimeStamp> + std::default::Default,
-    Hash: Hasher<Output = Hash> + std::default::Default,
-    Data: Digest + std::default::Default + std::convert::From<Vec<u8>>,
+    TimeStamp: Time<TimeStamp = TimeStamp> + std::default::Default + Clone,
+    Hash: Hasher<Output = Hash> + std::default::Default + Clone + std::convert::From<[u8; 32]>,
+    Data: Digest + std::default::Default + std::convert::From<Vec<u8>> + Clone,
  {  
     pub fn genesis_block() -> Self {
         Block::new(b"Genesis Block".to_vec().into(), Hash::default())
@@ -67,19 +71,11 @@ where
             ..Block::default()
         };
 
-        block.set_hash();
+        let pow = ProofOfWork::new(block.clone());
+        let (nonce, hash) = pow.run();
+        block.hash = hash;
+        block.nonce = nonce;
         
         block
-    }
-
-    pub fn set_hash(&mut self) {
-        let mut timestamp = self.timestamp.to_vec();
-        let mut headers = vec![];
-        headers.append(&mut self.prev_block_hash.to_vec());
-        headers.append(&mut self.data.to_vec());
-        headers.append(&mut timestamp);
-        let hash = Hash::sha256_hash(headers);
-        
-        self.hash = hash;
     }
 }

@@ -1,8 +1,10 @@
 pub mod block;
-
 pub mod blockchain;
+pub mod proofwork;
 
 pub use blockchain::BlockChain;
+
+use crate::proofwork::ProofOfWork;
 
 fn main() {
     let mut new_blockchain = BlockChain::new();
@@ -12,5 +14,7 @@ fn main() {
 
     for block in new_blockchain.blocks {
         println!("{}", block);
+        let pow = ProofOfWork::new(block);
+        println!("PoW: {}", pow.validate());
     }
 }
