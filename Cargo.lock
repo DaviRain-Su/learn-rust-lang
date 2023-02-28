@@ -82,6 +82,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "hex",
+ "num-traits",
  "primitive-types",
  "sha2",
  "time 0.3.20",

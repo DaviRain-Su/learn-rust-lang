@@ -15,6 +15,7 @@ pub struct Block<TimeStamp, Data, Hash> {
     /// current block hash
     pub hash: Hash,
     /// nonce
+    /// todo Move this type to geneisc type
     pub nonce: u64,
 }
 
