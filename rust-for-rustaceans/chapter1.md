@@ -2,13 +2,13 @@
 
 As you dive into the more advanced corners of Rust, it’s important that you ensure you have a solid understanding of the fundamentals. In Rust, as in any programming language, the precise meaning of various keywords and concepts becomes important as you begin to use the language in more sophisticated ways. In this chapter, we’ll walk through many of Rust’s primitives and try to define more clearly what they mean, how they work, and why they are exactly the way that they are. Specifically, we’ll look at how variables and values differ, how they are represented in memory, and the different memory regions a program has. We’ll then discuss some of the subtleties of ownership, borrowing, and lifetimes that you’ll need to have a handle on before you continue with the book.
 
-​    在你深入 Rust 更高级的领域之前，确保你对基础知识有坚实的理解非常重要。在 Rust 中，就像在任何编程语言中一样，随着你开始以更复杂的方式使用该语言，各种关键字和概念的确切含义变得更加重要。在本章中，我们将介绍许多 Rust 的基本元素，并尝试更清晰地定义它们的含义、工作原理以及它们为什么会是现在这个样子。具体而言，我们将**了解变量和值的区别、它们在内存中的表示方式以及程序所具有的不同内存区域**。然后，我们将讨论一些关于**所有权、借用和生命周期**的微妙之处，这些是你在继续本书之前需要掌握的知识。
+​    在你深入 Rust 更高级的领域之前，确保你对基础知识有坚实的理解非常重要。在 Rust 中，就像在任何编程语言中一样，*随着你开始以更复杂的方式使用该语言，各种关键字和概念的确切含义变得更加重要*。在本章中，我们将介绍许多 Rust 的基本元素，并尝试更清晰地定义它们的含义、工作原理以及它们为什么会是现在这个样子。具体而言，我们将**了解变量和值的区别、它们在内存中的表示方式以及程序所具有的不同内存区域**。然后，我们将讨论一些关于**所有权、借用和生命周期**的微妙之处，这些是你在继续本书之前需要掌握的知识。
 
 You can read this chapter from top to bottom if you wish, or you can use it as a reference to brush up on the concepts that you feel less
 sure about. I recommend that you move on only when you feel completely comfortable with the content of this chapter, as
 misconceptions about how these primitives work will quickly get in the way of understanding the more advanced topics, or lead to you using them incorrectly.
 
-​  你可以按照顺序从头到尾阅读这一章，或者将其作为参考，了解你不确定的概念。我建议在你完全理解本章内容之前不要继续，因为对这些基本原理的错误理解会很快妨碍你理解更高级的主题，或导致你错误地使用它们。
+​  你可以按照顺序从头到尾阅读这一章，或者将其作为参考，了解你不确定的概念。我建议在你完全理解本章内容之前不要继续，**因为对这些基本原理的错误理解会很快妨碍你理解更高级的主题**，或导致你错误地使用它们。
 
 ## Taling About Memory
 
@@ -34,14 +34,14 @@ and its in-memory representation is the byte `0x06`. Similarly, the `str`
 representation is its UTF-8 encoding. A value’s meaning is
 independent of the location where those bytes are stored.
 
-在深入探讨内存区域之前，您需要**了解值、变量和指针之间的区别**。在 Rust 中，值是类型和该类型值域的元素的组合。可以使用其类型的表示将值转换为字节序列，但单独来看，您可以将值视为程序员的意图。例如，类型为 `u8` 的数字 `6` 是数学整数 6 的实例，其内存表示为字节 `0x06`。类似地，字符串 `"Hello world"` 是所有字符串域中的值，其表示形式是其 UTF-8 编码。**值的含义与存储这些字节的位置无关。**
+在深入探讨内存区域之前，您需要**了解值、变量和指针之间的区别**。在 Rust 中，值是类型和该类型值域的元素的组合。可以使用其类型的表示将值转换为字节序列，但单独来看，您可以将值视为程序员的意图。例如，类型为 `u8` 的数字 `6` 是数学整数 `6` 的实例，其内存表示为字节 `0x06`。类似地，字符串 `"Hello world"` 是所有字符串域中的值，其表示形式是其 UTF-8 编码。**值的含义与存储这些字节的位置无关。**
 
 A value is stored in a place, which is the Rust terminology for “a
 location that can hold a value.” This place can be on the stack, on the
 heap, or in a number of other locations. The most common place to
 store a value is a variable, which is a named value slot on the stack.
 
-值存储在位置中，这是 Rust 中“可以容纳一个值的位置”的术语。这个位置可以在堆栈、堆或其他许多位置上。存储值的最常见位置是变量，它是堆栈上的一个命名值槽。
+*值存储在位置中，这是 Rust 中“可以容纳一个值的位置”的术语。* 这个位置可以在堆栈(stack)、堆或其他许多位置上。存储值的最常见位置是变量，它是堆栈上的一个命名值槽。
 
 A pointer is a value that holds the address of a region of memory,
 so the pointer points to a place. A pointer can be dereferenced to
@@ -50,7 +50,7 @@ store the same pointer in more than one variable and therefore have
 multiple variables that indirectly refer to the same location in
 memory and thus the same underlying value.
 
-"指针"是一个持有内存区域地址的数值，因此指针指向一个地方。指针可以被取消引用，以访问存储在它所指向的内存位置的值。我们可以在一个以上的变量中存储相同的指针，因此有多个变量间接指向内存中的同一位置，从而有相同的基础值。
+指针是一个保存了某个内存区域地址的值，因此指针指向一个位置。可以通过解引用指针来访问内存位置中存储的值。可以将相同的指针存储在多个变量中，从而拥有多个间接地指向内存中相同位置的变量，也就是拥有同一个基础值。
 
 Consider the code in Listing 1-1, which illustrates these three
 elements.
@@ -77,9 +77,9 @@ While var1 and var2 store the same value initially, they store separate,
 independent copies of that value; when we change the value stored in
 var2 1, the value in var1 does not change. In particular, the = operator
 stores the value of the right-hand side expression in the place named
-by the left-hand side
+by the left-hand side.
 
-这里，有四个不同的值: 42（i32），43（i32），x的地址（pointer），以及y的地址（pointer）。还有四个变量：x、y、var1和var2。后两个变量都持有指针类型的值，因为引用是指针。虽然var1和var2最初存储的是同一个值，但它们分别存储该值的独立副本；当我们改变var2 中存储的值时，var1中的值不会改变。特别是，= 运算符将右侧表达式的值存储在左侧命名的地方。
+这里有四个不同的值：`42`（一个i32类型的整数）、`43`（一个i32类型的整数）、`x`的地址（一个指针）和`y`的地址（一个指针）。还有四个变量：`x`、`y`、`var1`和`var2`。后两个变量都持有指针类型的值，因为引用就是指针。虽然`var1`和`var2`最初存储相同的值，但它们存储独立的、互不干扰的副本；当我们改变var2中存储的值时，var1中的值不会改变。特别地，赋值操作符“=”会将右侧表达式的值存储到左侧命名的位置。
 
 An interesting example of where the distinction between variables,
 values, and pointers becomes important is in a statement such as:
@@ -97,13 +97,13 @@ you might say, “But hang on, where is the string value stored, then?
 Where does the pointer point?” If so, you have a keen eye—we’ll get
 to that in a second.
 
-尽管我们给变量string分配了一个字符串值，但该变量的实际值是一个指向字符串值 "Hello world "中第一个字符的指针，而不是字符串值本身。这时你可能会说："但是等一下，那么字符串值是在哪里存储的？指针指向哪里？" 如果是这样，你的眼光就很敏锐了--我们一会儿就会说到这一点。
+值得注意的是，尽管我们将一个字符串值赋给变量 string，但实际上变量的值是一个指向字符串值 "Hello world" 的第一个字符的指针，而不是字符串值本身。此时你可能会问，“但是等等，那么字符串值存储在哪里呢？指针指向哪里？”如果是这样，那么你有一双敏锐的眼睛——我们很快就会讨论这个问题。
 
-Note: Technically, the value of string also includes the string’s
+> Note: Technically, the value of string also includes the string’s
 length. We’ll talk about that in Chapter 2 when we discuss
 wide pointer types.
 
-> 从技术上讲，字符串的值还包括字符串的长度。我们将在第二章讨论宽指针类型时谈论这个问题。
+> Note: 技术上讲，string 的值还包括字符串的长度。我们将在第2章讨论宽指针类型时详细讨论这一点。
 
 ### Variables in Depth
 
@@ -120,9 +120,9 @@ models are good for when you are reasoning about unsafe code and
 raw pointers. The models for variables described in the following two
 sections will suffice for most of the material in this book
 
-我之前给出的变量定义很宽泛，本身不太可能有什么用。当你遇到更复杂的代码时，你将需要一个更准确的心理模型来帮助你推理出程序的真正作用。我们可以利用许多这样的模型。详细描述它们会占用好几章的篇幅，也超出了本书的范围，但广义上讲，它们可以分为两类：高层模型和低层模型。高层模型在思考生命周期和借用层面的代码时很有用，而低层模型在推理不安全代码和原始指针时很有用。下面两节描述的变量模型对于本书的大部分材料来说已经足够了。
+我之前给出的变量定义是广泛的，本身可能不是很有用。随着你遇到更复杂的代码，你需要一个更准确的思维模型来帮助你理解程序的实际运行情况。我们可以利用许多这样的模型。详细描述所有这些模型需要几章的篇幅，已超出本书的范围，但大体上可以分为两类：**高级模型和低级模型。** **高级模型在考虑代码的生命周期和借用级别时很有用，而低级模型则适用于在推理不安全代码和原始指针时。** 下面两节描述的变量模型足以满足本书大部分内容的需要。
 
-#### Hight-Level Model
+#### 高级模型（Hight-Level Model）
 
 In the high-level model, we don’t think of variables as places that
 hold bytes. Instead, we think of them just as names given to values as
@@ -134,7 +134,7 @@ access, which establishes a dependency relationship between the two
 accesses. If the value in a variable is moved, no lines can be drawn
 from it anymore.
 
-​    在高层模型中，我们不认为变量是存放字节的地方。相反，我们认为它们只是在整个程序中被实例化、移动和使用时赋予数值的名称。当你给一个变量赋值的时候，这个值就会被这个变量命名。**当一个变量后来被访问时，你可以想象从该变量以前的访问到新的访问画一条线，这在两个访问之间建立了一种依赖关系。如果一个变量中的值被移动了，就不能再从它那里画线。**
+**在高级模型中，我们不认为变量是保存字节的位置。相反，我们将它们视为在程序中实例化、移动和使用时赋予值的名称。** 当你将一个值赋给一个变量时，从那时起，该变量就代表了该值。当稍后访问变量时，可以想象从该变量的先前访问到新访问之间绘制一条线，这样就建立了两个访问之间的依赖关系。如果变量中的值被移动了，就无法再从它上面绘制线条了。
 
 In this model, a variable exists only so long as it holds a legal
 value; you cannot draw lines from a variable whose value is
@@ -144,7 +144,7 @@ dependency lines, often called flows, each one tracing the lifetime of
 a particular instance of a value. Flows can fork and merge when there
 are branches, with each split tracing a distinct lifetime for that value.
 
-在这个模型中，一个变量只有在它持有合法的值时才存在；你不能从一个值未被初始化或已被移动的变量上画线，所以实际上它不存在。使用这个模型，你的整个程序由许多这样的依赖线组成，通常称为流，每个流都追踪一个值的特定实例的生命周期。当有分支时，流可以分叉和合并，每一个分叉都追踪该值的一个不同的生命周期。
+*在这个模型中，变量只存在于它持有合法值的期间；你不能从一个值未初始化或已被移动的变量上绘制线条，因此实际上它不存在。* 使用这个模型，你的整个程序由许多这些依赖线条组成，通常被称为流，每个流追踪一个特定值实例的生命周期。当出现分支时，流可以分叉和合并，每个分支追踪该值的不同生命周期。
 
 
 The compiler can check that at any given point in your program, all
@@ -154,12 +154,10 @@ value. Nor can there be a flow that borrows a value while there is no
 flow that owns the value. Listing 1-2 shows examples of both of these
 cases.
 
-编译器可以检查在程序的任何给定点，所有可以相互平行存在的流都是兼容的。例如，不能有两个并行的流对一个值进行可变的访问。也不能有一个流借用一个值，而没有一个流拥有该值。清单1-2显示了这两种情况的例子。
+**编译器可以检查程序中任何给定点，所有可以并行存在的流都是兼容的。** 例如，**不能有两个并行的流对一个值具有可变访问权限。** 同样，不能有一个流借用一个值，而没有拥有该值的流存在。代码清单 1-2 展示了这两种情况的示例。
 
 
 ```rust
-// listing 1-2: Illegal flows that the borrow checker will catch
-
 let mut x;
 // this access would be illegal, nowhere to draw the flow from:
 // 这条通道将是非法的，没有地方可以引流：
@@ -180,7 +178,7 @@ let mut x;
 
 Listing 1-2: Illegal flows that the borrow checker will catch
 
-First, we cannot use x before it is initialized, because we have
+First, we cannot use `x` before it is initialized, because we have
 nowhere to draw the flow from. Only when we assign a value to x can
 we draw flows from it. This code has two flows: one exclusive (&mut)
 flow from 1 to 3, and one shared (&) flow from 1 through 2 to 4.
@@ -194,7 +192,7 @@ would compile fine! The shared flow would terminate at 2, and
 when the exclusive flow is checked at 3, no conflicting flows would
 exist.
 
-首先，我们不能在x被初始化之前使用它，因为我们没有地方可以引出流量。只有当我们给x赋值时，我们才能从它那里提取流量。这段代码有两个流：一个从1到3的独占（&mut）流，一个从1到2到4的共享（&）流。 借阅检查器检查每个流的每个顶点，并检查是否有其他不兼容的流同时存在。在这种情况下，当借贷检查器检查3处的独占流时，它看到了终止于4处的共享流。由于你不能同时对一个值进行独占和共享使用，借贷检查器（正确地）拒绝了该代码。请注意，如果没有4，这段代码会编译得很好。共享流将在2处终止，而当排他流在3处被检查时，将不存在冲突的流。
+首先，我们不能在初始化 `x` 之前使用它，因为我们没有任何地方可以绘制流。只有当我们给 `x` 赋值时，才能从它绘制流。这段代码有两个流：一个从 `1` 到 `3` 的排他（&mut）流，以及一个从 `1` 经过 `2` 到 `4` 的共享（&）流。**借用检查器检查每个流的每个顶点，并检查是否存在其他不兼容的流并发存在。** 在这种情况下，当借用检查器检查 `3` 处的排他流时，它看到终止于 `4` 的共享流。由于您不能同时具有值的排他和共享使用，因此借用检查器（正确地）拒绝该代码。请注意，如果不存在 `4`，这段代码将编译良好！共享流将在 `2` 处终止，当检查 `3` 处的排他流时，不存在冲突的流。
 
 If a new variable is declared with the same name as a previous one,
 they are still considered distinct variables. This is called shadowing
@@ -205,11 +203,9 @@ and the borrow checker in particular, reasons about your program,
 and is actually used internally in the compiler to produce efficient
 code.
 
-如果一个新的变量与之前的变量同名，它们仍然被认为是不同的变量。这被称为 "阴影"--后一个变量 "阴影 "了前一个同名的变量。这两个变量共存，尽管随后的代码不再有办法命名先前的变量。这种模式与编译器，特别是借用检查器，对你的程序的推理大致吻合，而且实际上在编译器的内部使用，以产生高效的代码。
+如果使用与先前变量相同的名称声明新变量，则它们仍然被视为不同的变量。这被称为“遮蔽”——后面的变量通过相同的名称“遮蔽”了前面的变量。这两个变量共存，尽管随后的代码不再有方法来命名先前的变量。这个模型大致匹配编译器（特别是借用检查器）对程序进行推理的方式，实际上在编译器内部用于生成高效的代码。
 
-
-
-#### Low-Level Model
+#### 低级模型(Low-Level Model)
 
 Variables name memory locations that may or may not hold legal
 values. You can think of a variable as a “value slot.” When you assign
@@ -229,14 +225,14 @@ backing them. This model matches the memory model used by C and
 C++, and many other low-level languages, and is useful for when you
 need to reason explicitly about memory.
 
-"变量 "命名了可能持有或不持有合法数值的内存位置。你可以把一个变量看作是一个 "值槽"。当你给它赋值时，这个槽被填满，它的旧值（如果它有的话）被丢弃并被替换。当你访问它时，编译器会检查该槽是否为空，因为这意味着该变量未被初始化或其值已被移动。一个变量的指针指的是该变量的后备内存，可以被取消引用以获得其值。例如，在语句let x: usize中，变量x是堆栈上一个内存区域的名称，该区域有空间容纳一个usize大小的值，尽管它没有一个明确的值（其槽是空的）。如果你给这个变量赋值，比如x = 6，那么这个内存区域就会容纳代表值6的比特。这个模型与C  和C++以及许多其他低级语言所使用的内存模型，在你需要明确推理内存的时候是很有用的。
+变量命名可能保存合法值的内存位置。你可以将变量视为“值槽”。当你对它赋值时，槽被填充，它的旧值（如果有的话）被丢弃并替换。当你访问它时，编译器检查槽是否为空，因为这意味着变量未初始化或其值已移动。指向变量的指针指向变量的支持内存，可以通过对其进行取消引用来访问其值。例如，在语句 `let x: usize` 中，变量 `x` 是堆栈上的一个内存区域的名称，它具有大小为 `usize` 的值的空间，但它没有定义明确的值（它的槽为空）。如果你将一个值赋给该变量，例如 `x = 6`，那么内存中的该区域将保存表示值 `6` 的位。当你对 `x` 赋值时，`&x` 不会改变。如果你用相同的名称声明多个变量，它们仍然具有不同的内存块来支持它们。这个模型匹配` C` 和` C++` 以及许多其他低级语言使用的内存模型，对于需要显式推理内存的情况非常有用。
 
-note: In this example, we ignore CPU registers and treat them as
+> note: In this example, we ignore CPU registers and treat them as
 an optimization. In reality, the compiler may use a register
 to back a variable instead of a region of memory if no
 memory address is needed for that variable.
 
-> 在这个例子中，我们忽略了CPU寄存器，并将其视为一种优化。在现实中，如果一个变量不需要内存地址，编译器可能会使用一个寄存器来支持该变量，而不是一个内存区域。
+> Note: 在这个例子中，我们忽略了 CPU 寄存器并将它们视为一种优化。实际上，如果一个变量不需要内存地址，编译器可能会使用寄存器来支持变量，而不是内存区域。
 
 You may find that one of these matches your previous model better
 than the other, but I urge you to try to wrap your head around both
@@ -246,7 +242,7 @@ piece of code from both of these perspectives, you will find it much
 easier to work through complicated code segments and understand
 why they do or do not compile and work as you expect.
 
-你可能会发现其中一个比另一个更符合你以前的模型，但我敦促你试着把这两个模型都包在你的脑子里。它们都同样有效，而且都是简化，就像任何有用的心理模型都必须是简化的。如果你能从这两个角度来考虑一段代码，你会发现在处理复杂的代码段时要容易得多，并能理解为什么它们能或不能按照你的期望进行编译和工作。
+你可能会发现其中一种模型比另一种更符合你以前的模型，但我敦促你尝试理解两者。它们都是同样有效的，都是简化，就像任何有用的思维模型一样。如果你能从这两个角度考虑代码片段，你会发现更容易解决复杂的代码段，并理解它们是否符合你的期望以及为什么会出现编译问题。
 
 ### Memory Regions
 
@@ -258,7 +254,7 @@ significant impact on how you write your code. The three most
 important regions for the purposes of writing Rust code are the
 stack, the heap, and static memory.
 
-现在你已经掌握了我们如何提及内存，我们需要谈谈内存到底是什么。内存有许多不同的区域，也许令人惊讶的是，并非所有的内存都存储在你的计算机的DRAM中。你使用哪一部分内存，对你如何编写代码有很大影响。就编写Rust代码而言，三个最重要的区域是堆栈、堆和静态内存。
+现在你已经了解了我们如何引用内存，我们需要讨论一下内存实际上是什么。内存有许多不同的区域，也许令人惊讶的是，并不是所有的内存区域都存储在计算机的DRAM中。你使用的内存部分对你编写代码的方式有很大的影响。**为了编写 Rust 代码，最重要的三个内存区域是堆栈、堆和静态内存。**
 
 #### The Stack
 
@@ -271,7 +267,7 @@ stack. A function’s frame contains all the variables within that
 function, along with any arguments the function takes. When the
 function returns, its stack frame is reclaimed.
 
-堆栈是一个内存段，你的程序将其作为函数调用的抓取空间。每次调用一个函数，都会在堆栈的顶部分配一个连续的内存块，称为帧。 靠近堆栈底部的是主函数的框架，当函数调用其他函数时，额外的框架被推到堆栈中。一个函数的框架包含了该函数中的所有变量，以及该函数的任何参数。当函数返回时，其堆栈框架被回收。
+堆栈是程序用作函数调用的临时空间的一段内存。每次调用一个函数时，一个称为帧的连续内存块被分配在堆栈的顶部。在堆栈的底部附近是主函数的帧，在函数调用其他函数时，附加的帧被推入堆栈。一个函数的帧包含该函数内的所有变量，以及该函数接受的任何参数。当函数返回时，它的堆栈帧被回收。
 
 The bytes that make up the values of the function’s local variables
 are not immediately wiped, but it’s not safe to access them as they
@@ -280,7 +276,7 @@ frame overlaps with the reclaimed one. And even if they haven’t been
 overwritten, they may contain values that are illegal to use, such as
 ones that were moved when the function returned.
 
-构成函数局部变量值的字节不会立即被抹去，但访问它们并不安全，因为它们可能已经被后续的函数调用所覆盖，其框架与回收的框架重叠了。即使它们没有被覆盖，它们也可能包含非法使用的值，例如在函数返回时被移动的值。
+函数的本地变量的值所占的字节并不会立即被清除，但是访问它们是不安全的，因为它们可能已被重写为后续函数调用的帧与被回收的帧重叠。即使它们没有被重写，它们也可能包含不合法的值，例如在函数返回时已被移动的值。
 
 Stack frames, and crucially the fact that they eventually disappear,
 are very closely tied to the notion of lifetimes in Rust. Any variable
@@ -288,7 +284,7 @@ stored in a frame on the stack cannot be accessed after that frame
 goes away, so any reference to it must have a lifetime that is at most
 as long as the lifetime of the frame.
 
-堆栈框架，以及至关重要的是它们最终会消失的事实，与Rust中的生命期概念密切相关。任何存储在堆栈框架中的变量在该框架消失后都不能被访问，所以对它的任何引用都必须有一个最多等同于框架寿命的寿命。
+堆栈帧，以及它们最终消失的事实，与 Rust 中的生命周期概念密切相关。在堆栈的帧上存储的任何变量在该帧消失后都无法访问，因此对它的任何引用的生命周期必须最长不超过该帧的生命周期。
 
 #### The Heap
 
@@ -301,7 +297,8 @@ for the called function to write that value into before it returns. But if
 you want to, say, send that value to a different thread with which the
 current thread may share no stack frames at all, you can store it on
 the heap.
-堆是一个内存池，它不与程序的当前调用栈相联系。在堆内存中的值一直存在，直到它们被明确地取消分配。当你想让一个值超过当前函数框架的寿命时，这很有用。如果该值是函数的返回值，调用函数可以在其堆栈中留下一些空间，让被调用的函数在返回前将该值写入其中。但是，如果你想，比如说，把这个值发送给一个不同的线程，而当前线程可能根本就不共享堆栈框架，你可以把它存储在堆上。
+
+堆是一个内存池，它与程序的当前调用堆栈没有关系。在堆内存中的值一直存在，直到它们被明确释放。当你想让一个值存活在当前函数帧的生命周期之外时，这非常有用。如果该值是函数的返回值，调用函数可以在其堆栈上留出一些空间供被调用函数在返回之前写入该值。但是，如果你想将该值发送到一个不与当前线程共享任何堆栈帧的不同线程中，你可以将其存储在堆中。
 
 The heap allows you to explicitly allocate contiguous segments of
 memory. When you do so, you get a pointer to the start of that
@@ -315,15 +312,15 @@ continue to operate on that value. Or, phrased differently, when you
 heap-allocate memory, the resulting pointer has an unconstrained
 lifetime—its lifetime is however long your program keeps it alive.
 
-"堆 "允许你明确地分配连续的内存段。当你这样做的时候，你会得到一个指向该内存段起点的指针。该内存段为你保留，直到你后来取消分配；这个过程通常被称为释放，以C标准库中相应函数的名字命名。由于从堆中分配的内存在函数返回时不会消失，你可以在一个地方为一个值分配内存，把它的指针传给另一个线程，并让这个线程安全地继续对这个值进行操作。或者，换个说法，当你用堆分配内存时，产生的指针有一个不受约束的生命期--它的生命期是你的程序让它活着的时间。
+堆允许你显式地分配连续的内存段。当你这样做时，你会得到指向该内存段开头的指针。该内存段为你保留，直到你以后释放它；这个过程通常被称为释放，以 C 标准库中相应函数的名称命名。由于从堆中分配的内存不会在函数返回时消失，你可以在一个地方为值分配内存，将指针传递给另一个线程，并让该线程安全地继续操作该值。或者换句话说，当你从堆中分配内存时，所得到的指针具有无约束的生命周期——它的生命周期就是你的程序将其保持活动的时间。
 
 The primary mechanism for interacting with the heap in Rust is
-the Box type. When you write Box::new(value), the value is placed on the
-heap, and what you are given back (the Box<T>) is a pointer to that
-value on the heap. When the Box is eventually dropped, that memory
+the `Box` type. When you write `Box::new(value)`, the value is placed on the
+heap, and what you are given back (the `Box<T>`) is a pointer to that
+value on the heap. When the `Box` is eventually dropped, that memory
 is freed.
 
-Rust中与堆交互的主要机制是Box类型。当你写Box::new(value)时，值被放在堆上，而你得到的回报（Box<T>）是一个指向堆上该值的指针。当Box最终被丢弃时，该内存就被释放了。
+在 Rust 中与堆交互的主要机制是 `Box` 类型。当你编写 `Box::new(value)` 时，该值被放置在堆上，你所得到的是指向堆上该值的指针（`Box<T>`）。当 `Box` 最终被 dropped 时，该内存被释放。
 
 If you forget to deallocate heap memory, it will stick around
 forever, and your application will eventually eat up all the memory
@@ -332,9 +329,9 @@ something you want to avoid. However, there are some cases where
 you explicitly want to leak memory. For example, say you have a
 read-only configuration that the entire program should be able to
 access. You can allocate that on the heap and explicitly leak it with
-Box::leak to get a 'static reference to it.
+`Box::leak` to get a `'static` reference to it.
 
-如果你忘记去分配堆内存，它将永远存在，你的应用程序最终会吃掉你机器上的所有内存。这被称为泄漏内存，通常是你想避免的事情。然而，在有些情况下，你会明确地想要泄漏内存。例如，假设你有一个只读的配置，整个程序都应该能够访问。你可以在堆上分配它，然后用Box::leak显式地泄露它，以获得它的 "静态引用"。
+如果你忘记释放堆内存，它将永远存在，并且你的应用程序最终会耗尽机器上的所有内存。这被称为内存泄漏，通常是你要避免的情况。然而，有些情况下你明确地想要泄漏内存。例如，假设你有一个只读配置，整个程序都应该能够访问它。你可以将其分配在堆上，并使用 `Box::leak` 显式泄漏它，以获取对它的 `'static` 引用。
 
 #### Static Memory
 
@@ -350,7 +347,7 @@ function is called. Static memory also holds the memory for variables
 you declare with the static keyword, as well as certain constant values
 in your code, like strings.
 
-"静态内存 "实际上是位于你的程序被编译成的文件中几个密切相关的区域的总称。当程序被执行时，这些区域会自动加载到你的程序的内存中。静态存储器中的数值在程序的整个执行过程中一直存在。你的程序的静态存储器包含程序的二进制代码，通常被映射为只读。当你的程序执行时，它会逐条指令走过文本段中的二进制代码，并在调用函数时进行跳转。静态内存还保存着你用静态关键字声明的变量的内存，以及你代码中的某些常量值，如字符串。
+静态内存实际上是一个包含在你的程序编译后的文件中的几个密切相关的区域的综合术语。当程序被执行时，这些区域会自动加载到程序的内存中。**静态内存中的值在整个程序的执行期间都存在。** 你的程序的静态内存包含程序的二进制代码，通常被映射为只读。当你的程序执行时，它会逐条指令地在文本段中遍历二进制代码，并在每次调用函数时跳转。**静态内存还包含用 `static` 关键字声明的变量的内存，以及你代码中的某些常量值，如字符串。**
 
 The special lifetime 'static, which gets its name from the static
 memory region, marks a reference as being valid for “as long as static
@@ -364,7 +361,7 @@ reference with a static lifetime, whatever it points to might as well be
 in static memory as far as the rest of the program is concerned, as it
 can be used for however long your program wishes.
 
-特殊的寿命'static'，它的名字来自于静态内存区域，标志着一个引用在 "只要静态内存存在 "的情况下是有效的，也就是直到程序关闭。由于静态变量的内存是在程序开始时分配的，所以根据定义，对静态内存中的变量的引用是 "静态 "的，因为它在程序关闭前不会被删除。反之亦然--可能存在不指向静态内存的 "静态引用"--但这个名字仍然是恰当的：一旦你创建了一个具有静态寿命的引用，就程序的其余部分而言，它所指向的东西可能就在静态内存中，因为它可以被使用多长时间，你的程序就会使用多长时间。
+特殊的生命周期`'static'`得名于静态内存区域，它标记了一个引用为“只要静态内存存在”，也就是直到程序关闭。由于静态变量的内存是在程序启动时分配的，对静态内存中变量的引用是`'static'`的，因为它直到程序关闭才被释放。反之不成立——可能存在指向非静态内存的`'static'`引用——但名称仍然适用：一旦创建了具有`'static'`生命周期的引用，无论它指向什么，就像在静态内存中一样，就程序的其余部分而言，它可以被使用任意长的时间。
 
 You will encounter the 'static lifetime much more often than you
 will encounter truly static memory (through the static keyword, for
@@ -383,9 +380,9 @@ anything stored on the old thread’s stack. The new thread can refer
 only to values that will live for its entire lifetime, which may be for
 the remaining duration of the program.
 
-在使用Rust时，你遇到'static lifetime'的次数要比遇到真正的静态内存（例如通过static关键字）多得多。这是因为'static'经常出现在类型参数的特质边界中。像T:'static这样的约束表明，类型参数T能够存活多久，我们就保留它多久，包括程序的剩余执行时间。从本质上讲，这种约束要求T是自有的和自足的，要么它不借用其他（非静态）的值，要么它所借用的任何东西也是 "静态的，因此将坚持到程序的结束。作为约束的 "静态 "的一个很好的例子是std::thread::spoon函数，它创建了一个新的线程，它要求你传递给它的闭包是 "静态 "的。由于新线程可能比当前线程长寿，新线程不能 "引用存储在旧线程堆栈中的任何东西"。新线程只能引用在其整个生命周期内存在的值，这可能是在程序的剩余时间内。
+在Rust中，相比真正的静态内存（例如通过`static`关键字），你会更经常遇到`'static`生命周期。这是因为`'static`常常出现在类型参数的`trait bound`中。例如，像`T: 'static`这样的绑定表示类型参数`T`能够在我们保留它的时间内存活，直到程序执行结束。本质上，这个绑定要求`T`是自主拥有的，要么它不借用其他（非静态）值，要么它借用的任何值也都是`'static`的，因此将一直存在直到程序结束。一个很好的`'static`作为`bound`的例子是`std::thread::spawn`函数，它创建一个新的线程，需要传递给它的闭包是`'static`的。由于新线程可能会超出当前线程的生命周期，新线程不能引用存储在旧线程堆栈上的任何东西。新线程只能引用将在其整个生命周期内存活的值，这可能是程序剩余的持续时间。
 
-note: You may wonder how const differs from static. The const
+> Note: You may wonder how const differs from static. The const
 keyword declares the following item as constant. Constant
 items can be completely computed at compile time, and any
 code that refers to them is replaced with the constant’s
@@ -395,9 +392,7 @@ You can think of constant as a convenient name for a
 particular value
 
 
-> 你可能想知道const与static有什么区别。const关键字将以下项目声明为常量。常量项可以在编译时被完全计算出来，任何引用它们的代码都会在编译时被替换成常量的计算值。常量没有与之相关的内存或其他存储（它不是一个地方）。你可以把常量看作是一个特定值的方便名称。
-
-
+> Note: 您可能会想知道`const`与`static`的区别。`const`关键字声明以下项为常量。常量可以在编译时完全计算，任何引用它们的代码都会在编译期间被替换为常量的计算值。**常量没有与其关联的内存或其他存储（它不是一个位置）。您可以将常量视为特定值的方便名称。**
 
 ## Ownership
 
@@ -413,7 +408,7 @@ that flow from the original owner, even though the bits that make up
 the value are technically still there. Instead, you must access the
 moved value through variables that refer to its new location.
 
-Rust的内存模型的中心思想是，所有的值都有一个所有者，也就是说，正好有一个位置（通常是一个作用域）负责最终取消每个值的分配。这一点是通过借贷检查器强制执行的。如果值被移动了，比如把它赋给一个新的变量，把它推给一个向量，或者把它放在堆上，值的所有权就会从旧的位置移到新的位置。在这一点上，你不能再通过来自原所有者的变量来访问该值，即使构成该值的比特在技术上仍然存在。相反，你必须通过引用其新位置的变量来访问被移动的值。
+Rust的内存模型围绕着这样一个思想：所有值都有唯一的所有者——也就是说，每个值最终释放的责任都归属于一个位置（通常是一个作用域）。这是通过借用检查器实现的。如果值被移动，例如通过将其赋值给一个新变量、将其推送到向量中或将其放置在堆上，则该值的所有权从旧位置移动到新位置。此时，您不能再通过从原始所有者流动的变量访问该值，即使构成该值的位仍然存在。相反，您必须通过引用其新位置的变量来访问已移动的值。
 
 Some types are rebels and do not follow this rule. If a value’s type
 implements the special Copy trait, the value is not considered to have
@@ -427,8 +422,7 @@ their bits. This eliminates all types that contain non-Copy types as well
 as any type that owns a resource it must deallocate when the value is
 dropped
 
-有些类型是叛徒，不遵守这个规则。如果一个值的类型实现了特殊的复制特性，那么即使该值被重新分配到一个新的内存位置，也不会被认为已经移动。相反，该值被复制，并且新旧位置都保持可访问性。从本质上讲，在移动的目的地构建了另一个相同的值的实例。Rust中的大多数原始类型，如整数和浮点类型，都是Copy。要成为Copy类型，必须能够简单地通过复制它们的位来复制该类型的值。这就排除了所有包含非Copy类型的类型，以及任何拥有资源的类型，当值被丢弃时，它必须取消分配。
-
+有些类型是叛逆的，不遵循这个规则。如果一个值的类型实现了特殊的`Copy trait`，即使它被重新分配到新的内存位置，该值也不被认为已经移动。相反，该值被复制，旧位置和新位置都仍然可以访问。本质上，另一个完全相同的该值的实例在移动的目标处被构造。Rust中的大多数原始类型，例如整数和浮点数类型，都是`Copy`。为了实现`Copy`，必须能够仅通过复制它们的位来复制类型的值。这消除了所有包含非`Copy`类型的类型，以及任何在值被删除时必须释放资源的类型的所有权
 
 To see why, consider what would happen if a type like Box were Copy.
 If we executed box2 = box1, then box1 and box2 would both believe that
@@ -436,7 +430,7 @@ they owned the heap memory allocated for the box, and they would
 both attempt to free it when they went out of scope. Freeing the
 memory twice could have catastrophic consequences.
 
-要知道为什么，考虑一下如果像Box这样的类型是Copy的话会发生什么。如果我们执行box2 = box1，那么box1和box2都会认为他们拥有为box分配的堆内存，当他们超出范围时，他们都会试图释放它。释放两次内存可能会产生灾难性的后果。
+为了理解为什么这样做不可行，请考虑如果像`Box`这样的类型是`Copy`会发生什么。如果我们执行`box2 = box1`，那么`box1`和`box2`都会认为它们拥有为该`Box`分配的堆内存，并且它们都会在作用域结束时尝试释放它。释放内存两次可能会产生灾难性的后果。
 
 When a value’s owner no longer has use for it, it is the owner’s
 responsibility to do any necessary cleanup for that value by dropping
@@ -449,7 +443,7 @@ multiple times. A variable that holds a reference to another value
 does not own that other value, so the value isn’t dropped when the
 variable drops.
 
-当一个值的所有者不再使用它时，所有者有责任通过丢弃它对该值进行必要的清理。在Rust中，当持有该值的变量不再在范围内时，丢弃会自动发生。类型通常会递归地丢弃它们包含的值，所以丢弃一个复杂类型的变量可能会导致许多值被丢弃。由于Rust的离散所有权要求，我们不能意外地多次放弃同一个值。一个持有对另一个值的引用的变量并不拥有另一个值，所以当该变量丢弃时，该值不会被丢弃。
+当一个值的所有者不再使用它时，所有权者有责任通过丢弃该值来执行任何必要的清理工作。在Rust中，当保存值的变量不再在作用域内时，自动进行丢弃。类型通常会递归地丢弃它们包含的值，因此丢弃复杂类型的变量可能导致许多值被丢弃。由于Rust的**离散所有权**要求，我们不能意外地多次丢弃相同的值。保存对另一个值的引用的变量不拥有该其他值，因此在变量丢弃时该值不会被丢弃。
 
 The code in Listing 1-3 gives a quick summary of the rules around
 ownership, move and copy semantics, and dropping.
@@ -473,9 +467,7 @@ let y1 = Box::new(84);
 
 Listing 1-3: Moving and copying semantics
 
-我们一开始有两个值，数字42和一个包含数字84的Box（一个堆分配的值）。前者是Copy，而后者则不是。当我们把x1和y1放入元组z 1时，x1被复制到z中，而y1则被移到z中，此时，x1继续是可访问的，可以再次使用3。另一方面，一旦y1的值被移动4，它就变得不可访问了，任何试图访问它的行为都会引起编译器错误。当z超出范围2时，它所包含的元组值被丢弃，这反过来又丢弃了从x1复制的值和从y1移动的值。当来自y1的Box被丢弃时，它也会将用于存储y1的值的堆内存去掉。
-
-We start out with two values, the number 42 and a Box (a heapallocated value) containing the number 84. The former is Copy, whereas
+We start out with two values, the number 42 and a Box (a heap-allocated value) containing the number 84. The former is Copy, whereas
 the latter is not. When we place x1 and y1 into the tuple z 1, x1 is
 copied into z, whereas y1 is moved into z. At this point, x1 continues to
 be accessible and can be used again 3. On the other hand, y1 is
@@ -486,21 +478,23 @@ drops the value copied from x1 and the one moved from y1. When the
 Box from y1 is dropped, it also deallocates the heap memory used to
 store y1’s value.
 
+我们从两个值开始，一个是数字`42`，另一个是包含数字`84`的`Box`（一个堆分配的值）。前者是`Copy`，而后者不是。当我们将`x1`和`y1`放入元组`z1`中时，`x1`被复制到`z`中，而`y1`被移动到`z`中。此时，`x1`仍然可以访问并且可以再次使用`3`。另一方面，`y1`的值一旦被移动，就变得无法访问`4`，任何尝试访问它的尝试都会导致编译器错误。当`z`退出作用域`2`时，它包含的元组值被丢弃，这进而使从`x1`复制的值和从`y1`移动的值都被丢弃。当从`y1`中丢弃`Box`时，它也会释放用于存储`y1`值的堆内存。
 
-Rust automatically drops values when they go out of scope, such as x1 and y1 in the inner scope in Listing 1-3. The rules for the order in which to drop are fairly simple: variables (including function arguments) are dropped in reverse order, and nested values are dropped in source-code order.
 
-
-This might sound weird at first—why the discrepancy? If we look at it closely, though, it makes a lot of sense. Say you write a function that declares a string and then inserts a reference to that string into a new hash table. When the function returns, the hash table must be dropped first; if the string were dropped first, the hash table would then hold an invalid reference! In general, later variables may contain references to earlier values, whereas the inverse cannot happen due to Rust’s lifetime rules. And for that reason, Rust drops variables in reverse order.
-
-Now, we could have the same behavior for nested values, like the values in a tuple, array, or struct, but that would likely surprise users. If you constructed an array that contained two values, it’d seem odd if the last element of the array were dropped first. The same applies to tuples and structs, where the most intuitive behavior is for the first tuple element or field to be dropped first, then the second, and so on. Unlike for variables, there is no need to reverse the drop order in this case, since Rust doesn’t (currently) allow self-references in a single value. So, Rust goes with the intuitive option.
-
->Drop Order
+> Drop Order
 >
->当数值超出范围时，Rust会自动丢弃它们，比如清单1-3中内部范围的x1和y1。丢弃顺序的规则相当简单：变量（包括函数参数）按相反的顺序丢弃，嵌套值按源代码的顺序丢弃。
+> Rust automatically drops values when they go out of scope, such as x1 and y1 in the inner scope in Listing 1-3. The rules for the order in which to drop are fairly simple: variables (including function arguments) are dropped in reverse order, and nested values are dropped in source-code order.
 >
->这初听起来可能很奇怪--为什么会有这种差异？不过，如果我们仔细观察，它是很有意义的。假设你写了一个函数，声明了一个字符串，然后将该字符串的引用插入到一个新的哈希表中。当函数返回时，哈希表必须先被删除；如果字符串先被删除，那么哈希表就会持有一个无效的引用 一般来说，后来的变量可能包含对早期值的引用，而由于Rust的生命周期规则，反之则不能发生。出于这个原因，Rust以相反的顺序丢弃变量。
+>Rust在值超出其作用域时自动丢弃这些值，例如清单1-3中内部作用域中的`x1`和`y1`。**按照丢弃顺序的规则相当简单：变量（包括函数参数）按照相反的顺序进行丢弃，嵌套值按照源代码顺序进行丢弃**
 >
->现在，我们可以对嵌套的值有同样的行为，比如元组、数组或结构中的值，但这可能会让用户感到惊讶。如果你构建了一个包含两个值的数组，如果数组的最后一个元素先被丢弃，那就显得很奇怪。这同样适用于元组和结构，最直观的行为是第一个元组元素或字段先被丢弃，然后是第二个，以此类推。与变量不同的是，在这种情况下没有必要颠倒丢弃顺序，因为Rust（目前）不允许在单个值中进行自我引用。所以，Rust采用的是直观的选项。
+>This might sound weird at first—why the discrepancy? If we look at it closely, though, it makes a lot of sense. Say you write a function that declares a string and then inserts a reference to that string into a new hash table. When the function returns, the hash table must be dropped first; if the string were dropped first, the hash table would then hold an invalid reference! In general, later variables may contain references to earlier values, whereas the inverse cannot happen due to Rust’s lifetime rules. And for that reason, Rust drops variables in reverse order.
+>
+>这可能一开始听起来很奇怪——为什么会有这样的不一致性？但是，仔细看看，它有很多意义。假设您编写一个函数，声明一个字符串，然后将对该字符串的引用插入到一个新的哈希表中。当函数返回时，必须首先删除哈希表；如果先删除字符串，那么哈希表将持有一个无效引用！通常，后面的变量可能包含对先前值的引用，而逆反情况由于`Rust`的生命周期规则而无法发生。因此，Rust以相反的顺序删除变量。
+>
+>now, we could have the same behavior for nested values, like the values in a tuple, array, or struct, but that would likely surprise users. If you constructed an array that contained two values, it’d seem odd if the last element of the array were dropped first. The same applies to tuples and structs, where the most intuitive behavior is for the first tuple element or field to be dropped first, then the second, and so on. Unlike for variables, there is no need to reverse the drop order in this case, since Rust doesn’t (currently) allow self-references in a single value. So, Rust goes with the intuitive option.
+>
+>我们可以对嵌套值采用相同的行为，例如元组、数组或结构中的值，但是这可能会让用户感到惊讶。如果您构建一个包含两个值的数组，如果数组的最后一个元素首先被丢弃，那么它看起来很奇怪。对于元组和结构也是一样，最直观的行为是首先丢弃第一个元组元素或字段，然后是第二个元素或字段，依此类推。**与变量不同，在这种情况下没有必要反转丢弃顺序，因为Rust（目前）不允许单个值中的自引用。因此，Rust采用了直观的选项。**
+
 
 ## Borrowing and Lifetimes
 
@@ -511,7 +505,7 @@ used, such as whether the reference provides exclusive access to the
 referenced value, or whether the referenced value may also have
 other references point to it
 
-Rust允许一个价值的所有者通过引用将该价值出借给其他人，而不放弃所有权。引用是一个指针，它带有一个关于如何使用它的附加契约，比如引用是否提供对被引用值的独占访问，或者被引用值是否也可以有其他引用指向它。
+Rust允许值的所有者通过引用将该值借出给其他人，而不放弃所有权。**引用是带有附加使用约定的指针，例如引用是否提供对引用值的独占访问权，或者引用值是否也可以有其他引用指向它。**
 
 ### Shared References
 
@@ -522,7 +516,7 @@ them. Values behind shared references are not mutable; you cannot
 modify or reassign the value a shared reference points to, nor can
 you cast a shared reference to a mutable one.
 
-共享引用，&T，顾名思义，是一个可以共享的指针。任何数量的其他引用都可能存在于相同的值上，每个共享引用都是复制的，所以你可以轻而易举地制造更多的引用。共享引用后面的值是不可变的；你不能修改或重新分配一个共享引用所指向的值，也不能把一个共享引用投给一个可变的值。
+一个共享引用 `&T`，正如名称所示，是一个可以共享的指针。可以存在对同一值的任意数量的其他引用，每个共享引用都是`Copy`，因此您可以轻松地创建更多的引用。**共享引用背后的值不可变；您不能修改或重新分配共享引用指向的值，也不能将共享引用强制转换为可变引用。**
 
 The Rust compiler is allowed to assume that the value a shared
 reference points to will not change while that reference lives. For
@@ -531,16 +525,17 @@ reference is read multiple times in a function, it is within its rights to
 read it only once and reuse that value. More concretely, the assertion
 in Listing 1-4 should never fail.
 
-Rust编译器被允许假设共享引用所指向的值在该引用存在期间不会改变。例如，如果Rust编译器看到一个共享引用背后的值在一个函数中被多次读取，那么它就有权只读取一次并重用该值。更具体地说，清单1-4中的断言不应该失败。
+**Rust编译器可以假设共享引用指向的值在该引用存在期间不会更改。** 例如，如果Rust编译器看到在函数中多次读取共享引用后面的值，则可以合法地仅读取一次并重复使用该值。更具体地说，在清单1-4中的断言不应失败。
 
 ```rust
-// Listing 1-4: Rust assumes that shared references are immmutable
-
 fn cache(input: &i32, sum: &mut i32) {
   *sum = *input + *input;
   assert_eq!(*sum, 2* *input);
 }
 ```
+
+Listing 1-4: Rust assumes that shared references are immmutable
+
 
 Whether or not the compiler chooses to apply a given optimization
 is more or less irrelevant. The compiler heuristics change over time,
@@ -548,7 +543,7 @@ so you generally want to code against what the compiler is allowed to
 do rather than what it actually does in a particular case at a
 particular moment in time.
 
-编译器是否选择应用一个给定的优化或多或少是不相关的。编译器的启发式方法会随着时间的推移而改变，所以你通常希望针对编译器允许做的事情进行编码，而不是针对它在某一特定时刻的实际做法。
+*无论编译器是否选择应用给定的优化，都更或多少无关紧要。编译器的启发式算法会随着时间而改变，因此您通常希望针对编译器允许执行的操作编写代码，而不是针对特定情况和特定时刻编译器实际执行的操作编写代码。*
 
 ### Mutable References
 
@@ -561,7 +556,7 @@ words, it assumes that the mutable reference is exclusive. This
 enables some interesting optimizations that are not readily available
 in other languages. Take, for example, the code in Listing 1-5
 
-共享引用的替代方案是变异引用：&mut T。有了变异引用，Rust编译器又被允许充分利用引用自带的契约：编译器假设没有其他线程访问目标值，无论是通过共享引用还是变异引用。换句话说，它假定易变引用是独占的。这使得一些有趣的优化成为可能，这些优化在其他语言中是不容易实现的。以清单1-5中的代码为例。
+可变引用的替代方案是可变引用：`&mut T`。对于可变引用，`Rust`编译器再次可以充分利用引用所带来的约定：**编译器假设没有其他线程通过共享引用或可变引用访问目标值。** 换句话说，它假设可变引用是独占的。这使得一些有趣的优化在其他语言中不容易实现。例如，参见清单1-5中的代码。
 
 ```rust
 // listing 1-5: Rust assumes that mutable references are exclusive.
@@ -576,6 +571,8 @@ fn nolias(input: &i32, output: &mut i32) {
 ```
 Listing 1-5: Rust assumes that mutable references are exclusive.
 
+
+// todo
 In Rust, the compiler can assume that input and output do not point
 to the same memory. Therefore, the reassignment of output at 1
 cannot affect the check at 2, and the entire function can be compiled
@@ -1080,4 +1077,4 @@ over how types are represented in memory, see how generics and
 traits produce running code, and take a look at some of the special
 type and trait constructs Rust offers for more advanced use cases.
 
-本章的目的是建立一个坚实的、共享的基础，我们可以在接下来的章节中建立这个基础。到现在，我希望你觉得你已经牢牢掌握了Rust的内存和所有权模型，那些你可能从借用检查器中得到的错误似乎不那么神秘了。你可能已经知道了我们在这里所涉及的零星内容，但希望这一章能给你一个更全面的印象，让你知道这一切是如何结合起来的。在下一章中，我们将为类型做一些类似的事情。我们将讨论类型是如何在内存中表示的，看看泛型和特质是如何产生运行代码的，并看看Rust为更高级的用例提供的一些特殊类型和特质结构。
+本章的目的是建立一个坚实的共享基础，以便在接下来的章节中继续构建。现在，我希望您已经对Rust的内存和所有权模型有了坚实的理解，并且那些可能由借用检查器引发的错误看起来不再神秘。您可能已经了解了本章中讨论的某些部分，但希望本章能够为您提供一个更全面的图像，以便您了解它们是如何相互关联的。在下一章中，我们将对类型进行类似的讲解。我们将介绍类型在内存中的表示方式，了解泛型和特性如何产生运行代码，并查看一些Rust为更高级用例提供的特殊类型和特性构造。
