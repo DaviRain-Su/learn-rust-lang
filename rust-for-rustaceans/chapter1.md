@@ -2,7 +2,7 @@
 
 As you dive into the more advanced corners of Rust, it’s important that you ensure you have a solid understanding of the fundamentals. In Rust, as in any programming language, the precise meaning of various keywords and concepts becomes important as you begin to use the language in more sophisticated ways. In this chapter, we’ll walk through many of Rust’s primitives and try to define more clearly what they mean, how they work, and why they are exactly the way that they are. Specifically, we’ll look at how variables and values differ, how they are represented in memory, and the different memory regions a program has. We’ll then discuss some of the subtleties of ownership, borrowing, and lifetimes that you’ll need to have a handle on before you continue with the book.
 
-​    在你深入 Rust 更高级的领域之前，确保你对基础知识有坚实的理解非常重要。在 Rust 中，就像在任何编程语言中一样，随着你开始以更复杂的方式使用该语言，各种关键字和概念的确切含义变得更加重要。在本章中，我们将介绍许多 Rust 的基本元素，并尝试更清晰地定义它们的含义、工作原理以及它们为什么会是现在这个样子。具体而言，我们将了解变量和值的区别、它们在内存中的表示方式以及程序所具有的不同内存区域。然后，我们将讨论一些关于所有权、借用和生命周期的微妙之处，这些是你在继续本书之前需要掌握的知识。
+​    在你深入 Rust 更高级的领域之前，确保你对基础知识有坚实的理解非常重要。在 Rust 中，就像在任何编程语言中一样，随着你开始以更复杂的方式使用该语言，各种关键字和概念的确切含义变得更加重要。在本章中，我们将介绍许多 Rust 的基本元素，并尝试更清晰地定义它们的含义、工作原理以及它们为什么会是现在这个样子。具体而言，我们将**了解变量和值的区别、它们在内存中的表示方式以及程序所具有的不同内存区域**。然后，我们将讨论一些关于**所有权、借用和生命周期**的微妙之处，这些是你在继续本书之前需要掌握的知识。
 
 You can read this chapter from top to bottom if you wish, or you can use it as a reference to brush up on the concepts that you feel less
 sure about. I recommend that you move on only when you feel completely comfortable with the content of this chapter, as
@@ -34,15 +34,14 @@ and its in-memory representation is the byte `0x06`. Similarly, the `str`
 representation is its UTF-8 encoding. A value’s meaning is
 independent of the location where those bytes are stored.
 
-在深入探讨内存区域之前，您需要了解值、变量和指针之间的区别。在 Rust 中，值是类型和该类型值域的元素的组合。可以使用其类型的表示将值转换为字节序列，但单独来看，您可以将值视为程序员的意图。例如，类型为 `u8` 的数字 `6` 是数学整数 6 的实例，其内存表示为字节 `0x06`。类似地，字符串 `"Hello world"` 是所有字符串域中的值，其表示形式是其 UTF-8 编码。值的含义与存储这些字节的位置无关。
+在深入探讨内存区域之前，您需要**了解值、变量和指针之间的区别**。在 Rust 中，值是类型和该类型值域的元素的组合。可以使用其类型的表示将值转换为字节序列，但单独来看，您可以将值视为程序员的意图。例如，类型为 `u8` 的数字 `6` 是数学整数 6 的实例，其内存表示为字节 `0x06`。类似地，字符串 `"Hello world"` 是所有字符串域中的值，其表示形式是其 UTF-8 编码。**值的含义与存储这些字节的位置无关。**
 
 A value is stored in a place, which is the Rust terminology for “a
 location that can hold a value.” This place can be on the stack, on the
 heap, or in a number of other locations. The most common place to
 store a value is a variable, which is a named value slot on the stack.
 
-
-一个值被存储在一个地方，这是Rust的术语，意思是 "一个可以容纳一个值的位置"。这个地方可以在堆栈中，也可以在堆上，或者在其他一些位置。最常见的存储值的地方是一个变量，它是堆栈上的一个命名值槽。
+值存储在位置中，这是 Rust 中“可以容纳一个值的位置”的术语。这个位置可以在堆栈、堆或其他许多位置上。存储值的最常见位置是变量，它是堆栈上的一个命名值槽。
 
 A pointer is a value that holds the address of a region of memory,
 so the pointer points to a place. A pointer can be dereferenced to
