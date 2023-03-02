@@ -119,3 +119,4 @@
 
 - 知乎专栏迷思
 
+## [Rust Paper](./RustPaper.md)
