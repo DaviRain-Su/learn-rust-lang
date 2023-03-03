@@ -69,17 +69,17 @@ let mut var2 = &x;
 Listing 1-1: Values, variables, and pointers
 
 
-Here, there are four distinct values: 42 (an i32), 43 (an i32), the
-address of x (a pointer), and the address of y (a pointer). There are
-also four variables: x, y, var1, and var2. The latter two variables both
+Here, there are four distinct values: `42` (an `i32`), `43` (an `i32`), the
+address of `x` (a pointer), and the address of `y` (a pointer). There are
+also four variables: `x`, `y`, `var1`, and `var2`. The latter two variables both
 hold values of the pointer type, because references are pointers.
-While var1 and var2 store the same value initially, they store separate,
+While `var1` and `var2` store the same value initially, they store separate,
 independent copies of that value; when we change the value stored in
-var2 1, the value in var1 does not change. In particular, the = operator
+`var2 1`, the value in `var1` does not change. In particular, the `=` operator
 stores the value of the right-hand side expression in the place named
 by the left-hand side.
 
-这里有四个不同的值：`42`（一个i32类型的整数）、`43`（一个i32类型的整数）、`x`的地址（一个指针）和`y`的地址（一个指针）。还有四个变量：`x`、`y`、`var1`和`var2`。后两个变量都持有指针类型的值，因为引用就是指针。虽然`var1`和`var2`最初存储相同的值，但它们存储独立的、互不干扰的副本；当我们改变var2中存储的值时，var1中的值不会改变。特别地，赋值操作符“=”会将右侧表达式的值存储到左侧命名的位置。
+这里有四个不同的值：`42`（一个i32类型的整数）、`43`（一个i32类型的整数）、`x`的地址（一个指针）和`y`的地址（一个指针）。还有四个变量：`x`、`y`、`var1`和`var2`。后两个变量都持有指针类型的值，因为引用就是指针。虽然`var1`和`var2`最初存储相同的值，但它们存储独立的、互不干扰的副本；当我们改变`var2`中存储的值时，`var1`中的值不会改变。特别地，赋值操作符“`=`”会将右侧表达式的值存储到左侧命名的位置。
 
 An interesting example of where the distinction between variables,
 values, and pointers becomes important is in a statement such as:
@@ -90,14 +90,14 @@ values, and pointers becomes important is in a statement such as:
 let string = "Hello, world";
 ```
 
-Even though we assign a string value to the variable string, the
+Even though we assign a string value to the variable `string`, the
 actual value of the variable is a pointer to the first character in the
-string value "Hello world", and not the string value itself. At this point
+string value `"Hello world"`, and not the string value itself. At this point
 you might say, “But hang on, where is the string value stored, then?
 Where does the pointer point?” If so, you have a keen eye—we’ll get
 to that in a second.
 
-值得注意的是，尽管我们将一个字符串值赋给变量 string，但实际上变量的值是一个指向字符串值 "Hello world" 的第一个字符的指针，而不是字符串值本身。此时你可能会问，“但是等等，那么字符串值存储在哪里呢？指针指向哪里？”如果是这样，那么你有一双敏锐的眼睛——我们很快就会讨论这个问题。
+值得注意的是，尽管我们将一个字符串值赋给变量 `string`，但实际上变量的值是一个指向字符串值 `"Hello world"` 的第一个字符的指针，而不是字符串值本身。此时你可能会问，“但是等等，那么字符串值存储在哪里呢？指针指向哪里？”如果是这样，那么你有一双敏锐的眼睛——我们很快就会讨论这个问题。
 
 > Note: Technically, the value of string also includes the string’s
 length. We’ll talk about that in Chapter 2 when we discuss
@@ -181,15 +181,15 @@ Listing 1-2: Illegal flows that the borrow checker will catch
 First, we cannot use `x` before it is initialized, because we have
 nowhere to draw the flow from. Only when we assign a value to x can
 we draw flows from it. This code has two flows: one exclusive (&mut)
-flow from 1 to 3, and one shared (&) flow from 1 through 2 to 4.
+flow from `1` to `3`, and one shared (`&`) flow from `1` through `2` to `4`.
 The borrow checker inspects every vertex of every flow and checks
 that no other incompatible flows exist concurrently. In this case,
-when the borrow checker inspects the exclusive flow at 3, it sees the
-shared flow that terminates at 4. Since you cannot have an exclusive
+when the borrow checker inspects the exclusive flow at `3`, it sees the
+shared flow that terminates at `4`. Since you cannot have an exclusive
 and a shared use of a value at the same time, the borrow checker
-(correctly) rejects the code. Notice that if 4 was not there, this code
-would compile fine! The shared flow would terminate at 2, and
-when the exclusive flow is checked at 3, no conflicting flows would
+(correctly) rejects the code. Notice that if `4` was not there, this code
+would compile fine! The shared flow would terminate at `2`, and
+when the exclusive flow is checked at `3`, no conflicting flows would
 exist.
 
 首先，我们不能在初始化 `x` 之前使用它，因为我们没有任何地方可以绘制流。只有当我们给 `x` 赋值时，才能从它绘制流。这段代码有两个流：一个从 `1` 到 `3` 的排他（&mut）流，以及一个从 `1` 经过 `2` 到 `4` 的共享（&）流。**借用检查器检查每个流的每个顶点，并检查是否存在其他不兼容的流并发存在。** 在这种情况下，当借用检查器检查 `3` 处的排他流时，它看到终止于 `4` 的共享流。由于您不能同时具有值的排他和共享使用，因此借用检查器（正确地）拒绝该代码。请注意，如果不存在 `4`，这段代码将编译良好！共享流将在 `2` 处终止，当检查 `3` 处的排他流时，不存在冲突的流。
@@ -214,15 +214,15 @@ replaced. When you access it, the compiler checks that the slot isn’t
 empty, as that would mean the variable is uninitialized or its value
 has been moved. A pointer to a variable refers to the variable’s
 backing memory and can be dereferenced to get at its value. For
-example, in the statement let x: usize, the variable x is a name for a
+example, in the statement `let x: usize`, the variable `x` is a name for a
 region of memory on the stack that has room for a value the size of a
 usize, though it does not have a well-defined value (its slot is empty).
-If you assign a value to that variable, such as with x = 6, that region of
-memory will then hold the bits representing the value 6. &x does not
-change when you assign to x. If you declare multiple variables with
+If you assign a value to that variable, such as with `x = 6`, that region of
+memory will then hold the bits representing the value `6`. `&x` does not
+change when you assign to `x`. If you declare multiple variables with
 the same name, they still end up with different chunks of memory
-backing them. This model matches the memory model used by C and
-C++, and many other low-level languages, and is useful for when you
+backing them. This model matches the memory model used by `C` and
+`C++`, and many other low-level languages, and is useful for when you
 need to reason explicitly about memory.
 
 变量命名可能保存合法值的内存位置。你可以将变量视为“值槽”。当你对它赋值时，槽被填充，它的旧值（如果有的话）被丢弃并替换。当你访问它时，编译器检查槽是否为空，因为这意味着变量未初始化或其值已移动。指向变量的指针指向变量的支持内存，可以通过对其进行取消引用来访问其值。例如，在语句 `let x: usize` 中，变量 `x` 是堆栈上的一个内存区域的名称，它具有大小为 `usize` 的值的空间，但它没有定义明确的值（它的槽为空）。如果你将一个值赋给该变量，例如 `x = 6`，那么内存中的该区域将保存表示值 `6` 的位。当你对 `x` 赋值时，`&x` 不会改变。如果你用相同的名称声明多个变量，它们仍然具有不同的内存块来支持它们。这个模型匹配` C` 和` C++` 以及许多其他低级语言使用的内存模型，对于需要显式推理内存的情况非常有用。
@@ -363,18 +363,18 @@ can be used for however long your program wishes.
 
 特殊的生命周期`'static'`得名于静态内存区域，它标记了一个引用为“只要静态内存存在”，也就是直到程序关闭。由于静态变量的内存是在程序启动时分配的，对静态内存中变量的引用是`'static'`的，因为它直到程序关闭才被释放。反之不成立——可能存在指向非静态内存的`'static'`引用——但名称仍然适用：一旦创建了具有`'static'`生命周期的引用，无论它指向什么，就像在静态内存中一样，就程序的其余部分而言，它可以被使用任意长的时间。
 
-You will encounter the 'static lifetime much more often than you
+You will encounter the `'static` lifetime much more often than you
 will encounter truly static memory (through the static keyword, for
-example) when working with Rust. This is because 'static often shows
-up in trait bounds on type parameters. A bound like T: 'static
+example) when working with Rust. This is because `'static` often shows
+up in trait bounds on type parameters. A bound like T: `'static`
 indicates that the type parameter T is able to live for however long we
 keep it around for, up to and including the remaining execution of
 the program. Essentially, this bound requires that T is owned and
 self-sufficient, either in that it does not borrow other (non-static)
-values or that anything it does borrow is also 'static and thus will
-stick around until the end of the program. A good example of 'static
-as a bound is the std::thread::spawn function that creates a new thread,
-which requires that the closure you pass it is 'static. Since the new
+values or that anything it does borrow is also `'static` and thus will
+stick around until the end of the program. A good example of `'static`
+as a bound is the `std::thread::spawn` function that creates a new thread,
+which requires that the closure you pass it is `'static`. Since the new
 thread may outlive the current thread, the new thread cannot refer to
 anything stored on the old thread’s stack. The new thread can refer
 only to values that will live for its entire lifetime, which may be for
@@ -411,12 +411,12 @@ moved value through variables that refer to its new location.
 Rust的内存模型围绕着这样一个思想：所有值都有唯一的所有者——也就是说，每个值最终释放的责任都归属于一个位置（通常是一个作用域）。这是通过借用检查器实现的。如果值被移动，例如通过将其赋值给一个新变量、将其推送到向量中或将其放置在堆上，则该值的所有权从旧位置移动到新位置。此时，您不能再通过从原始所有者流动的变量访问该值，即使构成该值的位仍然存在。相反，您必须通过引用其新位置的变量来访问已移动的值。
 
 Some types are rebels and do not follow this rule. If a value’s type
-implements the special Copy trait, the value is not considered to have
+implements the special `Copy trait`, the value is not considered to have
 moved even if it is reassigned to a new memory location. Instead, the
 value is copied, and both the old and new locations remain
 accessible. Essentially, another identical instance of that same value
 is constructed at the destination of the move. Most primitive types in
-Rust, such as the integer and floating-point types, are Copy. To be Copy,
+Rust, such as the integer and floating-point types, are `Copy`. To be` Copy`,
 it must be possible to duplicate the type’s values simply by copying
 their bits. This eliminates all types that contain non-Copy types as well
 as any type that owns a resource it must deallocate when the value is
@@ -424,9 +424,9 @@ dropped
 
 有些类型是叛逆的，不遵循这个规则。如果一个值的类型实现了特殊的`Copy trait`，即使它被重新分配到新的内存位置，该值也不被认为已经移动。相反，该值被复制，旧位置和新位置都仍然可以访问。本质上，另一个完全相同的该值的实例在移动的目标处被构造。Rust中的大多数原始类型，例如整数和浮点数类型，都是`Copy`。为了实现`Copy`，必须能够仅通过复制它们的位来复制类型的值。这消除了所有包含非`Copy`类型的类型，以及任何在值被删除时必须释放资源的类型的所有权
 
-To see why, consider what would happen if a type like Box were Copy.
-If we executed box2 = box1, then box1 and box2 would both believe that
-they owned the heap memory allocated for the box, and they would
+To see why, consider what would happen if a type like` Box` were `Copy`.
+If we executed `box2 = box1`, then box1 and `box2` would both believe that
+they owned the heap memory allocated for the `box`, and they would
 both attempt to free it when they went out of scope. Freeing the
 memory twice could have catastrophic consequences.
 
@@ -467,16 +467,16 @@ let y1 = Box::new(84);
 
 Listing 1-3: Moving and copying semantics
 
-We start out with two values, the number 42 and a Box (a heap-allocated value) containing the number 84. The former is Copy, whereas
-the latter is not. When we place x1 and y1 into the tuple z 1, x1 is
-copied into z, whereas y1 is moved into z. At this point, x1 continues to
-be accessible and can be used again 3. On the other hand, y1 is
-rendered inaccessible once its value has been moved 4, and any
+We start out with two values, the number `42` and a `Box` (a heap-allocated value) containing the number `84`. The former is `Copy`, whereas
+the latter is not. When we place `x1` and `y1` into the tuple` z 1`, `x1 `is
+copied into `z`, whereas `y1` is moved into `z`. At this point, `x1` continues to
+be accessible and can be used again `3`. On the other hand, `y1` is
+rendered inaccessible once its value has been moved `4`, and any
 attempt to access it would incur a compiler error. When z goes out of
-scope 2, the tuple value it contains is dropped, and this in turn
-drops the value copied from x1 and the one moved from y1. When the
-Box from y1 is dropped, it also deallocates the heap memory used to
-store y1’s value.
+scope `2`, the tuple value it contains is dropped, and this in turn
+drops the value copied from `x1` and the one moved from `y1`. When the
+Box from `y1` is dropped, it also deallocates the heap memory used to
+store `y1`’s value.
 
 我们从两个值开始，一个是数字`42`，另一个是包含数字`84`的`Box`（一个堆分配的值）。前者是`Copy`，而后者不是。当我们将`x1`和`y1`放入元组`z1`中时，`x1`被复制到`z`中，而`y1`被移动到`z`中。此时，`x1`仍然可以访问并且可以再次使用`3`。另一方面，`y1`的值一旦被移动，就变得无法访问`4`，任何尝试访问它的尝试都会导致编译器错误。当`z`退出作用域`2`时，它包含的元组值被丢弃，这进而使从`x1`复制的值和从`y1`移动的值都被丢弃。当从`y1`中丢弃`Box`时，它也会释放用于存储`y1`值的堆内存。
 
@@ -559,7 +559,6 @@ in other languages. Take, for example, the code in Listing 1-5
 可变引用的替代方案是可变引用：`&mut T`。对于可变引用，`Rust`编译器再次可以充分利用引用所带来的约定：**编译器假设没有其他线程通过共享引用或可变引用访问目标值。** 换句话说，它假设可变引用是独占的。这使得一些有趣的优化在其他语言中不容易实现。例如，参见清单1-5中的代码。
 
 ```rust
-// listing 1-5: Rust assumes that mutable references are exclusive.
 fn nolias(input: &i32, output: &mut i32) {
   if *input == 1{
     1: *output = 2;
@@ -569,10 +568,9 @@ fn nolias(input: &i32, output: &mut i32) {
   }
 }
 ```
+
 Listing 1-5: Rust assumes that mutable references are exclusive.
 
-
-// todo
 In Rust, the compiler can assume that input and output do not point
 to the same memory. Therefore, the reassignment of output at 1
 cannot affect the check at 2, and the entire function can be compiled
@@ -580,8 +578,7 @@ as a single if-else block. If the compiler could not rely on the exclusive
 mutability contract, that optimization would be invalid, since an input
 of 1 could then result in an output of 3 in a case like noalias(&x, &mut x).
 
-在Rust中，编译器可以假设输入和输出不指向同一内存。因此，1处输出的重新分配不能影响2处的检查，整个函数可以被编译为一个单一的if-else块。如果编译器不能依赖排他性可变性契约，那么这种优化就会失效，因为在noalias(&x, &mut x)这样的情况下，1的输入可能导致3的输出。
-
+在Rust中，编译器可以假设输入和输出不指向相同的内存。因此，在`1`处重新分配输出不会影响`2`处的检查，整个函数可以编译为一个单独的`if-else`块。如果编译器不能依赖独占可变性约定，那么这种优化将是无效的，因为在像`noalias(&x, &mut x)`这样的情况下，输入为`1`可能导致输出为`3`。
 
 A mutable reference lets you mutate only the memory location that
 the reference points to. Whether you can mutate values that lie
@@ -589,15 +586,15 @@ beyond the immediate reference depends on the methods provided
 by the type that lies between. This may be easier to understand with
 an example, so consider Listing 1-6.
 
-一个可改变的引用只允许你改变该引用所指向的内存位置。你是否可以改变直接引用之外的值，取决于位于两者之间的类型所提供的方法。用一个例子可能更容易理解，所以考虑清单1-6。
+**可变引用只允许您修改引用指向的内存位置。** 您是否可以修改超出直接引用范围的值取决于介于两者之间的类型提供的方法。可能需要通过一个示例来更好地理解，因此请考虑清单1-6。
 
 ```rust
-// listing 1-6: Mutability applies only to the immediately referenced memory.
-
 let x = 42;
 let mut y = &x; // y is of type &i32
 let z = &mut y; // z is of type &mut &i32
 ```
+
+listing 1-6: Mutability applies only to the immediately referenced memory.
 
 In this example, you are able to change the value of the pointer y to
 a different value (that is, a different pointer) by making it reference a
@@ -606,7 +603,7 @@ different variable, but you cannot change the value that is pointed to
 y through z, but you cannot change z itself to hold a different
 reference.
 
-在这个例子中，你能够通过让指针y引用一个不同的变量来改变它的值（也就是一个不同的指针），但你不能改变被指向的值（也就是x的值）。同样地，你可以通过z来改变y的指针值，但你不能改变z本身来持有不同的引用。
+在这个例子中，您可以通过使指针`y`引用不同的变量来将指针的值更改为不同的值（即不同的指针），但是您无法更改所指向的值（即`x`的值）。同样，您可以通过`z`更改`y`的指针值，但是您无法更改`z`本身以保存不同的引用。
 
 The primary difference between owning a value and having a
 mutable reference to it is that the owner is responsible for dropping
@@ -617,14 +614,12 @@ reference, then you must leave another value in its place. If you did
 not, the owner would still think it needed to drop the value, but there
 would be no value for it to drop!
 
-拥有一个值和拥有一个可变的引用之间的主要区别是，所有者负责在不再需要的时候丢弃这个值。除此之外，你可以通过一个可改变的引用做任何事情，如果你拥有这个值的话，有一个注意事项：如果你把这个值移到可改变的引用后面，那么你必须在它的位置上留下另一个值。如果你不这样做，所有者仍然会认为它需要放弃这个值，但是它将没有值可以放弃！
+**拥有一个值和拥有一个可变引用的主要区别在于，当不再需要该值时，所有者负责释放该值。** 除此之外，您可以通过可变引用做任何您拥有该值时可以做的事情，但有一个例外：**如果您移动了可变引用后面的值，则必须留下另一个值来代替它。**如果没有这样做，所有者仍然认为需要丢弃该值，但是没有值可以被丢弃！
 
 Listing 1-7 gives an example of the ways in which you can move
 the value behind a mutable reference
 
 ```rust
-// listing 1-7 gives an example of the ways in which you can move the value behind a mutable reference.
-// listing 1-7: Access through a mutable reference must leave a value behind.
 fn replace_with_84(s: &mut Box<i32>) {
   // this is no okay, as *s would be empty:
   1: // let was = *s;
@@ -642,6 +637,8 @@ replace_with_84(&mut s);
 5: 
 ```
 
+// listing 1-7: Access through a mutable reference must leave a value behind.
+
 I’ve added commented-out lines that represent illegal operations.
 You cannot simply move the value out 1 since the caller would still
 think they owned that value and would free it again at 5, leading to
@@ -652,21 +649,20 @@ behind the mutable reference but leaves a new, default value for the
 type in its place. The default is a separate, owned value, so it is safe
 for the caller to drop it when the scope ends at 5.
 
-我已经添加了代表非法操作的注释行。你不能简单地将值移出1，因为调用者仍会认为他们拥有该值，并会在5处再次释放它，导致双重释放。如果你只是想留下一些有效的值，std::mem::take 2是一个不错的选择。它相当于std::mem::replace(&mut value, Default::default())；它将值从可变引用后面移出，但为该类型留下一个新的、默认的值。默认值是一个单独的、自有的值，所以当作用域在5处结束时，调用者可以安全地放弃它。
+我添加了一些被注释掉的行来表示非法操作。您不能简单地移动值 `1`，因为调用方仍然认为它们拥有该值，并在 `5` 处再次释放它，导致双重释放。如果您只想留下一些有效值，`std::mem::take 2` 是一个很好的选择。它相当于 `std::mem::replace(&mut value, Default::default())`；它从可变引用中移动值，但在原地留下了一个新的、默认的类型值。默认值是一个独立的、拥有的值，因此调用方在作用域结束时丢弃它是安全的。
 
 Alternatively, if you don’t need the old value behind the reference,
 you can overwrite it with a value that you already own 3, leaving it
 to the caller to drop the value later. When you do this, the value that
 used to be behind the mutable reference is dropped immediately
 
-另外，如果你不需要引用后面的旧值，你可以用一个你已经拥有的值来覆盖它3，让调用者以后再丢弃这个值。当你这样做的时候，原来在可变引用后面的值会被立即丢弃。
-
+替代方案是，如果您不需要参考(reference)的旧值，可以使用已经拥有的值覆盖它`3`，让调用方稍后丢弃该值。当您这样做时，曾经在可变引用后面的值会立即被丢弃。
 
 Finally, if you have two mutable references, you can swap their
 values without owning either of them 4, since both references will
 end up with a legal owned value for their owners to eventually free
 
-最后，如果你有两个易变的引用，你可以在不拥有其中任何一个的情况下交换它们的值4，因为两个引用最后都会有一个合法拥有的值供它们的所有者最终释放。
+最后，如果你有两个可变引用，你可以在不拥有它们的情况下交换它们的值 `4`，因为两个引用最终都会有一个合法的拥有者要释放的拥有值。
 
 ### Interior Mutability
 
@@ -679,41 +675,33 @@ categories: those that let you get a mutable reference through a
 shared reference, and those that let you replace a value given only a
 shared reference.
 
-有些类型提供内部可变性，这意味着它们允许你通过共享引用来变异一个值。这些类型通常依靠额外的机制（如原子CPU指令）或不变性来提供安全的可变性，而不依赖排他性引用的语义。这些通常分为两类：一类是让你通过共享引用获得一个可变的引用，另一类是让你替换一个只给定共享引用的值。
+有些类型提供内部可变性（interior mutability），这意味着它们允许你通过共享引用来改变值。这些类型通常依赖于额外的机制（比如`原子 CPU 指令`）或不变量，以提供安全的可变性而不依赖于独占引用的语义。这些类型通常分为两类：**一类让你通过共享引用获取可变引用，另一类则让你仅通过共享引用就可以替换一个值。**
 
-The first category consists of types like Mutex and RefCell, which
+The first category consists of types like `Mutex` and `RefCell`, which
 contain safety mechanisms to ensure that, for any value they give a
 mutable reference to, only one mutable reference (and no shared
 references) can exist at a time. Under the hood, these types (and
 those like them) all rely on a type called UnsafeCell, whose name should
-immediately make you hesitate to use it. We will cover UnsafeCell in
+immediately make you hesitate to use it. We will cover `UnsafeCell` in
 more detail in Chapter 9, but for now you should know that it is the
 only correct way to mutate through a shared reference.
 
-第一类由Mutex和RefCell等类型组成，它们包含安全机制，以确保对于它们给出的任何值的可变参考，一次只能存在一个可变参考（而没有共享参考）。在引擎盖下，这些类型（和那些类似的类型）都依赖于一个叫做UnsafeCell的类型，它的名字应该立刻让你对使用它感到犹豫。我们将在第9章详细介绍UnsafeCell，但现在你应该知道它是通过共享引用进行变异的唯一正确方法。
+
+这一类包括 `Mutex` 和 `RefCell` 这样的类型，它们包含安全机制，以确保对于它们给出的任何值，同一时间只能存在一个可变引用（和没有共享引用）。在底层，这些类型（以及类似它们的类型）都依赖于一种名为 `UnsafeCell` 的类型，其名称应立即让您对其使用保持犹豫。我们将在第 9 章中更详细地介绍 `UnsafeCell`，但现在您应该知道它是通过共享引用进行变异的唯一正确方式。
 
 Other categories of types that provide interior mutability are those
 that do not give out a mutable reference to the inner value but
 instead just give you methods for manipulating that value in place.
-The atomic integer types in std::sync::atomic and the std::cell::Cell type
+The atomic integer types in `std::sync::atomic` and the `std::cell::Cell` type
 fall into this category. You cannot get a reference directly to the usize
 or i32 behind such a type, but you can read and replace its value at a
 given point in time.
 
-提供内部可变性的其他类别的类型是那些不给出内部值的可变性引用，而只是给你在原地操作该值的方法。std::sync::atomic中的原子整数类型和std::cell::Cell类型就属于这个类别。你不能直接获得对这种类型背后的usize或i32的引用，但你可以在一个给定的时间点上读取和替换它的值。
+提供内部可变性的其他类型属于不同的类别，它们不直接提供对内部值的可变引用，而是提供操作该值的方法。`std::sync::atomic` 中的原子整数类型和 `std::cell::Cel`l 类型属于这一类别。您无法直接获得这些类型背后的 `usize` 或 `i32` 的引用，但可以在某个特定时刻读取和替换它的值。
 
-The Cell type in the standard library is an interesting
-example of safe interior mutability through invariants. It is
-not shareable across threads and never gives out a reference
-to the value contained in the Cell. Instead, the methods all
-either replace the value entirely or return a copy of the
-contained value. Since no references can exist to the inner
-value, it is always okay to move it. And since Cell isn’t
-shareable across threads, the inner value will never be
-concurrently mutated even though mutation happens
-through a shared reference.
+> Note: The Cell type in the standard library is an interesting example of safe interior mutability through invariants. It is not shareable across threads and never gives out a reference to the value contained in the Cell. Instead, the methods all either replace the value entirely or return a copy of the contained value. Since no references can exist to the inner value, it is always okay to move it. And since Cell isn’t shareable across threads, the inner value will never be concurrently mutated even though mutation happens through a shared reference.
 
-> 标准库中的Cell类型是一个有趣的例子，它通过不变量实现了安全的内部可变性。它不能跨线程共享，也不会给出对单元格中所包含的值的引用。相反，所有的方法要么完全替换该值，要么返回所含值的一个副本。因为没有对内部值的引用存在，所以移动它总是可以的。而且，由于Cell不能跨线程共享，即使变异是通过共享引用发生的，内部值也不会被并发变异。
+> Note: 标准库中的 `Cell` 类型是通过不变量实现安全内部可变性的有趣示例。它不能在线程之间共享，也永远不会提供对 `Cell` 中包含的值的引用。相反，所有的方法都要么完全替换值，要么返回一个包含内部值副本的对象。由于不能存在指向内部值的引用，因此在任何时候都可以移动它。并且由于 `Cell` 不能在线程之间共享，即使是通过共享引用进行变异，内部值也永远不会被同时变异。
 
 ### Lifetimes
 
@@ -724,7 +712,7 @@ will serve you well for the majority of Rust code you will write, but as
 we dive deeper into the more complex parts of Rust, you will need a
 more rigorous mental model to work with.
 
-如果你正在读这本书，你可能已经熟悉了生命期的概念，可能是通过编译器对生命期规则违反的反复通知。这种程度的理解对于你将要写的大多数Rust代码来说是很好的，但是当我们深入到Rust的更复杂的部分时，你将需要一个更严格的心理模型来工作。
+如果您正在阅读本书，则可能已经通过编译器不断发出的生命周期规则违规通知熟悉了生命周期的概念。这种水平的理解将为您编写的大多数Rust代码提供帮助，但是当我们深入探讨Rust的更复杂部分时，您将需要一个更严格的思维模型来处理。
 
 Newer Rust developers are often taught to think of lifetimes as
 corresponding to scopes: a lifetime begins when you take a reference
@@ -735,7 +723,8 @@ that some reference must be valid for. While a lifetime will frequently
 coincide with a scope, it does not have to, as we will see later in this
 section.
 
-新的Rust开发者经常被教导要把生命期看作是与作用域相对应的：当你获取某个变量的引用时，生命期就开始了，当该变量被移动或超出作用域时就结束了。这通常是正确的，而且通常很有用，但实际情况要复杂一些。生命期实际上是一个代码区域的名称，一些引用必须在该区域内有效。虽然生命期经常与作用域重合，但它并不是必须的，我们将在本节的后面看到。
+新手 Rust 开发者通常被教导将生命周期视为与作用域相对应：当您对某个变量引用时，生命周期开始，并且在变量移动或作用域结束时结束。这通常是正确的，也是有用的，但实际情况略微复杂。生命周期实际上是代码区域的名称，某些引用必须在其中有效。虽然生命周期通常会与作用域重合，但不一定如此，我们将在本节后面看到。
+
 
 #### Lifetimes and the Borrow Checker
 
@@ -750,16 +739,14 @@ discussed earlier in the chapter; the compiler checks that the flow of
 the reference we are accessing does not conflict with any other
 parallel flows.
 
-Rust lifetimes的核心是借用检查器。每当一个具有某种寿命的引用'a'被使用时，借用检查器就会检查'a'是否仍然活着。它通过追踪路径回到'a'开始的地方--引用被取走的地方--从使用点开始，并检查该路径上是否有冲突的使用。这确保了引用仍然指向一个可以安全访问的值。这类似于我们在本章前面讨论的高级 "数据流 "心理模型；编译器检查我们正在访问的引用的流不会与任何其他并行流相冲突。
+Rust 生命周期的核心在于借用检查器。每当使用具有某个生命周期 `'a` 的引用时，借用检查器会检查 `'a` 是否仍然存在。它通过从使用点回溯到 `'a` 开始的位置 - 引用被获取的地方，并检查沿该路径是否存在冲突的使用来实现这一点。这确保了引用仍指向可以安全访问的值。这类似于本章早期讨论的高级“数据流”心理模型；**编译器检查我们正在访问的引用流是否与任何其他并行流冲突。**
 
 Listing 1-8 shows a simple code example with lifetime annotations
 for the reference to x.
 
-清单1-8显示了一个简单的代码例子，其中有对x的引用的寿命注释。
+清单1-8显示了一个简单的代码例子，其中有对`x`的引用的生命周期的解释。
 
 ```rust
-// 1-8 shows a simple code example with lifetime annotations for the reference to x.
-// listing 1-8: lifetimes dot not need to be contiguous.
 let mut x = Box::new(42);
 1: let r = &x; // 'a
 if rand() > 0.5 {
@@ -772,9 +759,7 @@ if rand() > 0.5 {
 
 Listing 1-8: Lifetimes do not need to be contiguous.
 
-当我们获取对x的引用时，生命期从1开始。在第一个分支2中，我们立即尝试修改x，将其值改为84，这需要一个&mut x。它发现在获取引用和使用引用之间没有冲突，所以它接受了这段代码。如果你习惯于将生命周期视为作用域的话，这可能会让你感到惊讶，因为r在2的时候仍然在作用域中（在4的时候出了作用域）。但是借贷检查器足够聪明，它意识到如果这个分支被选中，以后就不会再使用r，因此x在这里被可变访问是没有问题的。或者，换句话说，在1处创建的生命期并没有延伸到这个分支：在2处之后没有来自r的流，因此没有冲突的流。然后，借贷检查器在3处的打印语句中发现了r的使用。它沿着路径回到1处，发现没有冲突的使用（2不在该路径上），所以它也接受这个使用。
-
-The lifetime starts at 1 when we take a reference to x. In the first
+The lifetime starts at `1` when we take a reference to `x`. In the first
 branch 2, we then immediately try to modify x by changing its value
 to 84, which requires a &mut x. The borrow checker takes out a mutable
 reference to x and immediately checks its use. It finds no conflicting
@@ -787,24 +772,25 @@ it is fine for x to be mutably accessed here. Or, phrased differently,
 the lifetime created at 1 does not extend into this branch: there is no
 flow from r beyond 2, and therefore there are no conflicting flows.
 The borrow checker then finds the use of r in the print statement at
-3. It walks the path back to 1 and finds no conflicting uses (2 is
+`1`. It walks the path back to 1 and finds no conflicting uses (2 is
 not on that path), so it accepts this use as well.
 
-如果我们在清单1-8中的4处增加了对r的使用，代码就不能再编译了。a的生命周期将从1一直持续到4（r的最后一次使用），当借贷检查器检查我们对r的新使用时，它将发现2处有一个冲突的使用。
+在这个例子中，生命周期从`1`开始，当我们将一个引用指向`x`时。在第一个分支`2`中，我们立即尝试通过更改其值为`84`来修改`x`，这需要一个`&mut x`。借用检查器取出一个可变引用以立即检查其使用。它在引用获取和使用之间没有找到任何冲突使用，因此接受了这段代码。如果你习惯将生命周期视为作用域，这可能会让你感到惊讶，因为`r`仍然在`2`的作用域中（它在`4`处作用域结束）。但是，借用检查器足够聪明，可以意识到如果采取这个分支，则`r`永远不会再被使用，因此此处对`x`进行可变访问是可以接受的。或者换句话说，在`1`处创建的生命周期不延伸到这个分支中：没有从`r`到`2`的流，因此也没有冲突的流。然后，借用检查器在`3`的打印语句中找到了对r的使用。它沿着路径回溯到`1`并找到没有冲突的使用（`2`不在该路径上），因此也接受了这个使用。
 
 If we were to add another use of r at 4 in Listing 1-8, the code
 would no longer compile. The lifetime 'a would then last from 1 all
 the way until 4 (the last use of r), and when the borrow checker
 checked our new use of r, it would discover a conflicting use at 2.
 
-寿命可以变得相当复杂。在清单1-9中，你可以看到一个有漏洞的生命周期的例子，它在开始和最终结束的地方间歇性地无效。
+如果我们在代码清单1-8中添加`r`的另一个使用，比如在`4`处，那么代码将不再编译。此时，`lifetime 'a`将持续从`1`直到`4`（`r`的最后一个使用），当借用检查器检查新的`r`使用时，它将在`2`处发现冲突的使用。
 
 Lifetimes can get quite convoluted. In Listing 1-9 you can see an
 example of a lifetime that has holes, where it’s intermittently invalid
 between where it starts and where it ultimately ends.
 
+生命周期可能会变得相当复杂。在清单1-9中，您可以看到一个有空洞的生命周期的示例，在该生命周期开始和最终结束之间不时无效。
+
 ```rust
-// listing 1-9: lifetimes can have holes.
 let mut x = Box::new(42);
 1: let mut z = &x; // 'a
 for i in 0..100 {
@@ -814,6 +800,8 @@ for i in 0..100 {
 }
 println!("{}",z); // 'a
 ```
+
+listing 1-9: lifetimes can have holes.
 
 The lifetime starts at 1 when we take a reference to x. We then
 move out of x at 3, which ends the lifetime 'a because it is no longer
@@ -825,7 +813,7 @@ statement, both of those uses now have a valid value to flow from,
 and there are no conflicting flows, so the borrow checker accepts the
 code!
 
-当我们获取对x的引用时，生命期从1开始。然后我们在3处移出x，这结束了'a'的生命期，因为它不再有效。借贷检查器认为'a'在2处结束，这使得3处的x没有冲突的流量，从而接受了这一举动。 然后，我们通过更新z 4中的引用来重新启动生命周期。 无论代码现在是循环回到2处还是继续到最后的打印语句，这两个用途现在都有一个有效的值可以流出来，而且没有冲突的流量，所以借贷检查器接受了代码！
+该生命周期从我们引用`x`时的`1`开始。然后我们在`3`处移出了`x`，这结束了生命周期`'a'`，因为它不再有效。 借用检查器接受了这个移动，认为`'a'`在`2`处结束，这样在`3`处就没有从`x`产生冲突的流了。然后，我们通过在`4`中更新`z`中的引用来重新开始生命周期。无论代码现在循环回到`2`还是继续到最后的打印语句，这两个使用现在都有一个有效的值可以流动，而且没有冲突的流，因此借用检查器接受了这段代码！
 
 Again, this aligns perfectly with the data-flow model of memory we
 discussed earlier. When x is moved, z stops existing. When we
@@ -834,7 +822,7 @@ only from that point forward. It just so happens that that new
 variable is also named z. With that model in mind, this example is
 not weird.
 
-同样，这与我们之前讨论的内存的数据流模型完全吻合。当x被移动时，z停止存在。当我们稍后重新分配z时，我们创建了一个全新的变量，这个变量只从这一点开始存在。碰巧的是，这个新变量也被命名为z。考虑到这个模型，这个例子并不奇怪。
+是的，这与我们之前讨论的内存数据流模型是完全一致的。当`x`被移动时，`z`停止存在。当我们稍后重新分配`z`时，我们正在创建一个完全新的变量，它只存在于那一点之后。恰好这个新变量也被命名为`z`。有了这个模型，这个例子就不会感觉很奇怪了。
 
 The borrow checker is, and has to be, conservative. If it’s
 unsure whether a borrow is valid, it rejects it, as the
@@ -843,9 +831,7 @@ disastrous. The borrow checker keeps getting smarter, but
 there are times when it needs help to understand why a
 borrow is legal. This is part of why we have unsafe Rust
 
-> 同样，这与我们之前讨论的内存的数据流模型完全吻合。当x被移动时，z停止存在。当我们稍后重新分配z时，我们创建了一个全新的变量，这个变量只从这一点开始存在。碰巧的是，这个新变量也被命名为z。考虑到这个模型，这个例子并不奇怪。
-
-
+借用检查器是保守的，必须如此。如果它不确定借用是否有效，它会拒绝它，因为允许无效借用的后果可能是灾难性的。借用检查器不断变得更加智能，但有时需要帮助才能理解为什么借用是合法的。这就是为什么我们有不安全 Rust 的部分原因。
 
 #### Gereric Lifetimes
 
@@ -855,7 +841,8 @@ can check their validity when they are used in the various methods
 on that type. This is especially true if you want a method on your
 type to return a reference that outlives the reference to self.
 
-偶尔你需要在你自己的类型中存储引用。这些引用需要有一个生命周期，这样当它们被用于该类型的各种方法时，借贷检查器可以检查它们的有效性。如果你想让你的类型上的一个方法返回一个比对自己的引用更久远的引用，这一点尤其正确。
+有时候您需要在自己的类型中存储引用。这些引用需要有生命周期，以便在它们在该类型的各种方法中使用时，借用检查器可以检查它们的有效性。如果您希望类型的某个方法返回一个超出 `self` 引用的引用，这一点尤其重要。
+
 
 Rust lets you make a type definition generic over one or more
 lifetimes, just as it allows you to make it generic over types. The Rust
@@ -865,7 +852,9 @@ reiterate the basics here. But as you write more complex types of this
 nature, there are two subtleties around the interaction between such
 types and lifetimes that you should be aware of.
 
-Rust允许你让一个类型定义在一个或多个生命期上通用，就像它允许你让它在类型上通用一样。Steve Klabnik和Carol Nichols的《Rust编程语言》（No Starch Press，2018）对这一主题做了一些详细介绍，所以我不会在这里重申基础知识。但是，当你编写这种性质的更复杂的类型时，围绕这种类型和生命期之间的互动，有两个微妙的问题，你应该注意。
+Rust允许您使类型定义在一个或多个生命周期上通用，就像允许您使其在类型上通用一样。Steve Klabnik和Carol Nichols（No Starch Press，2018）的《Rust编程语言》在此主题上进行了详细介绍，因此我不会在此重申基础知识。但是，随着您编写更复杂的此类类型，有两个关于此类类型和生命周期之间交互的细微差别需要注意。
+
+
 
 First, if your type also implements Drop, then dropping your type
 counts as a use of any lifetime or type your type is generic over.
@@ -878,7 +867,7 @@ ignore any references stored in your type as long as they do not use it
 anymore, like we saw in Listing 1-7. We’ll talk more about these rules
 around dropping in Chapter 9.
 
-首先，如果你的类型也实现了Drop，那么丢弃你的类型也算作是对你的类型的泛型寿命或类型的使用。基本上，当你的类型的一个实例被丢弃时，借贷检查器将检查在丢弃它之前使用你的类型的任何泛型寿命是否仍然合法。这是必要的，以防你的丢弃代码确实使用了任何这些引用。如果你的类型没有实现 Drop，丢弃这个类型就不算是使用，用户只要不再使用你的类型，就可以自由地忽略存储在你的类型中的任何引用，就像我们在清单 1-7 中看到的那样。我们将在第9章中更多地讨论这些关于放弃的规则。
+首先，如果你的类型还实现了 `Drop`，则丢弃该类型将被视为使用该类型所泛型的生命周期或类型。实际上，当一个实例的类型被丢弃时，借用检查器会检查在丢弃之前是否仍然可以使用任何泛型生命周期。如果你的丢弃代码确实使用了这些引用，这是必要的。如果你的类型没有实现 `Drop`，则丢弃该类型不会被视为使用，用户可以自由忽略存储在类型中的任何引用，只要他们不再使用它，就像我们在代码清单1-7中看到的那样。我们将在第9章更详细地讨论关于丢弃的规则。
 
 Second, while a type can be generic over multiple lifetimes, making
 it so often only serves to unnecessarily complicate your type
@@ -890,7 +879,7 @@ type that contains multiple references, and its methods return
 references that should be tied to the lifetime of only one of those
 references.
 
-第二，虽然一个类型可以在多个生命周期内通用，但经常这样做只会让你的类型签名变得不必要的复杂。通常情况下，一个类型在一个生命周期内是通用的就可以了，编译器会将插入到你的类型中的任何引用的生命周期中较短的一个作为这个生命周期。只有当你有一个包含多个引用的类型，而它的方法返回的引用应该只与其中一个引用的寿命挂钩时，你才应该真正使用多个泛型寿命参数。
+第二个需要注意的问题是，虽然一个类型可以泛型多个生命周期，但这样做通常只会使你的类型签名变得更加复杂。通常情况下，类型只需要泛型一个生命周期就足够了，编译器会使用较短的生命周期作为插入到你的类型中的任何引用的生命周期。只有当一个类型包含多个引用，并且它的方法返回应该绑定到这些引用中的一个的生命周期的引用时，你才需要使用多个生命周期参数。
 
 
 Consider the type in Listing 1-10, which gives you an iterator over
@@ -929,7 +918,7 @@ write: the return type would have a lifetime associated with a
 variable local to the function—the String produced by to_string—and
 the borrow checker would reject the code.
 
-当你构建这个类型时，你必须给出分隔符和要搜索的文档，这两个都是对字符串值的引用。当你要求下一个字符串时，你会得到一个对文档的引用。考虑一下如果你在这个类型中使用一个单一的生命周期会发生什么。迭代器产生的值将与文档的生命周期和分隔符相联系。这将使str_before无法编写：返回类型将有一个与函数本地变量相关的生命周期--to_string产生的String--借贷检查器将拒绝该代码。
+如果在这个类型中只使用了单个生命周期会怎样呢？迭代器生成的值将与文档和分隔符的生命周期相关联。这将使得 `str_before` 函数无法编写：返回类型将具有与函数内部变量相关联的生命周期——由 `to_string` 产生的 `String` 类型的生命周期，借用检查器会拒绝这段代码。
 
 #### Lifetime Variance
 
@@ -942,7 +931,7 @@ as B. Variance is the reason why, in Java, you can pass a Turtle to a
 function that accepts an Animal if Turtle is a subtype of Animal, or why, in
 Rust, you can pass a &'static str to a function that accepts a &'a str.
 
-"差异 "是程序员经常接触到的一个概念，但很少知道它的名字，因为它大多是看不见的。简而言之，差异性描述了哪些类型是其他类型的子类型，以及何时可以用子类型来代替超类型（反之亦然）。广义上讲，如果一个类型A至少和B一样有用，那么它就是另一个类型B的子类型。 Variance就是为什么在Java中，如果Turtle是Animal的子类型，你可以把Turtle传给接受Animal的函数，或者在Rust中，你可以把&'static str传给接受&'a str的函数。
+Variance（协变性）是一个程序员经常接触但很少知道其名称的概念，因为它通常是不可见的。简单来说，协变性描述了哪些类型是其他类型的子类型，以及何时可以在超类型的位置上使用子类型（反之亦然）。广义而言，如果类型`A`比类型`B`更有用，则类型`A`是类型`B`的子类型。协变性是为什么在`Java`中可以将一个`Turtle`（乌龟）传递给接受`Animal`（动物）的函数，如果`Turtle`是`Animal`的子类型，或者为什么在`Rust`中可以将一个`'&'static str`传递给接受`'&'a str`的函数的原因。
 
 While variance usually hides out of sight, it comes up often enough
 that we need to have a working knowledge of it. Turtle is a subtype of
@@ -953,17 +942,17 @@ and so is more useful. Or, more generally, if 'b: 'a ('b outlives 'a), then
 'b is a subtype of 'a. This is obviously not the formal definition, but it
 gets close enough to be of practical use.
 
-虽然变异通常隐藏在视线之外，但它经常出现，我们需要对它有一个工作上的了解。乌龟是动物的一个亚类型，因为乌龟比某些未指定的动物更 "有用"--乌龟可以做任何动物能做的事情，而且可能更多。同样，"静态 "是 "a "的一个子类型，因为 "静态 "的寿命至少与任何 "a "一样长，所以更有用。或者，更一般地说，如果'b：'a（'b比'a长寿），那么'b就是'a的一个子类型。这显然不是正式的定义，但它已经足够接近实际用途了。
+正如前面提到的那样，虽然variance通常隐藏在视野之外，但它经常出现，因此我们需要对其有一个工作知识。`Turtle`是`Animal`的子类型，因为一只`Turtle`比某个未指定的`Animal`更“有用”-一只`Turtle`可以做任何Animal可以做的事情，可能还可以做更多。类似地，`'static`是`'a`的子类型，因为`'static`的生命周期至少和任何`'a`一样长，因此更有用。或者更一般地，如果`'b：'a`（`'b`的生命周期超过`'a`），则`'b`是`'a`的子类型。这显然不是正式定义，但它足以实用。
 
 All types have a variance, which defines what other similar types
 can be used in that type’s place. There are three kinds of variance:
 covariant, invariant, and contravariant. A type is covariant if you can
 just use a subtype in place of the type. For example, if a variable is of
-type &'a T, you can provide a value of type &'static T to it, because &'a T
-is covariant in 'a. &'a T is also covariant in T, so you can pass a
-&Vec<&'static str> to a function that takes &Vec<&'a str>.
+type` &'a T`, you can provide a value of type `&'static T` to it, because `&'a T`
+is covariant in `'a`. `&'a T` is also covariant in `T`, so you can pass a
+`&Vec<&'static str>` to a function that takes `&Vec<&'a str>`.
 
-所有类型都有一个方差，它定义了哪些其他类似的类型可以用于该类型的位置。有三种方差：共变、不变、和不变型。如果你可以只使用一个子类型来代替该类型，那么该类型就是协变的。例如，如果一个变量是&'a T类型的，你可以给它提供一个&'static T类型的值，因为&'a T在'a中是协变的。&'a T在T中也是协变的，所以你可以把一个&Vec<&'static str>传递给一个接受&Vec<&'a str>的函数。
+所有类型都有一个方差（variance），它定义了可以在该类型的位置使用什么其他类似类型。有三种方差(variance)：**协变（covariant）、不变（invariant）和逆变（contravariant）**。如果可以仅仅使用子类型替换该类型，则该类型是协变的。例如，如果一个变量的类型是`&'a T`，那么可以提供一个类型为`&'static T`的值，因为`&'a T`对于`'a`是协变的。`&'a` T在T上也是协变的，因此可以将`&Vec<&'static str>`传递给一个接受`&Vec<&'a str>`的函数。
 
 Some types are invariant, which means that you must provide
 exactly the given type. &mut T is an example of this—if a function takes
@@ -971,7 +960,9 @@ a &mut Vec<&'a str>, you cannot pass it a &mut Vec<&'static str>. That is, &mut 
 thinking that it were a Vec<&'static str> and thus that the contained
 string were 'static! Any type that provides mutability is generally
 invariant for the same reason—for example, Cell<T> is invariant in T.
-有些类型是不变的，这意味着你必须准确地提供给定的类型。&mut T就是这样一个例子--如果一个函数接受一个&mut Vec<&'a str>，你不能把一个&mut Vec<&'static str>传递给它。也就是说，&mut T在T中是不变的。如果你可以，函数可以在Vec中放入一个短暂的字符串，然后调用者会继续使用它，认为它是一个Vec<&'static str>，从而认为包含的字符串是 "静态的！"。任何提供可变性的类型一般都是不变的，原因也是如此--例如，Cell<T>在T中是不变的。
+
+一些类型是不变的，这意味着你必须提供与给定类型完全相同的类型。`&mut T`就是这样一个例子，如果一个函数接受一个`&mut Vec<&'a str>`，你不能将其传递一个`&mut Vec<&'static str>`。也就是说，`&mut T`对于`T`是不变的。如果可以这样做，函数可以将一个短寿命的字符串放入`Vec`中，而调用者会继续使用它，认为它是一个`Vec<&'static str>`，因此包含的字符串是`'static`! 提供可变性的任何类型通常是不变的，例如，`Cell<T>`对于`T`是不变的，原因相同。
+
 
 The last category, contravariance, comes up for function
 arguments. Function types are more useful if they’re okay with their
@@ -979,7 +970,7 @@ arguments being less useful. This is clearer if you contrast the
 variance of the argument types on their own with their variance
 when used as function arguments:
 
-最后一类，即禁忌，出现在函数参数上。如果函数类型可以接受其参数不那么有用，那么它们就会更有用。如果你将参数类型本身的方差与它们作为函数参数时的方差进行对比，这一点就更清楚了：
+最后一类，协变，出现在函数参数中。如果函数能够接受其参数比期望类型更少，那么函数类型会更有用。如果你将参数类型的协变性与其作为函数参数时的协变性进行对比，这一点将更加明显：
 
 ```rust
 let x: &'static str; // mote useful, live longer
@@ -991,7 +982,7 @@ fn take_func2(&'a str) // less strict, more useful
 
 This flipped relationship indicates that Fn(T) is contravariant in T.
 
-这种翻转的关系表明，Fn(T)在T中是禁变量。
+这种颠倒的关系表明，Fn(T)对于T是逆变的。
 
 So why do you need to learn about variance when it comes to
 lifetimes? Variance becomes relevant when you consider how generic
@@ -999,7 +990,7 @@ lifetime parameters interact with the borrow checker. Consider a
 type like the one shown in Listing 1-11, which uses multiple lifetimes
 in a single field.
 
-那么，当涉及到寿命时，你为什么需要学习方差呢？当你考虑通用寿命参数如何与借贷检查器交互时，方差就变得相关了。考虑像清单1-11中所示的类型，它在一个字段中使用了多个寿命。
+很多时候，当你涉及到借用检查器时，就需要了解生命周期的变异性。考虑一个像示例1-11中所示的类型，它在一个字段中使用了多个生命周期
 
 ```rust
 // listing1-11: A type that needs to be generic over multiple lifetimes
@@ -1010,6 +1001,7 @@ let mut s = "Hello";
 1: &MutStr {s: &mut s}.s = "world";
 println!("{}", s);
 ```
+
 Listing 1-11: A type that needs to be generic over multiple
 lifetimes
 
@@ -1019,15 +1011,14 @@ different parts of the structure, as we did with StrSplit in Listing 1-10.
 But if you replace the two lifetimes here with a single 'a, the code no
 longer compiles! And it’s all because of variance.
 
-乍一看，在这里使用两个生命期似乎没有必要--我们没有需要区分结构中不同部分的借贷的方法，就像我们在清单1-10中的StrSplit那样。但是如果你用一个'a'来代替这里的两个生命期，代码就不再能编译了！这都是因为变异。而这一切都是因为变异。
+乍一看，这里使用两个生命周期似乎是不必要的——我们没有需要区分结构不同部分借用的方法，就像在清单1-10中使用`StrSplit`时那样。但是，如果将这里的两个生命周期替换为单个`'a`，则代码不再编译！这全是因为方差(variance)。
 
 Note: The syntax at 1 may seem alien. It’s equivalent to defining a
-variable x holding a MutStr and then writing *x.s = "world",
+variable x holding a MutStr and then writing `*x.s = "world"`,
 except that there’s no variable and so the MutStr is dropped
 immediately
 
-
-> 1处的语法可能看起来很陌生。它相当于定义了一个持有MutStr的变量x，然后写*x.s = "world"，只是没有变量，所以MutStr被立即删除。
+> 说明：`1`处的语法可能看起来很奇怪。它等同于定义一个包含`MutStr`的变量`x`，然后写成`*x.s = "world"`，只是没有变量，所以`MutStr`会立即被丢弃。
 
 At 1, the compiler must determine what lifetime the lifetime
 parameter(s) should be set to. If there are two lifetimes, 'a is set to
@@ -1035,13 +1026,13 @@ the to-be-determined lifetime of the borrow of s, and 'b is set to 'static
 since that’s the lifetime of the provided string "hello". If there is just
 one lifetime 'a, the compiler infers that that lifetime must be 'static.
 
-在1处，编译器必须确定寿命参数应该被设置为什么寿命。如果有两个寿命，'a'被设置为有待确定的s的借贷寿命，'b'被设置为'静态'，因为那是提供的字符串 "hello "的寿命。如果只有一个生命期'a'，编译器会推断该生命期必须是'静态'。
+在第1行，编译器必须确定生命周期参数应该设置为什么生命周期。如果有两个生命周期，`'a` 将被设置为待确定的 `s` 的借用的生命周期，`'b` 将被设置为``'static，`因为提供的字符串 `"hello"` 的生命周期是 `'static`。如果只有一个生命周期 `'a`，编译器会推断该生命周期必须是 `'static`。
 
 When we later attempt to access the string reference s through a
 shared reference to print it, the compiler tries to shorten the mutable
 borrow of s used by MutStr to allow the shared borrow of s.
 
-当我们以后试图通过共享引用访问字符串引用s来打印它时，编译器会尝试缩短MutStr使用的s的可变借用，以允许s的共享借用。
+当我们后来尝试通过共享引用来访问字符串引用s并打印它时，编译器试图缩短由`MutStr`使用的`s`的可变借用，以允许s的共享借用。
 
 In the two-lifetime case, 'a simply ends just before the println, and
 'b stays the same. In the single-lifetime case, on the other hand, we
@@ -1053,7 +1044,7 @@ requires that the relevant type is never replaced with a sub- or
 supertype, so the compiler’s attempt to shorten the borrow fails, and
 it reports that the list is still mutably borrowed. Ouch!
 
-在双生命周期的情况下，'a'只是在println之前结束，'b'保持不变。另一方面，在单时限的情况下，我们遇到了问题。编译器想缩短s的借用，但要做到这一点，它也必须缩短str的借用。虽然&'static str一般来说可以缩短为任何&'a str（&'a T在'a中是共变的），但这里它在&mut T后面，而&mut T在T中是不变量的。不变量要求相关类型永远不会被子类型或超类型取代，所以编译器缩短借用的尝试失败了，它报告说列表仍然是可变的借用。哎哟！
+当我们后来试图通过共享引用访问字符串引用`s`以打印它时，编译器尝试缩短`MutStr`使用的`s`的可变借用，以允许共享借用`s`。在两个生命周期的情况下，`'a`在`println`之前结束，而`'b`保持不变。在单个生命周期的情况下，我们遇到了问题。编译器想要缩短对`s`的借用，但要这样做，它还必须缩短对`str`的借用。虽然`&'static str`通常可以缩短为任何`&'a str`（`&'a T`对`'a`是协变的），但在这里它在`&mut T`后面，而`&mut T`对`T`是不变的。不变性要求相关类型永远不会被替换为子类型或超类型，因此编译器尝试缩短借用失败，并报告列表仍在进行可变借用。超类型取代，所以编译器缩短借用的尝试失败了，它报告说列表仍然是可变的借用。哎哟！
 
 Because of the reduced flexibility imposed by invariance, you want
 to ensure that your types remain covariant (or contravariant where
@@ -1062,7 +1053,7 @@ that requires introducing additional lifetime arguments, you need to
 carefully weigh the cognitive cost of adding another parameter
 against the ergonomic cost of invariance.
 
-由于不变性带来的灵活性的降低，你想确保你的类型在尽可能多的通用参数上保持协变性（或在适当的情况下保持协变性）。如果这需要引入额外的寿命参数，你需要仔细权衡增加另一个参数的认知成本和不变性的人机工程成本。
+因为不变性所施加的降低灵活性，所以你想要确保你的类型在尽可能多的泛型参数上保持协变（或在适当的情况下反变）。如果这需要引入额外的生命周期参数，你需要仔细权衡添加另一个参数的认知成本和不变性的人体工程学成本。
 
 ## Summary
 
@@ -1077,4 +1068,4 @@ over how types are represented in memory, see how generics and
 traits produce running code, and take a look at some of the special
 type and trait constructs Rust offers for more advanced use cases.
 
-本章的目的是建立一个坚实的共享基础，以便在接下来的章节中继续构建。现在，我希望您已经对Rust的内存和所有权模型有了坚实的理解，并且那些可能由借用检查器引发的错误看起来不再神秘。您可能已经了解了本章中讨论的某些部分，但希望本章能够为您提供一个更全面的图像，以便您了解它们是如何相互关联的。在下一章中，我们将对类型进行类似的讲解。我们将介绍类型在内存中的表示方式，了解泛型和特性如何产生运行代码，并查看一些Rust为更高级用例提供的特殊类型和特性构造。
+本章的目的是为了建立一个坚实、共同的基础，以便在接下来的章节中进行更深入的探索。现在，我希望你已经对 Rust 的内存和所有权模型有了扎实的掌握，并且那些来自借用检查器的错误看起来不再那么神秘。你可能已经了解了本章介绍的部分内容，但希望本章让你对它们的整体框架有更全面的了解。在下一章中，我们将为类型做类似的介绍。我们将讨论类型在内存中的表示方式，了解泛型和 `trait` 如何产生可运行的代码，并深入研究一些 Rust 为更高级用例提供的特殊类型和 trait 构造。
