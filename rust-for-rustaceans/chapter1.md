@@ -824,14 +824,14 @@ not weird.
 
 是的，这与我们之前讨论的内存数据流模型是完全一致的。当`x`被移动时，`z`停止存在。当我们稍后重新分配`z`时，我们正在创建一个完全新的变量，它只存在于那一点之后。恰好这个新变量也被命名为`z`。有了这个模型，这个例子就不会感觉很奇怪了。
 
-The borrow checker is, and has to be, conservative. If it’s
+>Note: The borrow checker is, and has to be, conservative. If it’s
 unsure whether a borrow is valid, it rejects it, as the
 consequences of allowing an invalid borrow could be
 disastrous. The borrow checker keeps getting smarter, but
 there are times when it needs help to understand why a
 borrow is legal. This is part of why we have unsafe Rust
 
-借用检查器是保守的，必须如此。如果它不确定借用是否有效，它会拒绝它，因为允许无效借用的后果可能是灾难性的。借用检查器不断变得更加智能，但有时需要帮助才能理解为什么借用是合法的。这就是为什么我们有不安全 Rust 的部分原因。
+> Note: 借用检查器是保守的，必须如此。如果它不确定借用是否有效，它会拒绝它，因为允许无效借用的后果可能是灾难性的。借用检查器不断变得更加智能，但有时需要帮助才能理解为什么借用是合法的。这就是为什么我们有不安全 Rust 的部分原因。
 
 #### Gereric Lifetimes
 
@@ -1013,20 +1013,20 @@ longer compiles! And it’s all because of variance.
 
 乍一看，这里使用两个生命周期似乎是不必要的——我们没有需要区分结构不同部分借用的方法，就像在清单1-10中使用`StrSplit`时那样。但是，如果将这里的两个生命周期替换为单个`'a`，则代码不再编译！这全是因为方差(variance)。
 
-Note: The syntax at 1 may seem alien. It’s equivalent to defining a
+>Note: The syntax at 1 may seem alien. It’s equivalent to defining a
 variable x holding a MutStr and then writing `*x.s = "world"`,
 except that there’s no variable and so the MutStr is dropped
 immediately
 
 > 说明：`1`处的语法可能看起来很奇怪。它等同于定义一个包含`MutStr`的变量`x`，然后写成`*x.s = "world"`，只是没有变量，所以`MutStr`会立即被丢弃。
 
-At 1, the compiler must determine what lifetime the lifetime
+At `1`, the compiler must determine what lifetime the lifetime
 parameter(s) should be set to. If there are two lifetimes, 'a is set to
 the to-be-determined lifetime of the borrow of s, and 'b is set to 'static
 since that’s the lifetime of the provided string "hello". If there is just
 one lifetime 'a, the compiler infers that that lifetime must be 'static.
 
-在第1行，编译器必须确定生命周期参数应该设置为什么生命周期。如果有两个生命周期，`'a` 将被设置为待确定的 `s` 的借用的生命周期，`'b` 将被设置为``'static，`因为提供的字符串 `"hello"` 的生命周期是 `'static`。如果只有一个生命周期 `'a`，编译器会推断该生命周期必须是 `'static`。
+在第1行，编译器必须确定生命周期参数应该设置为什么生命周期。如果有两个生命周期，`'a` 将被设置为待确定的 `s` 的借用的生命周期，`'b` 将被设置为``'static` 因为提供的字符串 `"hello"` 的生命周期是 `'static`。如果只有一个生命周期 `'a`，编译器会推断该生命周期必须是 `'static`。
 
 When we later attempt to access the string reference s through a
 shared reference to print it, the compiler tries to shorten the mutable
